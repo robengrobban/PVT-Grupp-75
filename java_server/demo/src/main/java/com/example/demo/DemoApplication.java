@@ -17,6 +17,6 @@ public class DemoApplication extends SpringBootServletInitializer{
 
 	@GetMapping("/hello")
 	public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-		return String.format("Good day, %s!", name);
+		return String.format("Good evening, %s!", name);
 	}
 }
