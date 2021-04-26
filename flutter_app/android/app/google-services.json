@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1097591538869",
+    "project_id": "pvt-group-75",
+    "storage_bucket": "pvt-group-75.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1097591538869:android:9e6f1bf4e974f3ba752afc",
+        "android_client_info": {
+          "package_name": "pvt.group.seventyfive"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1097591538869-unc687nmhhmd8q6mtmi467arqaki28n0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pvt.group.seventyfive",
+            "certificate_hash": "89daac636dee2fe7644d69af939e019344a5bc67"
+          }
+        },
+        {
+          "client_id": "1097591538869-gfpm9ae615p5l55pljljord9kvbskdkb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBog6beQkjj01ogCWaKlqFZigVUkj9VN68"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1097591538869-gfpm9ae615p5l55pljljord9kvbskdkb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
