@@ -41,6 +41,43 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1097591538869:android:a321101293e327ba752afc",
+        "android_client_info": {
+          "package_name": "pvt.group.seventyfive.flutter_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1097591538869-3e1j5qt652rdg9h6aefatb05k4q2rc57.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pvt.group.seventyfive.flutter_app",
+            "certificate_hash": "89daac636dee2fe7644d69af939e019344a5bc67"
+          }
+        },
+        {
+          "client_id": "1097591538869-gfpm9ae615p5l55pljljord9kvbskdkb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBog6beQkjj01ogCWaKlqFZigVUkj9VN68"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1097591538869-gfpm9ae615p5l55pljljord9kvbskdkb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
