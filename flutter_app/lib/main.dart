@@ -109,8 +109,8 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
         },
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+        tooltip: 'Login',
+        child: Icon(Icons.person),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

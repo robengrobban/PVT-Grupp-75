@@ -1,15 +1,7 @@
 
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_app/models/account.dart';
 
-GoogleSignIn _googleSignIn = GoogleSignIn(
-  scopes: [
-    'email',
-    'https://www.googleapis.com/auth/calendar.readonly',
-  ],
-);
-
-GoogleSignInAccount _currentUser;
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -21,12 +13,9 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
-      setState(() {
-        _currentUser = account;
-      });
+    setState(() {
+      Account().update(state: this);
     });
-    _googleSignIn.signInSilently();
   }
 
   @override
@@ -43,38 +32,21 @@ class LoginScreenState extends State<LoginScreen> {
             TextButton(
               child: Text("Logga in"),
               onPressed: () {
-                _handleSignIn();
+                Account().handleSignIn();
               },
             ),
             TextButton(
               child: Text("Logga ut"),
               onPressed: () {
-                _handleSignOut();
+                Account().handleSignOut();
               },
             ),
-            Text(getUsername())
+            Text(Account().displayName())
           ],
         )
     );
   }
 
-  String getUsername() {
-    if ( _currentUser != null ) {
-      return _currentUser.displayName;
-    }
-    else {
-      return "Ingen är inloggad";
-    }
-  }
 
-  Future<void> _handleSignIn() async {
-    try {
-      await _googleSignIn.signIn();
-    } catch (error) {
-      print(error);
-    }
-  }
-
-  Future<void> _handleSignOut() => _googleSignIn.disconnect();
 
 }
