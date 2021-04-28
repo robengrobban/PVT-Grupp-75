@@ -1,4 +1,4 @@
-package com.group75.walkInProgress;
+package com.group75.walkInProgressBackend;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
