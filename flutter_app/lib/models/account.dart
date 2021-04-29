@@ -28,11 +28,13 @@ class Account {
       else {
         state.setState(() {
           _currentUser = account;
-          _fixMeMyCalendar(_currentUser); // Testning
         });
       }
     });
     _googleSignIn.signInSilently();
+    if (_currentUser != null) {
+      _fixMeMyCalendar(_currentUser); // Testning
+    }
   }
 
   Future<void> handleSignIn() async {
@@ -46,14 +48,25 @@ class Account {
   Future<void> handleSignOut() => _googleSignIn.disconnect();
 
   Future<void> _fixMeMyCalendar(GoogleSignInAccount user) async {
+
+    DateTime startTime = new DateTime.now();
+    DateTime endTime = new DateTime.now().add(new Duration(days: 1));
+    print(startTime.toUtc().toIso8601String());
+    print(endTime.toUtc().toIso8601String());
+    print(Uri.parse('https://www.googleapis.com/calendar/v3/calendars/'+user.email+'/events?orderBy=startTime&singleEvents=true&timeMax='+startTime.toUtc().toIso8601String()+'&timeMin='+endTime.toUtc().toIso8601String()));
+
+    String _startTime = startTime.toUtc().toIso8601String();
+    String _endTime = endTime.toUtc().toIso8601String();
+
+    _startTime = "2021-04-29T00:00:00Z";
+    _endTime = "2021-04-30T00:00:00Z";
+
     final http.Response response = await http.get(
-      Uri.parse('https://www.googleapis.com/calendar/v3/calendars/'+user.email),
+      Uri.parse('https://www.googleapis.com/calendar/v3/calendars/'+user.email+'/events?orderBy=startTime&singleEvents=true&timeMax='+_startTime+'&timeMin='+_endTime),
       headers: await user.authHeaders,
     );
-    if (response.statusCode != 200) {
-      print('API: ${response.statusCode} response: ${response.body}');
-      return;
-    }
+    print('API: ${response.statusCode} response: ${response.body}');
+    return;
   }
 
   String displayName() {
