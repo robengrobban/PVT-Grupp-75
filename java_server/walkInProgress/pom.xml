@@ -72,8 +72,17 @@
 			</extension>
 		</extensions>
 	</build>
-
 	<repositories>
+    <!-- first, Maven Central -->
+    <repository>
+        <id>central</id>
+        <name>Central Repository</name>
+        <url>https://repo.maven.apache.org/maven2</url>
+        <snapshots>
+            <enabled>false</enabled>
+        </snapshots>
+    </repository>
+
 		<repository>
 			<id>spring-releases</id>
 			<url>https://repo.spring.io/libs-release</url>
@@ -83,14 +92,11 @@
 	</repositories>
 
 	<pluginRepositories>
-			<pluginRepository>
-			<id>google-maps-services-java</id>
-			<url>https://github.com/googlemaps/google-maps-services-java.git</url>
-		</pluginRepository>
 		<pluginRepository>
 			<id>spring-releases</id>
 			<url>https://repo.spring.io/libs-release</url>
 		</pluginRepository>
+		
 		<pluginRepository>
 			<id>synergian-repo</id>
 			<url>https://raw.github.com/synergian/wagon-git/releases</url>
