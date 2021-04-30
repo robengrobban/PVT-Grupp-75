@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>com.google.maps</groupId>
 			<artifactId>google-maps-services</artifactId>
-			<version>0.17.0</version>
+			<version>0.18.0</version>
 		</dependency>
 	</dependencies>
 
@@ -74,15 +74,7 @@
 	</build>
 
 	<repositories>
-		<repository>
-			<id>spring-releases</id>
-			<url>https://repo.spring.io/libs-release</url>
-		</repository>
-		
-		<repository>
-			<id>google-maps-services-java</id>
-			<url>https://github.com/googlemaps/google-maps-services-java.git</url>
-		</repository>
+
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
