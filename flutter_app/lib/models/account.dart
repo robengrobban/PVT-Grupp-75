@@ -1,7 +1,7 @@
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
-import 'dart:developer';
 import 'dart:convert' show json;
+import 'package:flutter_app/models/event.dart';
 
 class Account {
 
@@ -17,6 +17,8 @@ class Account {
   );
 
   GoogleSignInAccount _currentUser;
+
+  List<Event> _events = List.empty(growable: true);
 
   factory Account() {
     return _instance;
@@ -34,9 +36,6 @@ class Account {
       }
     });
     _googleSignIn.signInSilently();
-    if (_currentUser != null) {
-      _fixMeMyCalendar(_currentUser); // Testning
-    }
   }
 
   Future<void> handleSignIn() async {
@@ -49,7 +48,8 @@ class Account {
 
   Future<void> handleSignOut() => _googleSignIn.disconnect();
 
-  Future<void> _fixMeMyCalendar(GoogleSignInAccount user) async {
+  Future<void> generateCalendar(/*GoogleSignInAccount user*/) async {
+    GoogleSignInAccount user = _currentUser;
 
     DateTime startTime = new DateTime.now();
     DateTime endTime = new DateTime.now().add(new Duration(days: 1));
@@ -62,9 +62,30 @@ class Account {
       // ERROR HANDLING
       return;
     }
-    log('API: ${response.statusCode} response: ${response.body}');
-    final Map<String, dynamic> data = json.decode(response.body);
+    _buildEventList(json.decode(response.body));
     return;
+  }
+
+  void _buildEventList( Map<String, dynamic> json ) {
+    List<dynamic> items = json["items"];
+    _events = List.empty(growable: true);
+
+    for (int i = 0; i < items.length; i++) {
+      if ( items[i]["start"]["dateTime"] == null ) {
+        continue;
+      }
+      String id = items[i]["id"];
+      String summary = items[i]["summary"];
+      DateTime startTime = DateTime.parse(items[i]["start"]["dateTime"]);
+      DateTime endTime = DateTime.parse(items[i]["end"]["dateTime"]);
+
+      _events.add(new Event(id, summary, startTime, endTime));
+    }
+
+  }
+
+  List<Event> events() {
+    return _events;
   }
 
   String displayName() {
