@@ -23,7 +23,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -49,11 +49,6 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.google.maps</groupId>
-			<artifactId>google-maps-services</artifactId>
-			<version>0.18.0</version>
-		</dependency>
 	</dependencies>
 
 	<build>
@@ -63,7 +58,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
-
+		
 		<extensions>
 			<extension>
 				<groupId>ar.com.synergian</groupId>
@@ -72,42 +67,28 @@
 			</extension>
 		</extensions>
 	</build>
-	<repositories>
-    <!-- first, Maven Central -->
-    <repository>
-        <id>central</id>
-        <name>Central Repository</name>
-        <url>https://repo.maven.apache.org/maven2</url>
-        <snapshots>
-            <enabled>false</enabled>
-        </snapshots>
-    </repository>
-
+	
 		<repository>
-			<id>spring-releases</id>
-			<url>https://repo.spring.io/libs-release</url>
+		<id>spring-releases</id>
+		<url>https://repo.spring.io/libs-release</url>
 		</repository>
-		
-
 	</repositories>
-
 	<pluginRepositories>
 		<pluginRepository>
 			<id>spring-releases</id>
 			<url>https://repo.spring.io/libs-release</url>
 		</pluginRepository>
-		
 		<pluginRepository>
 			<id>synergian-repo</id>
 			<url>https://raw.github.com/synergian/wagon-git/releases</url>
 		</pluginRepository>
 	</pluginRepositories>
-
+	
 	<distributionManagement>
 		<repository>
-			<id>internal.repo</id>
-			<name>Internal repo</name>
-			<url>git@github.com/robengrobban/PVT-Grupp-75.git</url>
+		<id>internal.repo</id>
+		<name>Internal repo</name>
+		<url>git@github.com/robengrobban/PVT-Grupp-75.git</url>
 		</repository>
 	</distributionManagement>
 
