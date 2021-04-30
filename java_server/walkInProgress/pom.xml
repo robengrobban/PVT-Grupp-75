@@ -78,6 +78,11 @@
 			<id>spring-releases</id>
 			<url>https://repo.spring.io/libs-release</url>
 		</repository>
+		
+		<repository>
+			<id>google-maps-services-java</id>
+			<url>https://github.com/googlemaps/google-maps-services-java.git</url>
+		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
