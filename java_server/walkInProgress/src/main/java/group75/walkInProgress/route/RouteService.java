@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.google.maps.*;
 import com.google.maps.errors.ApiException;
-import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
 
@@ -26,7 +25,7 @@ public class RouteService {
 		req.optimizeWaypoints(false);
 		try {
 			var result = req.await();
-			return new Route(result.routes[0]);
+			return new Route(result.routes[0], waypoints, startPoint);
 		} catch (ApiException | InterruptedException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

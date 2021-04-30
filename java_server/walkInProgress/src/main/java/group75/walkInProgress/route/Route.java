@@ -3,7 +3,6 @@ package group75.walkInProgress.route;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.LatLng;
 
@@ -34,16 +33,12 @@ public class Route {
 		return polyCoordinates;
 	}
 
-	public List<LatLng> getwaypoints() {
+	public List<LatLng> getWaypoints() {
 		return waypoints;
 	}
 
 	public double getDistance() {
 		return distance;
-	}
-
-	public List<LatLng> getWaypoints() {
-		return waypoints;
 	}
 
 	public LatLng getStartPoint() {
