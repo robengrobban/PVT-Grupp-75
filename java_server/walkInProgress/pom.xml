@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.4.5</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	
+
 	<groupId>group75</groupId>
 	<artifactId>walkInProgress</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -19,11 +20,13 @@
 		<java.version>11</java.version>
 	</properties>
 	<dependencies>
+
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -37,7 +40,7 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-core</artifactId>
 		</dependency>
-		
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -49,6 +52,11 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.google.maps</groupId>
+			<artifactId>google-maps-services</artifactId>
+			<version>0.18.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -58,7 +66,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
-		
+
 		<extensions>
 			<extension>
 				<groupId>ar.com.synergian</groupId>
@@ -67,11 +75,11 @@
 			</extension>
 		</extensions>
 	</build>
-	
+
 	<repositories>
 		<repository>
-		<id>spring-releases</id>
-		<url>https://repo.spring.io/libs-release</url>
+			<id>spring-releases</id>
+			<url>https://repo.spring.io/libs-release</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
@@ -84,12 +92,12 @@
 			<url>https://raw.github.com/synergian/wagon-git/releases</url>
 		</pluginRepository>
 	</pluginRepositories>
-	
+
 	<distributionManagement>
 		<repository>
-		<id>internal.repo</id>
-		<name>Internal repo</name>
-		<url>git@github.com/robengrobban/PVT-Grupp-75.git</url>
+			<id>internal.repo</id>
+			<name>Internal repo</name>
+			<url>git@github.com/robengrobban/PVT-Grupp-75.git</url>
 		</repository>
 	</distributionManagement>
 
