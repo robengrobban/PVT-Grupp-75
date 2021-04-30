@@ -1,5 +1,6 @@
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
+import 'dart:developer';
 
 class Account {
 
@@ -51,21 +52,12 @@ class Account {
 
     DateTime startTime = new DateTime.now();
     DateTime endTime = new DateTime.now().add(new Duration(days: 1));
-    print(startTime.toUtc().toIso8601String());
-    print(endTime.toUtc().toIso8601String());
-    print(Uri.parse('https://www.googleapis.com/calendar/v3/calendars/'+user.email+'/events?orderBy=startTime&singleEvents=true&timeMax='+startTime.toUtc().toIso8601String()+'&timeMin='+endTime.toUtc().toIso8601String()));
-
-    String _startTime = startTime.toUtc().toIso8601String();
-    String _endTime = endTime.toUtc().toIso8601String();
-
-    _startTime = "2021-04-29T00:00:00Z";
-    _endTime = "2021-04-30T00:00:00Z";
 
     final http.Response response = await http.get(
-      Uri.parse('https://www.googleapis.com/calendar/v3/calendars/'+user.email+'/events?orderBy=startTime&singleEvents=true&timeMax='+_startTime+'&timeMin='+_endTime),
+      Uri.parse('https://www.googleapis.com/calendar/v3/calendars/'+user.email+'/events?orderBy=startTime&singleEvents=true&timeMax='+endTime.toUtc().toIso8601String()+'&timeMin='+startTime.toUtc().toIso8601String()),
       headers: await user.authHeaders,
     );
-    print('API: ${response.statusCode} response: ${response.body}');
+    log('API: ${response.statusCode} response: ${response.body}');
     return;
   }
 
