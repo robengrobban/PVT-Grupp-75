@@ -59,7 +59,7 @@ class Account {
       headers: await user.authHeaders,
     );
     if (response.statusCode != 200) {
-      // ERROR HANDELING
+      // ERROR HANDLING
       return;
     }
     log('API: ${response.statusCode} response: ${response.body}');
