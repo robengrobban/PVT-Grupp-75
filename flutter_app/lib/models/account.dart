@@ -1,6 +1,7 @@
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:developer';
+import 'dart:convert' show json;
 
 class Account {
 
@@ -57,7 +58,12 @@ class Account {
       Uri.parse('https://www.googleapis.com/calendar/v3/calendars/'+user.email+'/events?orderBy=startTime&singleEvents=true&timeMax='+endTime.toUtc().toIso8601String()+'&timeMin='+startTime.toUtc().toIso8601String()),
       headers: await user.authHeaders,
     );
+    if (response.statusCode != 200) {
+      // ERROR HANDELING
+      return;
+    }
     log('API: ${response.statusCode} response: ${response.body}');
+    final Map<String, dynamic> data = json.decode(response.body);
     return;
   }
 
