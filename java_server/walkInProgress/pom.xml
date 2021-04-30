@@ -74,9 +74,19 @@
 	</build>
 
 	<repositories>
+		<repository>
+			<id>spring-releases</id>
+			<url>https://repo.spring.io/libs-release</url>
+		</repository>
+		
 
 	</repositories>
+
 	<pluginRepositories>
+			<pluginRepository>
+			<id>google-maps-services-java</id>
+			<url>https://github.com/googlemaps/google-maps-services-java.git</url>
+		</pluginRepository>
 		<pluginRepository>
 			<id>spring-releases</id>
 			<url>https://repo.spring.io/libs-release</url>
