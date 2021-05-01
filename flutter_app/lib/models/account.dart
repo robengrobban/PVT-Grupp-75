@@ -19,12 +19,15 @@ class Account {
   GoogleSignInAccount _currentUser;
 
   List<Event> _events = List.empty(growable: true);
+  DateTime _lastEventsFetched;
+  bool _loggedIn = false;
 
   factory Account() {
     return _instance;
   }
 
-  void update({state = null}) {
+  void update({state}) {
+    _googleSignIn.signInSilently();
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       if ( state == null ) {
         _currentUser = account;
@@ -35,20 +38,30 @@ class Account {
         });
       }
     });
-    _googleSignIn.signInSilently();
   }
 
   Future<void> handleSignIn() async {
     try {
+      _loggedIn = true;
       await _googleSignIn.signIn();
     } catch (error) {
+      _notLoggedInActions();
       print(error);
     }
   }
 
-  Future<void> handleSignOut() => _googleSignIn.disconnect();
+  Future<void> handleSignOut() async {
+    _notLoggedInActions();
+    return _googleSignIn.disconnect();
+  }
 
-  Future<void> generateCalendar(/*GoogleSignInAccount user*/) async {
+  void _notLoggedInActions() {
+    _events = List.empty();
+    _loggedIn = false;
+    _lastEventsFetched = null;
+  }
+
+  Future<List<Event>> _generateCalendar() async {
     GoogleSignInAccount user = _currentUser;
 
     DateTime startTime = new DateTime.now();
@@ -59,16 +72,18 @@ class Account {
       headers: await user.authHeaders,
     );
     if (response.statusCode != 200) {
-      // ERROR HANDLING
-      return;
+      return List.empty();
     }
-    _buildEventList(json.decode(response.body));
-    return;
+    return _buildEventList(json.decode(response.body));;
   }
 
-  void _buildEventList( Map<String, dynamic> json ) {
+  bool isLoggedIn() {
+    return _loggedIn;
+  }
+
+  List<Event> _buildEventList( Map<String, dynamic> json ) {
     List<dynamic> items = json["items"];
-    _events = List.empty(growable: true);
+    List<Event> events = List.empty(growable: true);
 
     for (int i = 0; i < items.length; i++) {
       if ( items[i]["start"]["dateTime"] == null ) {
@@ -79,12 +94,21 @@ class Account {
       DateTime startTime = DateTime.parse(items[i]["start"]["dateTime"]);
       DateTime endTime = DateTime.parse(items[i]["end"]["dateTime"]);
 
-      _events.add(new Event(id, summary, startTime, endTime));
+      events.add(new Event(id, summary, startTime, endTime));
     }
+
+    return events;
 
   }
 
-  List<Event> events() {
+  Future<List<Event>> events() async {
+    if ( !_loggedIn ) {
+      return Future.error("Not logged in");
+    }
+    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inSeconds > 60 ) {
+      _events = await _generateCalendar();
+      _lastEventsFetched = DateTime.now();
+    }
     return _events;
   }
 
@@ -92,7 +116,7 @@ class Account {
     if (_currentUser != null) {
       return _currentUser.displayName;
     }
-    return "Ingen inloggad";
+    return "Inte inloggad";
   }
 
 }

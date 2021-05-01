@@ -11,15 +11,13 @@ class LoginScreen extends StatefulWidget {
 
 class LoginScreenState extends State<LoginScreen> {
 
-  List<Event> events = List.empty(growable: true);
+
   
   @override
   void initState() {
     super.initState();
     setState(() {
       Account().update(state: this);
-      Account().generateCalendar();
-      events = Account().events();
     });
   }
 
@@ -38,25 +36,34 @@ class LoginScreenState extends State<LoginScreen> {
             Center(
                 child: Text(Account().displayName())
             ),
-            SingleChildScrollView(
-              physics: ScrollPhysics(),
-              child: ListView.builder(
-                  padding: const EdgeInsets.all(8),
-                  physics: NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: events.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Container (
-                      color: Colors.cyan,
-                      child: ListTile(
-                          title: Text("${events[index].summary()}"),
-                          subtitle: Text("${events[index].startTime().toUtc()} - ${events[index].endTime().toUtc()}")
-                      )
-                    );
-                  }
-              ),
+            FutureBuilder<List<Event>>(
+              future: Account().events(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                      padding: const EdgeInsets.all(8),
+                      physics: NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return Container (
+                            color: Colors.cyan,
+                            child: ListTile(
+                                title: Text("${snapshot.data[index].summary()}"),
+                                subtitle: Text("${snapshot.data[index].startTime().toUtc()} - ${snapshot.data[index].endTime().toUtc()}")
+                            )
+                        );
+                      }
+                  );
+                }
+                else if ( snapshot.hasError ) {
+                  return Center( child: Text("kan inte ladda kalendar", style: TextStyle(fontStyle: FontStyle.italic),) );
+                }
+                else {
+                  return Center( child: Text("Laddar kalendar"));
+                }
+              },
             ),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
