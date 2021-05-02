@@ -8,13 +8,17 @@ import com.google.maps.model.LatLng;
 
 
 public class Route {
-	  List<LatLng> polyCoordinates;
-	  List<LatLng> waypoints;
-	  LatLng startPoint;
-	  int distance;
-	  int duration;
+	  private List<LatLng> polyCoordinates;
+	  private List<LatLng> waypoints;
+	  private LatLng startPoint;
+	  private int distance;
+	  private int duration;
+	  private LatLng northEastBound;
+	  private LatLng southWestBound;
 
 	  Route(DirectionsRoute directionsResult, List<LatLng> waypoints, LatLng startPoint) {
+		  this.northEastBound = directionsResult.bounds.northeast;
+		  this.southWestBound = directionsResult.bounds.southwest;
 		  this.waypoints = waypoints;
 		  this.startPoint = startPoint;
 		  polyCoordinates = new ArrayList<LatLng>();
@@ -24,10 +28,9 @@ public class Route {
 				  distance += step.distance.inMeters;
 				  duration += step.duration.inSeconds;
 			  }
-			  
 		  }
-		  
 	  }
+	  
 
 	public List<LatLng> getPolyCoordinates() {
 		return polyCoordinates;
@@ -35,6 +38,14 @@ public class Route {
 
 	public List<LatLng> getWaypoints() {
 		return waypoints;
+	}
+
+	public LatLng getNorthEastBound() {
+		return northEastBound;
+	}
+
+	public LatLng getSouthWestBound() {
+		return southWestBound;
 	}
 
 	public double getDistance() {

@@ -12,7 +12,7 @@ import com.google.maps.model.TravelMode;
 
 
 public class RouteService {
-	final static int NUMBER_OF_WAYPOINTS = 3; 
+	private final static int NUMBER_OF_WAYPOINTS = 3;
 	
 
 	public Route getRoute(LatLng startPoint, double duration, double radians) {
