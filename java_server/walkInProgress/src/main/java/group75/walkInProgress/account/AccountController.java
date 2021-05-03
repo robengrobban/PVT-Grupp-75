@@ -15,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AccountController {
 
     @GetMapping(path="/create")
-    public ResponseEntity<Route> getCircularRoute(@RequestParam String id) {
+    public ResponseEntity<String> getCircularRoute(@RequestParam String id) {
 
-        return new ResponseEntity<Route>(id, HttpStatus.OK);
+        return new ResponseEntity<String>(id, HttpStatus.OK);
 
     }
 
