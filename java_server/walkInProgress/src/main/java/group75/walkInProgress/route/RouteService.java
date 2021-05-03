@@ -17,7 +17,7 @@ public class RouteService {
 	private static final int KM_PER_HOUR_WALKING = 5;
 	private static final int MINUTES_PER_HOUR = 60;
 	private static final double DEFAULT_CROWS_TO_ROAD_FACTOR = 1.4;
-	private static final int ACCAPTABLE_DURATION_DIFFERENCE_IN_MINUTES = 5;
+	private static final int ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS = 5;
 	
 
 	public Route getRoute(LatLng startPoint, double duration, double radians) {
@@ -32,12 +32,11 @@ public class RouteService {
 			Route route = generateRoute(startPoint, waypoints);
 			System.out.println("Try " + numberOfTries + " With crowfactor " + crowsToRoadFactor + " gives " + route.getDuration()/60);
 			System.out.println(route.getDuration()/60 - duration);
-			if(Math.abs(route.getDuration()/60 - duration) <= ACCAPTABLE_DURATION_DIFFERENCE_IN_MINUTES) {
+			if(Math.abs(route.getDuration()/60 - duration) <= ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS) {
 				System.out.println(numberOfTries);
 				return route;
 			}else {
-				//TODO fix pinpong
-				if (route.getDuration()/60 < duration - ACCAPTABLE_DURATION_DIFFERENCE_IN_MINUTES){
+				if (route.getDuration()/60 < duration - ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS){
 					crowsToRoadFactor -= 0.1;
 				} else {
 					crowsToRoadFactor += 0.1;

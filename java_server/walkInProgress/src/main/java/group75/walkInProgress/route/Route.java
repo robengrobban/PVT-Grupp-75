@@ -1,29 +1,18 @@
 package group75.walkInProgress.route;
 
-import javax.persistence.Entity;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ElementCollection;
+
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.LatLng;
 
-@Entity
+
 public class Route {
-	  @Id
-	  @GeneratedValue(strategy=GenerationType.AUTO)
-	  private Integer id;
-	  @ElementCollection
 	  private List<LatLng> polyCoordinates;
-	  @ElementCollection
 	  private List<LatLng> waypoints;
 	  private LatLng startPoint;
 	  private int distance;
-
-
-	private int duration;
+	  private int duration;
 	  private LatLng northEastBound;
 	  private LatLng southWestBound;
 
@@ -63,10 +52,6 @@ public class Route {
 		return distance;
 	}
 
-	public Integer getId() {
-		return id;
-	}
-
 	public LatLng getStartPoint() {
 		return startPoint;
 	}
@@ -74,5 +59,7 @@ public class Route {
 	public int getDuration() {
 		return duration;
 	}
+	
+	
 	  
 }
