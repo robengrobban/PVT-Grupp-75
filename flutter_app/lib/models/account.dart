@@ -64,6 +64,10 @@ class Account {
   Future<List<Event>> _generateCalendar() async {
     GoogleSignInAccount user = _currentUser;
 
+    if ( user == null ) {
+      return List.empty();
+    }
+
     DateTime startTime = new DateTime.now();
     DateTime endTime = new DateTime.now().add(new Duration(days: 1));
 

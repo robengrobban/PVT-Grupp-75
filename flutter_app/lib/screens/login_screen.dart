@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/account.dart';
 import 'package:flutter_app/models/event.dart';
