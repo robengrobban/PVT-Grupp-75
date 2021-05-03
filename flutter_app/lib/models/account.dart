@@ -105,7 +105,7 @@ class Account {
     if ( !_loggedIn ) {
       return Future.error("Not logged in");
     }
-    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inSeconds > 60 ) {
+    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inSeconds > 30 ) {
       _events = await _generateCalendar();
       _lastEventsFetched = DateTime.now();
     }
