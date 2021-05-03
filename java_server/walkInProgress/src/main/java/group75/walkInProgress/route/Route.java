@@ -6,6 +6,7 @@ import java.util.List;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ElementCollection;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.LatLng;
 
@@ -14,7 +15,7 @@ public class Route {
 	  @Id
 	  @GeneratedValue(strategy=GenerationType.AUTO)
 	  private Integer id;
-	  
+	  @ElementCollection
 	  private List<LatLng> polyCoordinates;
 	  private List<LatLng> waypoints;
 	  private LatLng startPoint;
