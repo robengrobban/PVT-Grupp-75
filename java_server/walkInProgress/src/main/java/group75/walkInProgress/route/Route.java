@@ -48,8 +48,15 @@ public class Route {
 	  
 	  
 
+
+
+
+
 	public Route() {}
 
+	public Integer getId() {
+		return id;
+	}
 
 
 	public List<LatLng> getPolyCoordinates() {

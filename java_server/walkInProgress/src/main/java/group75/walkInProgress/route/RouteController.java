@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import com.google.maps.model.LatLng;
 
 @Controller
-@RequestMapping
+@RequestMapping(path="/route")
 public class RouteController {
 	private final RouteService service = new RouteService();
 	  @Autowired 
