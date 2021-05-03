@@ -3,6 +3,7 @@ package group75.walkInProgress.route;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,7 +21,8 @@ public class RouteController {
 	  private RouteRepository routeRepository;
 	
 	  @PostMapping(path="/save", consumes = "application/json", produces = "application/json")
-	  public @ResponseBody Route saveRoute(@RequestParam Route route) {
+	  public @ResponseBody Route saveRoute(@RequestBody Route route) {
+		  System.out.print(route);
 		  return routeRepository.save(route);
 	  }
 	

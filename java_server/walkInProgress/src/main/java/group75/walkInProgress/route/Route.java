@@ -45,6 +45,12 @@ public class Route {
 		  }
 	  }
 	  
+	  
+	  
+
+	public Route() {}
+
+
 
 	public List<LatLng> getPolyCoordinates() {
 		return polyCoordinates;
