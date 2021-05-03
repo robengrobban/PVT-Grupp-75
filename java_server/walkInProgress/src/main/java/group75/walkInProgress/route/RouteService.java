@@ -12,12 +12,41 @@ import com.google.maps.model.TravelMode;
 
 
 public class RouteService {
-	private final static int NUMBER_OF_WAYPOINTS = 3;
+	private static final int NUMBER_OF_WAYPOINTS = 3;
+	private static final int MAXIMUM_NUMBER_OF_TRIES = 10;
+	private static final int KM_PER_HOUR_WALKING = 5;
+	private static final int MINUTES_PER_HOUR = 60;
+	private static final double DEFAULT_CROWS_TO_ROAD_FACTOR = 1.4;
+	private static final int ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS = 5;
 	
 
 	public Route getRoute(LatLng startPoint, double duration, double radians) {
-		var waypoints = generateWaypoints(startPoint, (duration/60)*5, radians);
+		int numberOfTries = 0;
+		double crowsToRoadFactor = DEFAULT_CROWS_TO_ROAD_FACTOR;
 		
+		while (numberOfTries<MAXIMUM_NUMBER_OF_TRIES) {
+			numberOfTries++;
+			
+			double distance = ((duration/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING) / crowsToRoadFactor;
+			var waypoints = generateWaypoints(startPoint, distance, radians);
+			Route route = generateRoute(startPoint, waypoints);
+			System.out.println("Try " + numberOfTries + " With crowfactor " + crowsToRoadFactor + " gives " + route.getDuration()/60);
+			System.out.println(route.getDuration()/60 - duration);
+			if(Math.abs(route.getDuration()/60 - duration) <= ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS) {
+				System.out.println(numberOfTries);
+				return route;
+			}else {
+				if (route.getDuration()/60 < duration - ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS){
+					crowsToRoadFactor -= 0.2;
+				} else {
+					crowsToRoadFactor += 0.2;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private Route generateRoute(LatLng startPoint, List<LatLng> waypoints) {
 		var req = DirectionsApi.newRequest(MapsContext.getInstance());
 		req.origin(startPoint);
 		req.destination(startPoint);
@@ -33,7 +62,6 @@ public class RouteService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return null;
 	}
 	
