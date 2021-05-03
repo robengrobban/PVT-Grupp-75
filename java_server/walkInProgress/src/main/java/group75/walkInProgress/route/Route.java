@@ -17,6 +17,7 @@ public class Route {
 	  private Integer id;
 	  @ElementCollection
 	  private List<LatLng> polyCoordinates;
+	  @ElementCollection
 	  private List<LatLng> waypoints;
 	  private LatLng startPoint;
 	  private int distance;
