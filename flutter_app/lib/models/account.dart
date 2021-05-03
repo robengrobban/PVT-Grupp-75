@@ -74,7 +74,7 @@ class Account {
     if (response.statusCode != 200) {
       return List.empty();
     }
-    return _buildEventList(json.decode(response.body));;
+    return _buildEventList(json.decode(response.body));
   }
 
   bool isLoggedIn() {
