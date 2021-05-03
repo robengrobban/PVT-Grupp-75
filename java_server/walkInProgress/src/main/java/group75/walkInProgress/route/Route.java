@@ -30,7 +30,7 @@ public class Route {
 	  private LatLng northEastBound;
 	  private LatLng southWestBound;
 
-	  Route(DirectionsRoute directionsResult, List<LatLng> waypoints, LatLng startPoint) {
+	  Route(DirectionsRoute directionsResult, List<LatLng> waypoints, LatLng startPoint) throws RouteException {
 		  this.northEastBound = directionsResult.bounds.northeast;
 		  this.southWestBound = directionsResult.bounds.southwest;
 		  this.waypoints = waypoints;
@@ -38,6 +38,9 @@ public class Route {
 		  polyCoordinates = new ArrayList<LatLng>();
 		  for (var leg : directionsResult.legs) {
 			  for (var step : leg.steps) {
+				  if(step.htmlInstructions.contains("ferry"))
+					  throw new RouteException("A walking route can't include a ferry");
+				  System.out.println(step.htmlInstructions);
 				  polyCoordinates.addAll(step.polyline.decodePath());
 				  distance += step.distance.inMeters;
 				  duration += step.duration.inSeconds;

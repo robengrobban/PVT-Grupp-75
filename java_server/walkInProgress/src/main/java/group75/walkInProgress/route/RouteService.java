@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.maps.*;
 import com.google.maps.DirectionsApi.RouteRestriction;
 import com.google.maps.errors.ApiException;
+import com.google.maps.model.AddressType;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
 
@@ -16,20 +17,27 @@ public class RouteService {
 	private static final int MAXIMUM_NUMBER_OF_TRIES = 10;
 	private static final int KM_PER_HOUR_WALKING = 5;
 	private static final int MINUTES_PER_HOUR = 60;
-	private static final double DEFAULT_CROWS_TO_ROAD_FACTOR = 1.4;
+	private static final double DEFAULT_ROAD_TO_CROWS_FACTOR = 0.7;
 	private static final int ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS = 5;
+	private static final double DEFAULT_CROWS_FACTOR_STEP = 0.1;
 	
 
 	public Route getRoute(LatLng startPoint, double duration, double radians) {
 		int numberOfTries = 0;
-		double crowsToRoadFactor = DEFAULT_CROWS_TO_ROAD_FACTOR;
+		double crowsToRoadFactor = DEFAULT_ROAD_TO_CROWS_FACTOR;
+		double crowsStep = DEFAULT_CROWS_FACTOR_STEP;
+		boolean hasBeenIncreased = false;
+		boolean hasBeenDecreased = false;
+		
 		
 		while (numberOfTries<MAXIMUM_NUMBER_OF_TRIES) {
 			numberOfTries++;
 			
-			double distance = ((duration/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING) / crowsToRoadFactor;
+			double distance = ((duration/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING) * crowsToRoadFactor;
 			var waypoints = generateWaypoints(startPoint, distance, radians);
 			Route route = generateRoute(startPoint, waypoints);
+			if (route ==  null)
+				return null;
 			System.out.println("Try " + numberOfTries + " With crowfactor " + crowsToRoadFactor + " gives " + route.getDuration()/60);
 			System.out.println(route.getDuration()/60 - duration);
 			if(Math.abs(route.getDuration()/60 - duration) <= ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS) {
@@ -37,9 +45,19 @@ public class RouteService {
 				return route;
 			}else {
 				if (route.getDuration()/60 < duration - ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS){
-					crowsToRoadFactor -= 0.1;
+					if(hasBeenDecreased) {
+						crowsStep /=2;
+						hasBeenDecreased = false;
+					}
+					hasBeenIncreased = true;
+					crowsToRoadFactor += crowsStep;
 				} else {
-					crowsToRoadFactor += 0.1;
+					if(hasBeenIncreased) {
+						crowsStep /=2;
+						hasBeenIncreased = false;
+					}
+					hasBeenDecreased = true;
+					crowsToRoadFactor -= crowsStep;
 				}
 			}
 		}
@@ -59,8 +77,8 @@ public class RouteService {
 			var result = req.await();
 			return new Route(result.routes[0], waypoints, startPoint);
 		} catch (ApiException | InterruptedException | IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (RouteException e) {
 		}
 		return null;
 	}
@@ -81,6 +99,7 @@ public class RouteService {
 		double longDifference = (Math.cos(radians) * legDistance) / (Math.cos(startPoint.lat * Math.PI / 180) * 111.320); 
 		double newLat = startPoint.lat + latDifference; 
 		double newLong = startPoint.lng + longDifference; 
+		System.out.println(newLat + "," + newLong);
 		return new LatLng(newLat, newLong);
 	}
 
