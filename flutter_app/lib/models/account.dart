@@ -103,11 +103,16 @@ class Account {
 
   Future<List<Event>> events() async {
     if ( !_loggedIn ) {
+      print("Error");
       return Future.error("Not logged in");
     }
-    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inSeconds > 30 ) {
+    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inMinutes > 30 ) {
       _events = await _generateCalendar();
       _lastEventsFetched = DateTime.now();
+      print("Update");
+    }
+    else {
+      print("Cache");
     }
     return _events;
   }
