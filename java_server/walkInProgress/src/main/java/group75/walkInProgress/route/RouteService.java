@@ -37,9 +37,9 @@ public class RouteService {
 				return route;
 			}else {
 				if (route.getDuration()/60 < duration - ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS){
-					crowsToRoadFactor -= 0.2;
+					crowsToRoadFactor -= 0.1;
 				} else {
-					crowsToRoadFactor += 0.2;
+					crowsToRoadFactor += 0.1;
 				}
 			}
 		}
