@@ -32,7 +32,7 @@ class NotificationHandler {
         _count++, 'Knack Knack', 'Det finns en hemsökt prommenad för dig att gååååååååå', platformChannelSpecifics,
         payload: 'item x');
   }
-
+ 
 
 
 }
