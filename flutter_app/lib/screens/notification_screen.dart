@@ -21,12 +21,8 @@ class NotificationScreenState extends State<NotificationScreen> {
           children: [
             Center(
                 child: ElevatedButton(
-                  child: Text("Skicka en notifikation"),
-                  onPressed: () async {
-
-                    NotificationHandler().send();
-
-                  },
+                  child: Text("Generera notifikationer"),
+                  onPressed: NotificationHandler().generateCalendarNotifications,
                 )
             )
           ],

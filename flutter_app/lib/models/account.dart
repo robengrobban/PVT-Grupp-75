@@ -9,7 +9,7 @@ class Account {
 
   static final Account _instance = Account._privateConstructor();
 
-  GoogleSignIn _googleSignIn = GoogleSignIn(
+  static final GoogleSignIn _googleSignIn = GoogleSignIn(
     scopes: [
       'email',
       'https://www.googleapis.com/auth/calendar.readonly',
@@ -20,7 +20,6 @@ class Account {
 
   List<Event> _events = List.empty(growable: true);
   DateTime _lastEventsFetched;
-  bool _loggedIn = false;
 
   factory Account() {
     return _instance;
@@ -42,7 +41,6 @@ class Account {
 
   Future<void> handleSignIn() async {
     try {
-      _loggedIn = true;
       await _googleSignIn.signIn();
     } catch (error) {
       _notLoggedInActions();
@@ -52,12 +50,11 @@ class Account {
 
   Future<void> handleSignOut() async {
     _notLoggedInActions();
-    return _googleSignIn.disconnect();
+    _googleSignIn.disconnect();
   }
 
   void _notLoggedInActions() {
     _events = List.empty();
-    _loggedIn = false;
     _lastEventsFetched = null;
   }
 
@@ -81,10 +78,6 @@ class Account {
     return _buildEventList(json.decode(response.body));
   }
 
-  bool isLoggedIn() {
-    return _loggedIn;
-  }
-
   List<Event> _buildEventList( Map<String, dynamic> json ) {
     List<dynamic> items = json["items"];
     List<Event> events = List.empty(growable: true);
@@ -95,8 +88,8 @@ class Account {
       }
       String id = items[i]["id"];
       String summary = items[i]["summary"];
-      DateTime startTime = DateTime.parse(items[i]["start"]["dateTime"]);
-      DateTime endTime = DateTime.parse(items[i]["end"]["dateTime"]);
+      DateTime startTime = DateTime.parse(items[i]["start"]["dateTime"]).toLocal();
+      DateTime endTime = DateTime.parse(items[i]["end"]["dateTime"]).toLocal();
 
       events.add(new Event(id, summary, startTime, endTime));
     }
@@ -106,10 +99,10 @@ class Account {
   }
 
   Future<List<Event>> events() async {
-    if ( !_loggedIn ) {
+    if (_currentUser == null ) {
       return Future.error("Not logged in");
     }
-    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inMinutes > 30 ) {
+    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inSeconds > 0 ) {
       _events = await _generateCalendar();
       _lastEventsFetched = DateTime.now();
     }

@@ -49,7 +49,7 @@ class LoginScreenState extends State<LoginScreen> {
                             color: Colors.cyan,
                             child: ListTile(
                                 title: Text("${snapshot.data[index].summary()}"),
-                                subtitle: Text("${snapshot.data[index].startTime().toUtc()} - ${snapshot.data[index].endTime().toUtc()}")
+                                subtitle: Text("${snapshot.data[index].startTime()} - ${snapshot.data[index].endTime()}")
                             )
                         );
                       }

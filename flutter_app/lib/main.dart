@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
 import 'screens/notification_screen.dart';
+import 'package:flutter_app/models/account.dart';
+import 'package:flutter_app/models/notification_handler.dart';
 
 void main() {
-
-
-
   runApp(MyApp());
+
+  Account().update();
+  NotificationHandler().init();
 }
 
 class MyApp extends StatelessWidget {
@@ -106,6 +108,9 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            ElevatedButton(onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+            }, child: Text("Den hemsökta inloggningssidan"))
           ],
         ),
       ),
