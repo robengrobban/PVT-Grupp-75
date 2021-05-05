@@ -21,6 +21,8 @@ public class RouteService {
 	private static final int ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS = 5;
 	private static final double DEFAULT_CROWS_FACTOR_STEP = 0.1;
 	
+	private final NearbyService nearbyService = new NearbyService();
+	
 
 	public Route getRoute(LatLng startPoint, double duration, double radians) {
 		int numberOfTries = 0;
@@ -64,6 +66,30 @@ public class RouteService {
 		return null;
 	}
 	
+	public Route getRoute(LatLng startPoint, double duration, double radians, String type) {
+		int distance = (int)((((duration/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING)*1000)/ (NUMBER_OF_WAYPOINTS + 1)*DEFAULT_ROAD_TO_CROWS_FACTOR);
+		List<LatLng> places = nearbyService.getPlacesNearby(startPoint, distance, type);
+		double closestRadians = Integer.MAX_VALUE;
+		LatLng closestPlace = null;
+		for (LatLng place : places) {
+			double bearing = getBearing(startPoint, place);
+			if(Math.abs(bearing-radians) < Math.abs(closestRadians-radians)) {
+				closestRadians = bearing;
+				closestPlace = place;
+			}
+		}
+		List<LatLng> wayPoints = new ArrayList<>();
+		wayPoints.add(closestPlace);
+		wayPoints.addAll(generateWaypoints(startPoint, distance*(NUMBER_OF_WAYPOINTS + 1)/1000, closestRadians));
+		Route route = generateRoute(startPoint, wayPoints);
+		return route;
+	}
+	
+	private double getBearing(LatLng startPoint, LatLng place) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 	private Route generateRoute(LatLng startPoint, List<LatLng> waypoints) {
 		var req = DirectionsApi.newRequest(MapsContext.getInstance());
 		req.origin(startPoint);

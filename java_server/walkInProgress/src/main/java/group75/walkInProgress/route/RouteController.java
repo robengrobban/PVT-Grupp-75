@@ -11,12 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import com.google.maps.NearbySearchRequest;
 import com.google.maps.model.LatLng;
 
 @Controller
 @RequestMapping(path="/route")
 public class RouteController {
 	private final RouteService service = new RouteService();
+	private final NearbyService nearbyService = new NearbyService();
 	  @Autowired 
 	  private RouteRepository routeRepository;
 	
@@ -26,15 +28,21 @@ public class RouteController {
 		  return routeRepository.save(route);
 	  }
 	
+//	  @GetMapping(path="/generate")
+//	  public ResponseEntity<Route> getCircularRoute(@RequestParam double lat, double lng, int duration, double radians) {
+//		  Route route = service.getRoute(new LatLng(lat, lng), duration, radians);
+//		  if(route != null) {
+//			  return new ResponseEntity<Route>(route, HttpStatus.OK);
+//		  } else {
+//			  return new ResponseEntity<Route>(HttpStatus.NOT_FOUND);
+//		  }
+//	  }
+	  
 	  @GetMapping(path="/generate")
-	  public ResponseEntity<Route> getCircularRoute(@RequestParam double lat, double lng, int duration, double radians) {
-		  Route route = service.getRoute(new LatLng(lat, lng), duration, radians);
-		  if(route != null) {
-			  return new ResponseEntity<Route>(route, HttpStatus.OK);
-		  } else {
-			  return new ResponseEntity<Route>(HttpStatus.NOT_FOUND);
-		  }
-	     
+	  public ResponseEntity<Route> getCircularRoute(@RequestParam double lat, double lng, int duration, double radians, String type) {
+		  Route route = service.getRoute(new LatLng(lat, lng),duration, radians, type.toUpperCase());
+		  System.out.println("duration: " + route.getDuration());
+		  return new ResponseEntity<Route>(route, HttpStatus.OK);
 	  }
 
 }

@@ -40,7 +40,6 @@ public class Route {
 			  for (var step : leg.steps) {
 				  if(step.htmlInstructions.contains("ferry"))
 					  throw new RouteException("A walking route can't include a ferry");
-				  System.out.println(step.htmlInstructions);
 				  polyCoordinates.addAll(step.polyline.decodePath());
 				  distance += step.distance.inMeters;
 				  duration += step.duration.inSeconds;
@@ -48,12 +47,6 @@ public class Route {
 		  }
 	  }
 	  
-	  
-	  
-
-
-
-
 
 	public Route() {}
 
