@@ -15,9 +15,7 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      Account().update(state: this);
-    });
+    Account().update(state: this);
   }
 
   @override
