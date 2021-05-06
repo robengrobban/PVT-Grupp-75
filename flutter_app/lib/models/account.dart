@@ -1,3 +1,5 @@
+
+import 'package:flutter_app/models/notification_handler.dart';
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:convert' show json;
@@ -36,6 +38,7 @@ class Account {
           _currentUser = account;
         });
       }
+      _changeUserActions();
     });
   }
 
@@ -43,19 +46,19 @@ class Account {
     try {
       await _googleSignIn.signIn();
     } catch (error) {
-      _notLoggedInActions();
       print(error);
     }
   }
 
   Future<void> handleSignOut() async {
-    _notLoggedInActions();
+    await NotificationHandler().wipeNotifications();
     _googleSignIn.disconnect();
   }
 
-  void _notLoggedInActions() {
+  void _changeUserActions() async {
     _events = List.empty();
     _lastEventsFetched = null;
+    await NotificationHandler().generateCalendarNotifications();
   }
 
   Future<List<Event>> _generateCalendar() async {
@@ -107,6 +110,10 @@ class Account {
       _lastEventsFetched = DateTime.now();
     }
     return _events;
+  }
+
+  bool isLoggedIn() {
+    return _currentUser != null;
   }
 
   String displayName() {

@@ -120,7 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
           //Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
         },
         tooltip: 'Login',
-        child: Icon(Icons.person),
+        child: Icon(Icons.notifications),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

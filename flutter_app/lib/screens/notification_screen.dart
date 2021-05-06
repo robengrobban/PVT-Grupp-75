@@ -24,6 +24,18 @@ class NotificationScreenState extends State<NotificationScreen> {
                   child: Text("Generera notifikationer"),
                   onPressed: NotificationHandler().generateCalendarNotifications,
                 )
+            ),
+            Center(
+                child: ElevatedButton(
+                  child: Text("Ta bort alla notifikationer"),
+                  onPressed: NotificationHandler().wipeNotifications,
+                )
+            ),
+            Center(
+                child: ElevatedButton(
+                  child: Text("Visa alla notifikationer"),
+                  onPressed: NotificationHandler().showNotifications,
+                )
             )
           ],
         )

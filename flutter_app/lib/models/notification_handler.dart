@@ -17,27 +17,30 @@ class NotificationHandler {
   int _walkLength;
   int _timeRequired;
 
-  bool _walksGenerated = false;
+  final int _maxNotifications = 2;
 
   List<Event> _events = List.empty(growable: true);
-  List<NotificationSpot> _spots = List.empty(growable: true);
 
   factory NotificationHandler() {
     return _instance;
   }
 
-  void init() {
+  void init() async {
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings("@drawable/new_more_and_better_improved_logo");
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
     _notifications.initialize(initializationSettings);
     tz.initializeTimeZones();
 
-    _notificationsLeft = 2;
+    List<PendingNotificationRequest> pending;
+    await _fetchNotifications().then((value) => pending = value);
+
+    _notificationsLeft = _maxNotifications - pending.length;
     _walkLength = 20;
     _timeRequired = _walkLength + 10;
   }
 
-  void wipeNotifications() async {
+  Future<void> wipeNotifications() async {
+    _notificationsLeft = _maxNotifications;
     await _notifications.cancelAll();
   }
 
@@ -45,29 +48,44 @@ class NotificationHandler {
     await Account().events().then((value) => _events = value);
   }
 
+  Future<List<PendingNotificationRequest>> _fetchNotifications() async {
+    return await _notifications.pendingNotificationRequests();
+  }
+
+  void showNotifications() async {
+    List<PendingNotificationRequest> pending = await _notifications.pendingNotificationRequests();
+    print("Notifications:");
+    for (PendingNotificationRequest p in pending) {
+      print(p.id);
+      print(p.body);
+    }
+  }
+
   Future<void> generateCalendarNotifications() async {
 
-    if ( _walksGenerated ) {
+    print("Should generate?");
+    if ( _notificationsLeft == 0 || !Account().isLoggedIn() ) {
+      print("No");
       return;
     }
-    _walksGenerated = true;
+    print("Yes");
 
     await _fetchEvents();
-    _spots = List.empty(growable: true);
+    List<NotificationSpot> spots = List.empty(growable: true);
 
-    if ( _events.length > 2 ) {
+    if ( _events.length >= 2 ) {
       for (int i = 0; i < _events.length-1; i++) {
 
         DateTime startTime = _events[i].endTime();
         DateTime endTime = _events[i+1].startTime();
         int id = _events[i].id().hashCode;
 
-        _spots.add(new NotificationSpot(id, startTime, endTime));
+        spots.add(new NotificationSpot(id, startTime, endTime));
 
       }
     }
 
-    for ( NotificationSpot spot in _spots ) {
+    for ( NotificationSpot spot in spots ) {
       if ( _notificationsLeft == 0 ) {
         break;
       }
