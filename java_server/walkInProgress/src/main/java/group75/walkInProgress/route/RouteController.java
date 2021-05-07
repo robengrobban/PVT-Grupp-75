@@ -17,8 +17,8 @@ import com.google.maps.model.LatLng;
 @Controller
 @RequestMapping(path="/route")
 public class RouteController {
-	private final RouteService service = new RouteService();
-	private final NearbyService nearbyService = new NearbyService();
+	
+
 	  @Autowired 
 	  private RouteRepository routeRepository;
 	
@@ -40,8 +40,8 @@ public class RouteController {
 	  
 	  @GetMapping(path="/generate")
 	  public ResponseEntity<Route> getCircularRoute(@RequestParam double lat, double lng, int duration, double radians, String type) {
+		  RouteService service = new RouteService();
 		  Route route = service.getRoute(new LatLng(lat, lng),duration, radians, type.toUpperCase());
-		  System.out.println("duration: " + route.getDuration());
 		  return new ResponseEntity<Route>(route, HttpStatus.OK);
 	  }
 
