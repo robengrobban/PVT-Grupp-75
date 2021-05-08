@@ -14,8 +14,8 @@ public class AccountController {
     @Autowired
     private AccountRepository accountRepository;
 
-    @PostMapping(path="/create")
-    public @ResponseBody ResponseEntity<String> saveAccount(@RequestParam String email) {
+    @PostMapping(path="/create",consumes="application/json",produces="application/json")
+    public @ResponseBody ResponseEntity<String> saveAccount(@RequestBody String email) {
 
         // TODO: Update to use service "/exists"
         /*boolean exists = accountRepository.existsAccountByEmail(email);
