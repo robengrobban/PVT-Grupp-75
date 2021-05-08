@@ -1,20 +1,45 @@
 package group75.walkInProgress.account;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequestMapping(path="/account")
 public class AccountController {
 
-    @GetMapping(path="/create")
-    public ResponseEntity<String> getCircularRoute(@RequestParam String id) {
+    @Autowired
+    private AccountRepository accountRepository;
 
-        return new ResponseEntity<String>(id, HttpStatus.OK);
+    @PostMapping(path="/create")
+    public @ResponseBody ResponseEntity<Account> saveAccount(@RequestParam String email) {
+
+        // TODO: Update to use service "/exists"
+        boolean exists = accountRepository.existsAccountByEmail(email);
+
+        if ( exists ) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+
+        Account account = new Account();
+        account.setEmail(email);
+        accountRepository.save(account);
+
+        return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+
+    @GetMapping(path="/all")
+    public @ResponseBody Iterable<Account> getAllAccounts() {
+        return accountRepository.findAll();
+    }
+
+    @GetMapping(path="/exists")
+    public @ResponseBody ResponseEntity<Boolean> findAccount(@RequestParam String email) {
+
+        return new ResponseEntity<>(accountRepository.existsAccountByEmail(email), HttpStatus.OK);
 
     }
 
