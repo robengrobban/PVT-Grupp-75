@@ -15,7 +15,7 @@ public class AccountController {
     private AccountRepository accountRepository;
 
     @PostMapping(path="/create",consumes="application/json",produces="application/json")
-    public @ResponseBody ResponseEntity<String> saveAccount(@RequestBody String email) {
+    public @ResponseBody ResponseEntity<Account> saveAccount(@RequestBody Account account) {
 
         // TODO: Update to use service "/exists"
         /*boolean exists = accountRepository.existsAccountByEmail(email);
@@ -29,7 +29,7 @@ public class AccountController {
         accountRepository.save(account);
 
         return new ResponseEntity<>(account, HttpStatus.OK);*/
-        return new ResponseEntity<>(email, HttpStatus.OK);
+        return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
     @GetMapping(path="/all")
