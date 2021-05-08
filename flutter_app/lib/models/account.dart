@@ -88,7 +88,7 @@ class Account {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: json.encode(<String, String>{
-        'email': email,
+        'email': email
       }),
     );
   }
