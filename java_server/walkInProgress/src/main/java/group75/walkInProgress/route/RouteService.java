@@ -7,124 +7,121 @@ import java.util.List;
 import com.google.maps.*;
 import com.google.maps.DirectionsApi.RouteRestriction;
 import com.google.maps.errors.ApiException;
-import com.google.maps.model.AddressType;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.TravelMode;
 
 
 public class RouteService {
+	
+	private static final int KM_PER_LATITUDE = 111;
+	private static final double KM_TO_LONGITUDE_FACTOR = 111.320;
+	private static final double RADIANS_BETWEEN_LEGS = 60 * Math.PI / 180;
 	private static final int NUMBER_OF_WAYPOINTS = 3;
+	private static final int NUMBER_OF_LEGS = NUMBER_OF_WAYPOINTS + 1;
 	private static final int MAXIMUM_NUMBER_OF_TRIES = 10;
 	private static final int KM_PER_HOUR_WALKING = 5;
 	private static final int MINUTES_PER_HOUR = 60;
+	private static final int SECONDS_PER_MINUTE = 60;
 	private static final double DEFAULT_ROAD_TO_CROWS_FACTOR = 0.7;
 	private static final int ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES = 5;
 	private static final double DEFAULT_CROWS_FACTOR_STEP = 0.1;
 	
-	private int numberOfTries = 0;
-	
-	private double crowsStep = DEFAULT_CROWS_FACTOR_STEP;
-	private boolean hasBeenIncreased = false;
-	private boolean hasBeenDecreased = false;
+
 	
 	
 	private final NearbyService nearbyService = new NearbyService();
 	
 
-	public Route getRoute(LatLng startPoint, double duration, double radians) {
-		double crowFactor = DEFAULT_ROAD_TO_CROWS_FACTOR;
-		while (numberOfTries<MAXIMUM_NUMBER_OF_TRIES) {
-			numberOfTries++;
-			
-			double distance = ((duration/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING) * crowFactor;
-			var waypoints = generateWaypoints(startPoint, distance, radians);
-			Route route;
-			try {
-				route = generateRoute(startPoint, waypoints);
-			} catch (ApiException | InterruptedException | IOException | RouteException e) {
-				e.printStackTrace();
-				return null;
-			}
-
-			if(Math.abs(route.getDuration()/60 - duration) <= ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES) {
-				System.out.println(numberOfTries);
-				return route;
-			}else {
-				crowFactor = tweakCrowFactor(duration, route, crowFactor);
-			}
-		}
-		return null;
+	public Route getRoute(LatLng startPoint, double durationInMinutes, double radians) throws ApiException, InterruptedException, IOException, RouteException {
+		return generateRoute(startPoint, durationInMinutes, radians, new ArrayList<>());
 	}
-
-	private double tweakCrowFactor(double duration, Route route, double crowFactor) {
-		if (route.getDuration()/60 < duration - ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES){
-			if(hasBeenDecreased) {
-				crowsStep /=2;
-				hasBeenDecreased = false;
-			}
-			hasBeenIncreased = true;
-			crowFactor += crowsStep;
-		} else {
-			if(hasBeenIncreased) {
-				crowsStep /=2;
-				hasBeenIncreased = false;
-			}
-			hasBeenDecreased = true;
-			crowFactor -= crowsStep;
-		}
-		return crowFactor;
-	}
-
-
 	
-	public Route getRoute(LatLng startPoint, double duration, double radians, String type) {
-		int legDistance = (int)((((duration/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING)*1000)/ (NUMBER_OF_WAYPOINTS + 1)*DEFAULT_ROAD_TO_CROWS_FACTOR);
-		List<LatLng> places = nearbyService.getPlacesNearby(startPoint, legDistance, type);
-		if(places.isEmpty()) {
-			return getRoute(startPoint, duration, radians);
+	public Route getRoute(LatLng startPoint, double durationInMinutes, double radians, String type) throws ApiException, InterruptedException, IOException, RouteException, TypeException {
+		double approxdistanceInKm = ((durationInMinutes/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING) * DEFAULT_ROAD_TO_CROWS_FACTOR;
+		double legDistanceInKm = approxdistanceInKm/NUMBER_OF_LEGS;
+		
+		List<LatLng> places = nearbyService.getPlacesNearby(startPoint, legDistanceInKm, type);
+		
+		List<LatLng> pointsToPass = new ArrayList<>(); 
+		
+		if(!places.isEmpty()) {
+			LatLng closestPlace = findPointWithClosestBearing(places, startPoint, radians);
+			radians = getBearing(startPoint, closestPlace);
+			pointsToPass.add(closestPlace);
 		}
-		double closestRadians = Integer.MAX_VALUE;
+		
+		return generateRoute(startPoint, durationInMinutes, radians, pointsToPass);
+	}
+	
+	private LatLng findPointWithClosestBearing(List<LatLng> places, LatLng center, double goalBearing) {
+		double closestBearing = Integer.MAX_VALUE;
 		LatLng closestPlace = null;
+		
 		for (LatLng place : places) {
-			double bearing = getBearing(startPoint, place);
-			if(Math.abs(bearing-radians) < Math.abs(closestRadians-radians)) {
-				closestRadians = bearing;
+			double bearing = getBearing(center, place);
+			
+			if(Math.abs(bearing-goalBearing) < Math.abs(closestBearing-goalBearing)) {
+				closestBearing = bearing;
 				closestPlace = place;
 			}
 		}
-
-		double crowFactor = DEFAULT_ROAD_TO_CROWS_FACTOR;
+		return closestPlace;
+	}
+	
+	private Route generateRoute(LatLng startPoint, double durationInMinutes, double radians, List<LatLng> pointsToPass) throws ApiException, InterruptedException, IOException, RouteException {
+		int numberOfTries = 0;
+		CrowFactor crowFactor = new CrowFactor(DEFAULT_ROAD_TO_CROWS_FACTOR, DEFAULT_CROWS_FACTOR_STEP);
+		double crowDistance = (durationInMinutes/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING;
+		
 		while (numberOfTries<MAXIMUM_NUMBER_OF_TRIES) {
 			numberOfTries++;
-			List<LatLng> wayPoints = new ArrayList<>();
-			wayPoints.add(closestPlace);
-			double distance = ((duration/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING) * crowFactor;
-			wayPoints.addAll(generateWaypoints(startPoint, distance, closestRadians));
-			Route route;
-			try {
-				route = generateRoute(startPoint, wayPoints);
-			} catch (ApiException | InterruptedException | IOException | RouteException e) {
-				e.printStackTrace();
-				return null;
-			}
-			if(Math.abs(route.getDuration()/60 - duration) <= ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES) {
-				System.out.println("numberOfTries " + numberOfTries);
-				System.out.println("duration: " + route.getDuration()/60);
+			List<LatLng> wayPoints = new ArrayList<>(pointsToPass);
+			System.out.println(numberOfTries);
+			double distance = crowDistance * crowFactor.factor;
+			wayPoints.addAll(generateWaypoints(startPoint, distance, radians));
+			Route route = getRouteFromGoogle(startPoint, wayPoints);
+			System.out.println("Try number " + numberOfTries + " gave duration " + route.getDurationInSeconds()/60 + " with crowfactor " + crowFactor.factor);
+			if(isWithinAcceptedTime(route, durationInMinutes)) {
 				return route;
-			}else {
-				crowFactor = tweakCrowFactor(duration, route, crowFactor);
+			}else if (isUnderAcceptedTime(route, durationInMinutes)){
+				crowFactor.increase();
+			} else {
+				crowFactor.decrease();
 			}
 		}
 		return null;
 	}
 	
-	private double getBearing(LatLng startPoint, LatLng place) {
-		// TODO Auto-generated method stub
-		return 0;
+	private boolean isWithinAcceptedTime(Route route, double durationInMinutes ) {
+		return Math.abs(route.getDurationInSeconds()/SECONDS_PER_MINUTE - durationInMinutes) <= ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES;
+	}
+	
+	private boolean isUnderAcceptedTime(Route route, double durationInMinutes) {
+		return route.getDurationInSeconds()/SECONDS_PER_MINUTE < durationInMinutes - ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES;
+	}
+	
+	private boolean isOverAcceptedTime(Route route, double durationInMinutes) {
+		return route.getDurationInSeconds()/SECONDS_PER_MINUTE > durationInMinutes + ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES;
+	}
+	
+	double getBearing(LatLng startPoint, LatLng place) {
+		
+		double lat1InRad = Math.toRadians(startPoint.lat);
+		double lng1InRad = Math.toRadians(startPoint.lng);
+		double lat2InRad = Math.toRadians(place.lat);
+		double lng2InRad = Math.toRadians(place.lng);
+		
+		double longDiffInRad = lng2InRad - lng1InRad;
+		double x = Math.sin(longDiffInRad) * Math.cos(lat2InRad);
+		double y = Math.cos(lat1InRad) * Math.sin(lat2InRad) - Math.sin(lat1InRad) * Math.cos(lat2InRad) * Math.cos(longDiffInRad);
+		double bearingInRad = (Math.atan2(y,x) + (2*Math.PI));
+		
+		return bearingInRad % (Math.PI * 2);
 	}
 
-	private Route generateRoute(LatLng startPoint, List<LatLng> waypoints) throws ApiException, InterruptedException, IOException, RouteException {
+	private Route getRouteFromGoogle(LatLng startPoint, List<LatLng> waypoints) throws ApiException, InterruptedException, IOException, RouteException {
 		var req = DirectionsApi.newRequest(MapsContext.getInstance());
+		
 		req.origin(startPoint);
 		req.destination(startPoint);
 		req.waypoints(waypoints.toArray(new LatLng[waypoints.size()]));
@@ -132,28 +129,68 @@ public class RouteService {
 		req.avoid(RouteRestriction.FERRIES);
 		req.avoid(RouteRestriction.HIGHWAYS);
 		req.optimizeWaypoints(false);
+		
 		var result = req.await();
+		
 		return new Route(result.routes[0], waypoints, startPoint);
 	}
 	
-	private List<LatLng> generateWaypoints(LatLng startPoint, double distance, double radians) {
-		
+	private List<LatLng> generateWaypoints(LatLng startPoint, double walkDistanceInKm, double radians) {
 		List<LatLng> points = new ArrayList<LatLng>(); 
-		for (int i = 0; i < NUMBER_OF_WAYPOINTS; i++) { 
-			points.add(getPointOnCircumference( startPoint, distance / (NUMBER_OF_WAYPOINTS + 1), radians)); 
-			radians += (60 * Math.PI / 180); 
-		} 
-		return points;
 		
+		for (int i = 0; i < NUMBER_OF_WAYPOINTS; i++) {
+			double legDistance = walkDistanceInKm / NUMBER_OF_LEGS;
+			points.add(getPointOnCircumference( startPoint, legDistance, radians)); 
+			radians += RADIANS_BETWEEN_LEGS; 
+		} 
+		
+		return points;
 	}
 
-	private LatLng getPointOnCircumference(LatLng startPoint, double legDistance, double radians) {
-		double latDifference = (Math.sin(radians) * legDistance) / 111;
-		double longDifference = (Math.cos(radians) * legDistance) / (Math.cos(startPoint.lat * Math.PI / 180) * 111.320); 
+	LatLng getPointOnCircumference(LatLng startPoint, double legDistanceInKM, double radians) {
+		
+		double distanceInKmAlongYAxis = Math.sin(radians) * legDistanceInKM;
+		double latDifference = distanceInKmAlongYAxis / KM_PER_LATITUDE;
+		
+		//How long one longitude is depends on what latitude you are on. The factor is cosinus of the latitude times a factor in km 
+		double kmPerLongitude= Math.cos(Math.toRadians(startPoint.lat)) * KM_TO_LONGITUDE_FACTOR;
+		double distanceInKmAlongXAxis = Math.cos(radians) * legDistanceInKM;
+		double longDifference = distanceInKmAlongXAxis / kmPerLongitude;
+		
 		double newLat = startPoint.lat + latDifference; 
 		double newLong = startPoint.lng + longDifference; 
-		System.out.println(newLat + "," + newLong);
+
 		return new LatLng(newLat, newLong);
+	}
+	
+	private class CrowFactor {
+		double factor;
+		double step;
+		private boolean hasBeenIncreased;
+		private boolean hasBeenDecreased;
+		
+		CrowFactor(double startFactor, double startStep) {
+			factor = startFactor;
+			step = startStep;
+		}
+		
+		void increase() {
+			if(hasBeenDecreased) {
+				step /=2;
+				hasBeenDecreased = false;
+			}
+			hasBeenIncreased = true;
+			factor += step;
+		}
+		
+		void decrease() {
+			if(hasBeenIncreased) {
+				step /=2;
+				hasBeenIncreased = false;
+			}
+			hasBeenDecreased = true;
+			factor -= step;
+		}
 	}
 
 }
