@@ -74,14 +74,12 @@ class Account {
 
   /// Creates a entry for the user in the database
   void _registerUser(String email) async {
-    http.Response response;
-    await _createAccount(email).then((value) => response = value);
-    print(response.statusCode);
-    print(response.body);
-    print(response.headers);
+    _createAccount(email);
   }
 
-  Future<http.Response> _createAccount(String email) {
+  /// Sends a post request to create account
+  /// Returns the response.
+  Future<http.Response> _createAccount(String email) async {
     return http.post(
       Uri.https("group5-75.pvt.dsv.su.se", "/account/create"),
       headers: <String, String>{
