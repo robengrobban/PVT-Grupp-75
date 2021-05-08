@@ -15,21 +15,21 @@ public class AccountController {
     private AccountRepository accountRepository;
 
     @PostMapping(path="/create",consumes="application/json",produces="application/json")
-    public @ResponseBody ResponseEntity<String> saveAccount(@RequestBody Account account) {
+    public @ResponseBody ResponseEntity<Account> saveAccount(@RequestBody Account account) {
 
         // TODO: Update to use service "/exists"
-        /*boolean exists = accountRepository.existsAccountByEmail(email);
+        String email = account.getEmail();
+        boolean exists = accountRepository.existsAccountByEmail(email);
 
         if ( exists ) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
 
-        Account account = new Account();
+        account = new Account();
         account.setEmail(email);
         accountRepository.save(account);
 
-        return new ResponseEntity<>(account, HttpStatus.OK);*/
-        return new ResponseEntity<>(account.getEmail(), HttpStatus.OK);
+        return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
     @GetMapping(path="/all")
