@@ -72,12 +72,36 @@ class Account {
     _googleSignIn.disconnect();
   }
 
+  /// Creates a entry for the user in the database
+  void _registerUser(String email) async {
+    http.Response response;
+    await _createAccount(email).then((value) => response = value);
+    print(response.statusCode);
+    print(response.body);
+    print(response.headers);
+  }
+
+  Future<http.Response> _createAccount(String email) {
+    return http.post(
+      Uri.https("group5-75.pvt.dsv.su.se", "/account/create"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: json.encode(<String, String>{
+        'email': email,
+      }),
+    );
+  }
+
   /// Actions when the logged in user is changed.
   /// This occures both when the user login and logout.
   void _changeUserActions() async {
     _events = List.empty();
     _lastEventsFetched = null;
     await NotificationHandler().generateCalendarNotifications();
+    if ( isLoggedIn() ) {
+      _registerUser(_currentUser.email);
+    }
   }
 
   /// Generate a list of events using the google calendar.

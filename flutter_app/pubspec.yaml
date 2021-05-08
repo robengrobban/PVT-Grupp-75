@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   google_sign_in: ^5.0.2
-  http: ^0.13.1
+  http: ^0.13.3
   flutter_local_notifications: ^5.0.0+3
   timezone: ^0.7.0
 
