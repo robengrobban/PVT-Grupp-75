@@ -104,7 +104,7 @@ public class Route {
 	}
 
 
-	public void setDuration(int duration) {
+	public void setDurationInSeconds(int duration) {
 		this.durationInSeconds = duration;
 	}
 

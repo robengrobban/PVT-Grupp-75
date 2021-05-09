@@ -24,15 +24,15 @@ import com.google.maps.model.PlaceType;
 @Controller
 @RequestMapping(path="/route")
 public class RouteController {
-	private final RouteService service = new RouteService();
 	
 
 	  @Autowired 
 	  private RouteRepository routeRepository;
+	  @Autowired 
+	  private IRouteService service;
 	
 	  @PostMapping(path="/save", consumes = "application/json", produces = "application/json")
 	  public @ResponseBody Route saveRoute(@RequestBody Route route) {
-		  System.out.print(route);
 		  return routeRepository.save(route);
 	  }
 	
