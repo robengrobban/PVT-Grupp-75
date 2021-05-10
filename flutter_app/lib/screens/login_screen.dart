@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/account.dart';
 import 'package:flutter_app/models/event.dart';
@@ -16,9 +15,7 @@ class LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      Account().update(state: this);
-    });
+    Account().update(state: this);
   }
 
   @override
@@ -50,7 +47,7 @@ class LoginScreenState extends State<LoginScreen> {
                             color: Colors.cyan,
                             child: ListTile(
                                 title: Text("${snapshot.data[index].summary()}"),
-                                subtitle: Text("${snapshot.data[index].startTime().toUtc()} - ${snapshot.data[index].endTime().toUtc()}")
+                                subtitle: Text("${snapshot.data[index].startTime()} - ${snapshot.data[index].endTime()}")
                             )
                         );
                       }

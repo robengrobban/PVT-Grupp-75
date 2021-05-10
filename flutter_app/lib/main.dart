@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'screens/login_screen.dart';
+import 'screens/notification_screen.dart';
+import 'package:flutter_app/models/account.dart';
+import 'package:flutter_app/models/notification_handler.dart';
 
 void main() {
   runApp(MyApp());
+
+  Account().update();
+  NotificationHandler().init();
 }
 
 class MyApp extends StatelessWidget {
@@ -21,7 +27,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -102,15 +108,19 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            ElevatedButton(onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+            }, child: Text("Den hemsökta inloggningssidan"))
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationScreen()));
+          //Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
         },
         tooltip: 'Login',
-        child: Icon(Icons.person),
+        child: Icon(Icons.notifications),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
