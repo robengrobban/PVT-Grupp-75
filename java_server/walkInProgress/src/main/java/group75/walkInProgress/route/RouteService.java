@@ -34,7 +34,7 @@ public class RouteService implements IRouteService {
 	
 	
 	public RouteService() {
-		this(new NearbyService());
+		this(new NearbyService()); 
 	}
 	
 	
@@ -59,27 +59,12 @@ public class RouteService implements IRouteService {
 		List<LatLng> pointsToPass = new ArrayList<>();  
 		
 		if(!places.isEmpty()) {
-			LatLng closestPlace = findPointWithClosestBearing(places, startPoint, radians);
+			LatLng closestPlace = geoCalculator.findPointWithClosestBearing(places, startPoint, radians);
 			radians = geoCalculator.getBearingInRadians(startPoint, closestPlace);
 			pointsToPass.add(closestPlace);
 		}
 		
 		return generateRoute(startPoint, durationInMinutes, radians, pointsToPass);
-	}
-	
-	private LatLng findPointWithClosestBearing(List<LatLng> places, LatLng center, double goalBearing) {
-		double closestBearing = Integer.MAX_VALUE;
-		LatLng closestPlace = null;
-		
-		for (LatLng place : places) {
-			double bearing = geoCalculator.getBearingInRadians(center, place);
-			
-			if(Math.abs(bearing-goalBearing) < Math.abs(closestBearing-goalBearing)) {
-				closestBearing = bearing;
-				closestPlace = place;
-			}
-		}
-		return closestPlace;
 	}
 	
 	private Route generateRoute(LatLng startPoint, double durationInMinutes, double radians, List<LatLng> pointsToPass) throws ApiException, InterruptedException, IOException, RouteException {

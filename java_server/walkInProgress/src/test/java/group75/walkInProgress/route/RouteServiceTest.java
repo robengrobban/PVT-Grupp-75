@@ -120,7 +120,7 @@ class RouteServiceTest {
 		
 		@Test
 		void isUnderAcceptedTimeReturnsFalseIfRouteDurationIsLargerThanAcceptedRange() {
-			Route route = new Route();
+			Route route = new Route(); 
 			int routeDurationToTest = DEFAULT_DURATION_IN_MINUTES+RouteService.getAcceptableDurationDifferenceInMinutes()+1;
 			route.setDurationInSeconds(routeDurationToTest*SECONDS_PER_MINUTE);
 			assertFalse(service.isUnderAcceptedTime(route, DEFAULT_DURATION_IN_MINUTES));

@@ -1,8 +1,11 @@
 package group75.walkInProgress.route;
 
+import java.util.List;
+
 import com.google.maps.model.LatLng;
 
 public class GeoCalculator {
+	private static final double TAO = Math.PI * 2;
 	private static final int KM_PER_LATITUDE = 111;
 	private static final double KM_TO_LONGITUDE_FACTOR = 111.320;
 	
@@ -22,8 +25,8 @@ public class GeoCalculator {
 	 * @param startPoint a point from which to calculate a new point
 	 * @param distanceInKm a distance as the crows flies that the new point 
 	 * 						should be from the startPoint
-	 * @param angleInRadians a bearing from the startPoint to the returned point
-	 * 						negative angles and angles larger than 2*Pi is also
+	 * @param angleInRadians a bearing from the startPoint to the returned point.
+	 * 						Negative angles and angles larger than 2*Pi are also
 	 * 						accepted. 
 	 * @return the LatLng at the specified distance and angle from the startPoint
 	 */
@@ -76,9 +79,45 @@ public class GeoCalculator {
 		double longDiffInRad = lng2InRad - lng1InRad;
 		double x = Math.sin(longDiffInRad) * Math.cos(lat2InRad);
 		double y = Math.cos(lat1InRad) * Math.sin(lat2InRad) - Math.sin(lat1InRad) * Math.cos(lat2InRad) * Math.cos(longDiffInRad);
-		double bearingInRad = (Math.atan2(y,x) + (2*Math.PI))% (Math.PI * 2);
+		double bearingInRad = (Math.atan2(y,x) + TAO)% TAO;
 		
 		return bearingInRad;
 	}
+	
+	/**
+	 * Takes a list of places and returns the place that has the bearing
+	 * from the given startPoint that is closest to the specified goalBearing.
+	 * Returns null if places is empty.
+	 * Angles are counted counterclockwise with 0 being east.
+	 * @throws IllegalArgumentException if places or startPoint is null
+	 * @param places a list of places from which to choose from
+	 * @param startPoint a LatLng from which to calculate the bearing
+	 * @param goalBearing a bearing in radians from the startPoint, 
+	 * 			to compare places against. Negative angles and angles 
+	 * 			larger than 2*Pi are also accepted.
+	 * @return the LatLng from places that has the closest bearing from 
+	 * 			the startPoint compared to the goalBearing, null 
+	 * 			if places is empty.
+	 */
+	public LatLng findPointWithClosestBearing(List<LatLng> places, LatLng startPoint, double goalBearing) {
+		if(startPoint == null || places == null) {
+			throw new IllegalArgumentException("Neither the list of places or the startPoint can be null");
+		}
+		//To get a radian value between 0 and 2*Pi
+		goalBearing = (goalBearing % (TAO) + (TAO)) % TAO;
+		double smallestDifference = Integer.MAX_VALUE;
+		LatLng closestPlace = null;
 
+		
+		for (LatLng place : places) {
+			double bearing = getBearingInRadians(startPoint, place);
+			double bearingDifference = Math.min(TAO-Math.abs(bearing-goalBearing), Math.abs(bearing-goalBearing));
+			
+			if(bearingDifference < smallestDifference) {
+				smallestDifference = bearingDifference;
+				closestPlace = place;
+			}
+		}
+		return closestPlace;
+	}
 }

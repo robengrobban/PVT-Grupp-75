@@ -2,6 +2,8 @@ package group75.walkInProgress.route;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+
 import org.junit.jupiter.api.Test;
 
 import com.google.maps.model.LatLng;
@@ -23,6 +25,12 @@ class GeoCalculatorTest {
 	private static final double DEFAULT_ANGLE_IN_RADIANS_QUADRANT_TWO = Math.toRadians(170);
 	private static final double DEFAULT_ANGLE_IN_RADIANS_QUADRANT_THREE = Math.toRadians(195);
 	private static final double DEFAULT_ANGLE_IN_RADIANS_QUADRANT_FOUR = Math.toRadians(340);
+	
+	private static final double DEFAULT_NEGATIVE_ANGLE_IN_RADIANS = -1;
+	
+	private static final double DEFAULT_SMALL_RADIAN_CHANGE = 0.1;
+	private static final double DEFAULT_MEDIUM_RADIAN_CHANGE = 0.2;
+	private static final double DEFAULT_LARGE_RADIAN_CHANGE = 0.4;
 	
 	private static final int DEFAULT_NEGATIVE_NUMBER = -5;
 	
@@ -240,5 +248,111 @@ class GeoCalculatorTest {
 		LatLng endPoint = null;
 		assertThrows(IllegalArgumentException.class, () -> {CALCULATOR.getBearingInRadians(startPoint, endPoint);});
 	}
+	
+	@Test
+	void getPointWithClosestBearingReturnsNullIfListOfPlacesIsEmpty() {
+		LatLng point = CALCULATOR.findPointWithClosestBearing(new ArrayList<LatLng>(), DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE);
+		assertNull(point);
+	}
+	
+	@Test
+	void getPointWithClosestBearingThrowsIAEIfListOfPlacesIsNull() {
+		assertThrows(IllegalArgumentException.class, ()-> {
+			CALCULATOR.findPointWithClosestBearing(null, DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE);
+		});
+	}
+	@Test
+	void getPointWithClosestBearingThrowsIAEIfStartPointIsNull() {
+		ArrayList<LatLng> places = new ArrayList<>();
+		places.add(DEFAULT_LATLNG);
+		assertThrows(IllegalArgumentException.class, ()-> {
+			CALCULATOR.findPointWithClosestBearing(places, null ,DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE);
+		});
+	}
+	
+	@Test
+	void getPointWithClosestIdentifiesCorrectPointIfItIsFirstInListAndLargerThanGoalBearing() {
+		LatLng closestPoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE + DEFAULT_SMALL_RADIAN_CHANGE);
+		LatLng mediumClosePoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE + DEFAULT_MEDIUM_RADIAN_CHANGE);
+		LatLng mostDistantPoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE + DEFAULT_LARGE_RADIAN_CHANGE);
+		ArrayList<LatLng> places = new ArrayList<>();
+		places.add(closestPoint);
+		places.add(mediumClosePoint);
+		places.add(mostDistantPoint);
+		assertEquals(closestPoint,CALCULATOR.findPointWithClosestBearing(places, DEFAULT_LATLNG ,DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE));
+	}
+	
+	@Test
+	void getPointWithClosestIdentifiesCorrectPointIfItIsInTheMiddleOfTheListAndLargerThanGoalBearing() {
+		LatLng closestPoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE + DEFAULT_SMALL_RADIAN_CHANGE);
+		LatLng mediumClosePoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE + DEFAULT_MEDIUM_RADIAN_CHANGE);
+		LatLng mostDistantPoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE + DEFAULT_LARGE_RADIAN_CHANGE);
+		ArrayList<LatLng> places = new ArrayList<>();
+		places.add(mediumClosePoint);
+		places.add(closestPoint);
+		places.add(mostDistantPoint);
+		assertEquals(closestPoint,CALCULATOR.findPointWithClosestBearing(places, DEFAULT_LATLNG ,DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE));
+	}
+	
+	@Test
+	void getPointWithClosestIdentifiesCorrectPointIfItIsLastInTheListAndLargerThanGoalBearing() {
+		LatLng closestPoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE + DEFAULT_SMALL_RADIAN_CHANGE);
+		LatLng mediumClosePoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE + DEFAULT_MEDIUM_RADIAN_CHANGE);
+		LatLng mostDistantPoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE + DEFAULT_LARGE_RADIAN_CHANGE);
+		ArrayList<LatLng> places = new ArrayList<>();
+		places.add(mediumClosePoint);
+		places.add(mostDistantPoint);
+		places.add(closestPoint);
+		assertEquals(closestPoint,CALCULATOR.findPointWithClosestBearing(places, DEFAULT_LATLNG ,DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE));
+	}
+	
+	@Test
+	void getPointWithClosestIdentifiesCorrectPointIfItIsSmallerThanGoalBearing() {
+		LatLng closestPoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE - DEFAULT_SMALL_RADIAN_CHANGE);
+		LatLng mediumClosePoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE + DEFAULT_MEDIUM_RADIAN_CHANGE);
+		LatLng mostDistantPoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE + DEFAULT_LARGE_RADIAN_CHANGE);
+		ArrayList<LatLng> places = new ArrayList<>();
+		places.add(mediumClosePoint);
+		places.add(mostDistantPoint);
+		places.add(closestPoint);
+		assertEquals(closestPoint,CALCULATOR.findPointWithClosestBearing(places, DEFAULT_LATLNG ,DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE));
+	}
+	
+	@Test
+	void getPointWithClosestIdentifiesCorrectPointIfGoalBearingIsNegative() {
+		LatLng closestPoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_NEGATIVE_ANGLE_IN_RADIANS - DEFAULT_SMALL_RADIAN_CHANGE);
+		LatLng mediumClosePoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_NEGATIVE_ANGLE_IN_RADIANS + DEFAULT_MEDIUM_RADIAN_CHANGE);
+		LatLng mostDistantPoint = calculateNewPoint(DEFAULT_LATLNG, DEFAULT_NEGATIVE_ANGLE_IN_RADIANS + DEFAULT_LARGE_RADIAN_CHANGE);
+		ArrayList<LatLng> places = new ArrayList<>();
+		places.add(mediumClosePoint);
+		places.add(mostDistantPoint);
+		places.add(closestPoint);
+		assertEquals(closestPoint,CALCULATOR.findPointWithClosestBearing(places, DEFAULT_LATLNG ,DEFAULT_NEGATIVE_ANGLE_IN_RADIANS));
+	}
+	
+	@Test
+	void getPointWithClosestIdentifiesCorrectPointIfGoalBearingIsLargerThan2Pi() {
+		LatLng closestPoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI+1 - DEFAULT_SMALL_RADIAN_CHANGE);
+		LatLng mediumClosePoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI+1 + DEFAULT_MEDIUM_RADIAN_CHANGE);
+		LatLng mostDistantPoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI+1 + DEFAULT_LARGE_RADIAN_CHANGE);
+		ArrayList<LatLng> places = new ArrayList<>();
+		places.add(mediumClosePoint);
+		places.add(mostDistantPoint);
+		places.add(closestPoint);
+		assertEquals(closestPoint,CALCULATOR.findPointWithClosestBearing(places, DEFAULT_LATLNG ,2*Math.PI+1));
+	}
+	
+	@Test
+	void getPointWithClosestIdentifiesCorrectPointIfClosestPointIsCloseOnOtherSideOf0() {
+		LatLng closestPoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI - 0.01);
+		LatLng mediumClosePoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI - 0.02);
+		LatLng mostDistantPoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI - 0.03);
+		ArrayList<LatLng> places = new ArrayList<>();
+		places.add(mediumClosePoint);
+		places.add(mostDistantPoint);
+		places.add(closestPoint);
+		assertEquals(closestPoint,CALCULATOR.findPointWithClosestBearing(places, DEFAULT_LATLNG ,0.01));
+	}
+	
 
 }
