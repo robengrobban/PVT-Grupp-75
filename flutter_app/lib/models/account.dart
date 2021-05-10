@@ -41,19 +41,15 @@ class Account {
   /// Method used for updating the account.
   /// This can be used to activate a re-construction of a flutter widget, or
   /// to activate silent sign in.
-  void update({State state}) {
-    _googleSignIn.signInSilently();
+  void update( {Function() callback} ) {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
-      if ( state == null ) {
-        _currentUser = account;
-      }
-      else {
-        state.setState(() {
-          _currentUser = account;
-        });
+      _currentUser = account;
+      if ( callback != null ) {
+        callback();
       }
       _changeUserActions();
     });
+    _googleSignIn.signInSilently();
   }
 
   /// Sign in the user using google.
