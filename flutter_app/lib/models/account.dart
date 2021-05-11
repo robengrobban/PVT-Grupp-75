@@ -1,5 +1,4 @@
 
-import 'package:flutter/material.dart';
 import 'package:flutter_app/models/notification_handler.dart';
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
@@ -88,7 +87,7 @@ class Account {
   }
 
   /// Actions when the logged in user is changed.
-  /// This occures both when the user login and logout.
+  /// This occurs both when the user login and logout.
   void _changeUserActions() async {
     _events = List.empty();
     _lastEventsFetched = null;

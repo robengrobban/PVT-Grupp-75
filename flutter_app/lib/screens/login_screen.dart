@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/account.dart';
-import 'package:flutter_app/screens/home_screen.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 
 class LoginScreen extends StatefulWidget {
@@ -11,12 +10,13 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+
   @override
   void initState() {
     super.initState();
     Account().update( callback: () {
       if ( Account().isLoggedIn() ) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+        Navigator.of(context).pushReplacementNamed("/home");
       }
     });
   }
@@ -62,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Icon(Icons.person),
+                        Icon(Icons.login),
                         Text("Logga in med Google")
                       ],
                     ),

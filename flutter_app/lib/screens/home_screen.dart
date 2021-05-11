@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/screens/login_screen.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 
 class HomeScreen extends StatefulWidget {
@@ -14,13 +13,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          /*leading: Padding(
+          leading: Padding(
             padding: EdgeInsets.all(8.0),
-            child: Image.asset(
-              'assets/img/new_improved_logo_with_more_style.png',
-              fit:BoxFit.contain,
-            ),
-          ),*/
+            child: IconButton(
+              icon: Icon(Icons.menu),
+              onPressed: () {
+                Navigator.of(context).pushNamed("/menu");
+              },
+            )
+          ),
           title: Text("Walk in Progress"),
         ),
         backgroundColor: Colors.white,
@@ -36,12 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Theme.AppColors.brandOrange[500]
                   ],
                 )),
-            child: ElevatedButton(
-              child: Text("Demo - tillbaka"),
-              onPressed: () {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
-              },
-            ),
+            child: null
         )
     );
   }

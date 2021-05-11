@@ -2,6 +2,7 @@ import 'package:flutter_app/models/event.dart';
 import 'package:flutter_app/models/account.dart';
 import "package:flutter_app/models/notification_spot.dart";
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -21,11 +22,16 @@ class NotificationHandler {
   int _notificationsLeft;
   /// The length of walks.
   int _walkLength;
+  final int _defaultWalkLength = 20;
   /// The time required for a spot in the calendar to candidate for a notification.
   int _timeRequired;
+  final int _defaultOffset = 10;
+
+  SharedPreferences _preferences;
 
   /// The maximum number of scheduled notifications.
-  final int _maxNotifications = 2;
+  int _maxNotifications;
+  final int _defaultMaxNotifications = 2;
 
   /// Factory constructor to facilitate the Singleton design principle.
   factory NotificationHandler() {
@@ -42,9 +48,45 @@ class NotificationHandler {
     List<PendingNotificationRequest> pending;
     await _fetchNotifications().then((value) => pending = value);
 
+    _preferences = await SharedPreferences.getInstance();
+    _loadNotificationSettings();
+
     _notificationsLeft = _maxNotifications - pending.length;
-    _walkLength = 20;
-    _timeRequired = _walkLength + 10;
+    _timeRequired = _walkLength + _defaultOffset;
+
+    print(_maxNotifications);
+    print(_walkLength);
+    print(_notificationsLeft);
+  }
+
+  void _saveNotificationSettings() {
+
+    _preferences.setInt("maxNotifications", _maxNotifications);
+    _preferences.setInt("walkLength", _walkLength);
+
+  }
+
+  void _loadNotificationSettings() {
+
+    _maxNotifications = _preferences.getInt("maxNotifications") ?? _defaultMaxNotifications;
+    _walkLength = _preferences.getInt("walkLength") ?? _defaultWalkLength;
+
+  }
+
+  void updatedSettings(int maxNotifications, int walkLength) {
+    _maxNotifications = maxNotifications;
+    _walkLength = walkLength;
+    _timeRequired = _walkLength + _defaultOffset;
+    _saveNotificationSettings();
+    wipeNotifications();
+    generateCalendarNotifications();
+  }
+
+  int walkLength() {
+    return _walkLength;
+  }
+  int maxNotifications() {
+    return _maxNotifications;
   }
 
   /// Remove all scheduled notifications.
@@ -65,7 +107,7 @@ class NotificationHandler {
 
   /// Show all currently scheduled notifications (DEBUG).
   void showNotifications() async {
-    List<PendingNotificationRequest> pending = await _notifications.pendingNotificationRequests();
+    List<PendingNotificationRequest> pending = await _fetchNotifications();
     print("Notifications:");
     print("Left: " + _notificationsLeft.toString());
     for (PendingNotificationRequest p in pending) {
@@ -85,6 +127,7 @@ class NotificationHandler {
     print("Yes");
 
     List<Event> events = await _fetchEvents();
+    List<PendingNotificationRequest> pending = await _fetchNotifications();
     List<NotificationSpot> spots = _generateNotificationSpots(events);
 
     for ( NotificationSpot spot in spots ) {
@@ -96,13 +139,24 @@ class NotificationHandler {
       }
 
       int id = spot.id();
-      String title = "Det finns en möjlig promenad";
+      String title = "Det finns en möjlig promenad 🐜 🐜 🐜";
       String message = spot.startTime().toString();
 
       tz.TZDateTime time = tz.TZDateTime.from( spot.startTime(), tz.local );
 
       _schedule(id, title, message, time);
-      _notificationsLeft--;
+      bool conflict = false;
+
+      for ( PendingNotificationRequest request in pending ) {
+        if ( request.id == id ) {
+          conflict = true;
+          break;
+        }
+      }
+
+      if ( !conflict ) {
+        _notificationsLeft--;
+      }
 
       print(spot.id());
       print(spot.startTime());
