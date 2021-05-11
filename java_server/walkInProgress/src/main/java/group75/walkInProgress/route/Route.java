@@ -26,7 +26,7 @@ public class Route {
 	  private List<LatLng> waypoints;
 	  private LatLng startPoint;
 	  private int distance;
-	  private int duration;
+	  private int durationInSeconds;
 	  private LatLng northEastBound;
 	  private LatLng southWestBound;
 
@@ -38,22 +38,15 @@ public class Route {
 		  polyCoordinates = new ArrayList<LatLng>();
 		  for (var leg : directionsResult.legs) {
 			  for (var step : leg.steps) {
-				  if(step.htmlInstructions.contains("ferry"))
+				  if(step.htmlInstructions.toLowerCase().contains("ferry"))
 					  throw new RouteException("A walking route can't include a ferry");
-				  System.out.println(step.htmlInstructions);
 				  polyCoordinates.addAll(step.polyline.decodePath());
 				  distance += step.distance.inMeters;
-				  duration += step.duration.inSeconds;
+				  durationInSeconds += step.duration.inSeconds;
 			  }
 		  }
 	  }
 	  
-	  
-	  
-
-
-
-
 
 	public Route() {}
 
@@ -86,8 +79,8 @@ public class Route {
 		return startPoint;
 	}
 
-	public int getDuration() {
-		return duration;
+	public int getDurationInSeconds() {
+		return durationInSeconds;
 	}
 
 
@@ -111,8 +104,8 @@ public class Route {
 	}
 
 
-	public void setDuration(int duration) {
-		this.duration = duration;
+	public void setDurationInSeconds(int duration) {
+		this.durationInSeconds = duration;
 	}
 
 

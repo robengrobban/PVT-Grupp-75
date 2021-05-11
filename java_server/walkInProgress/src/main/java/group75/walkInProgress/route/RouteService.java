@@ -1,106 +1,95 @@
 package group75.walkInProgress.route;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.google.maps.*;
-import com.google.maps.DirectionsApi.RouteRestriction;
+import org.springframework.stereotype.Service;
 import com.google.maps.errors.ApiException;
-import com.google.maps.model.AddressType;
 import com.google.maps.model.LatLng;
-import com.google.maps.model.TravelMode;
 
-
-public class RouteService {
-	private static final int NUMBER_OF_WAYPOINTS = 3;
-	private static final int MAXIMUM_NUMBER_OF_TRIES = 10;
-	private static final int KM_PER_HOUR_WALKING = 5;
-	private static final int MINUTES_PER_HOUR = 60;
-	private static final double DEFAULT_ROAD_TO_CROWS_FACTOR = 0.7;
-	private static final int ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS = 5;
-	private static final double DEFAULT_CROWS_FACTOR_STEP = 0.1;
+@Service
+public class RouteService implements IRouteService {
 	
 
-	public Route getRoute(LatLng startPoint, double duration, double radians) {
-		int numberOfTries = 0;
-		double crowsToRoadFactor = DEFAULT_ROAD_TO_CROWS_FACTOR;
-		double crowsStep = DEFAULT_CROWS_FACTOR_STEP;
-		boolean hasBeenIncreased = false;
-		boolean hasBeenDecreased = false;
+	private static final int MAXIMUM_NUMBER_OF_TRIES = 10;
+
+	private static final int SECONDS_PER_MINUTE = 60;
+	
+	private static final int ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES = 10;
+	
+	
+
+	@Override
+	public Route getRoute(LatLng startPoint, double durationInMinutes, double radians, String type) throws ApiException, InterruptedException, IOException, RouteException, TypeException {
+		if(startPoint == null) {
+			throw new IllegalArgumentException("StartPoint can't be null");
+		}
+		if (durationInMinutes < 0) {
+			throw new IllegalArgumentException("Duration can't be negative");
+		}
+		RouteGenerator generator = getRouteGenerator(startPoint, durationInMinutes, radians, type);
+		if(type != null) {
+			generator.setTypeOfInterest(type);
+		}
 		
-		
-		while (numberOfTries<MAXIMUM_NUMBER_OF_TRIES) {
-			numberOfTries++;
+		return findRoute(generator, durationInMinutes);
+
+	}
+	
+	private Route findRoute(RouteGenerator generator, Double durationInMinutes) throws ApiException, InterruptedException, IOException, RouteException{
+		while (generator.getNumberOfTries() < getMaximumNumberOfTries()) {
 			
-			double distance = ((duration/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING) * crowsToRoadFactor;
-			var waypoints = generateWaypoints(startPoint, distance, radians);
-			Route route = generateRoute(startPoint, waypoints);
-			if (route ==  null)
-				return null;
-			System.out.println("Try " + numberOfTries + " With crowfactor " + crowsToRoadFactor + " gives " + route.getDuration()/60);
-			System.out.println(route.getDuration()/60 - duration);
-			if(Math.abs(route.getDuration()/60 - duration) <= ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS) {
-				System.out.println(numberOfTries);
+			Route route = generator.tryToFindRoute();
+			
+			if(isWithinAcceptedTime(route, durationInMinutes)) {
 				return route;
-			}else {
-				if (route.getDuration()/60 < duration - ACCAPTABLE_DURATION_DIFFERENCE_IN_SECONDS){
-					if(hasBeenDecreased) {
-						crowsStep /=2;
-						hasBeenDecreased = false;
-					}
-					hasBeenIncreased = true;
-					crowsToRoadFactor += crowsStep;
-				} else {
-					if(hasBeenIncreased) {
-						crowsStep /=2;
-						hasBeenIncreased = false;
-					}
-					hasBeenDecreased = true;
-					crowsToRoadFactor -= crowsStep;
-				}
+			}else if (isUnderAcceptedTime(route, durationInMinutes)){
+				generator.increaseCrowFactor();
+			} else {
+				generator.decreaseCrowFactor();
 			}
 		}
 		return null;
 	}
 	
-	private Route generateRoute(LatLng startPoint, List<LatLng> waypoints) {
-		var req = DirectionsApi.newRequest(MapsContext.getInstance());
-		req.origin(startPoint);
-		req.destination(startPoint);
-		req.waypoints(waypoints.toArray(new LatLng[waypoints.size()]));
-		req.mode(TravelMode.WALKING);
-		req.avoid(RouteRestriction.FERRIES);
-		req.avoid(RouteRestriction.HIGHWAYS);
-		req.optimizeWaypoints(false);
-		try {
-			var result = req.await();
-			return new Route(result.routes[0], waypoints, startPoint);
-		} catch (ApiException | InterruptedException | IOException e) {
-			e.printStackTrace();
-		} catch (RouteException e) {
-		}
-		return null;
+	RouteGenerator getRouteGenerator(LatLng startPoint, double durationInMinutes, double radians, String type) {
+		return new RouteGenerator(startPoint, durationInMinutes, radians);
 	}
 	
-	private List<LatLng> generateWaypoints(LatLng startPoint, double distance, double radians) {
-		
-		List<LatLng> points = new ArrayList<LatLng>(); 
-		for (int i = 0; i < NUMBER_OF_WAYPOINTS; i++) { 
-			points.add(getPointOnCircumference( startPoint, distance / (NUMBER_OF_WAYPOINTS + 1), radians)); 
-			radians += (60 * Math.PI / 180); 
-		} 
-		return points;
-		
+	boolean isWithinAcceptedTime(Route route, double durationInMinutes ) {
+		if(durationInMinutes < 0) {
+			throw new IllegalArgumentException("Duration can't be negative");
+		}
+		if(route == null) {
+			throw new IllegalArgumentException("Route can't be null");
+		}
+		return Math.abs(route.getDurationInSeconds()/SECONDS_PER_MINUTE - durationInMinutes) <= ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES;
+	}
+	
+	boolean isUnderAcceptedTime(Route route, double durationInMinutes) {
+		if(durationInMinutes < 0) {
+			throw new IllegalArgumentException("Duration can't be negative");
+		}
+		if(route == null) {
+			throw new IllegalArgumentException("Route can't be null");
+		}
+		return route.getDurationInSeconds()/SECONDS_PER_MINUTE < durationInMinutes - ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES;
+	}
+	
+	boolean isOverAcceptedTime(Route route, double durationInMinutes) {
+		if(durationInMinutes < 0) {
+			throw new IllegalArgumentException("Duration can't be negative");
+		}
+		if(route == null) {
+			throw new IllegalArgumentException("Route can't be null"); 
+		}
+		return route.getDurationInSeconds()/SECONDS_PER_MINUTE > durationInMinutes + ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES;
 	}
 
-	private LatLng getPointOnCircumference(LatLng startPoint, double legDistance, double radians) {
-		double latDifference = (Math.sin(radians) * legDistance) / 111;
-		double longDifference = (Math.cos(radians) * legDistance) / (Math.cos(startPoint.lat * Math.PI / 180) * 111.320); 
-		double newLat = startPoint.lat + latDifference; 
-		double newLong = startPoint.lng + longDifference; 
-		System.out.println(newLat + "," + newLong);
-		return new LatLng(newLat, newLong);
+	static int getAcceptableDurationDifferenceInMinutes() {
+		return ACCEPTABLE_DURATION_DIFFERENCE_IN_MINUTES;
+	}
+
+	static int getMaximumNumberOfTries() {
+		return MAXIMUM_NUMBER_OF_TRIES;
 	}
 
 }

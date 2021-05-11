@@ -1,8 +1,8 @@
 package group75.walkInProgress.route;
 
 @SuppressWarnings("serial")
-public class RouteException extends Exception{
-	public RouteException(String message) {
+public class TypeException extends Exception {
+	public TypeException(String message) {
 		super(message);
 	}
 }
