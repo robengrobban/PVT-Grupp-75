@@ -1,36 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/account.dart';
-import 'package:flutter_app/models/event.dart';
-
+import 'package:flutter_app/theme.dart' as Theme;
 
 class LoginScreen extends StatefulWidget {
+  LoginScreen({Key key}) : super(key: key);
+
   @override
-  State createState() => LoginScreenState();
+  State createState() => _LoginScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
 
-
-  
   @override
   void initState() {
     super.initState();
-    Account().update(state: this);
+    Account().update( callback: () {
+      if ( Account().isLoggedIn() ) {
+        Navigator.of(context).pushReplacementNamed("/home");
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Hemsökt inloggningsskärm"),
+          centerTitle: true,
+          leading: Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Image.asset(
+              'assets/img/new_improved_logo_with_more_style.png',
+              fit:BoxFit.contain,
+            ),
+          ),
+          title: Text("Walk in Progress"),
         ),
         backgroundColor: Colors.white,
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        body: Container(
+            padding: const EdgeInsets.all(32.0),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Theme.AppColors.brandPink[500],
+                Theme.AppColors.brandOrange[500]
+              ],
+            )),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                    foregroundColor: MaterialStateProperty.all<Color>(Colors.black)
+                  ),
+                  child: Container(
+                    margin: const EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.login),
+                        Text("Logga in med Google")
+                      ],
+                    ),
+                  ),
+                  onPressed: () async {
+                    await Account().handleSignIn();
+                  },
+                )
+              ],
+            )
+        )
+    );
+  }
 
-          children: [
-            Center(
+}
+/*Center(
                 child: Text(Account().displayName())
             ),
             FutureBuilder<List<Event>>(
@@ -77,12 +125,4 @@ class LoginScreenState extends State<LoginScreen> {
                   },
                 )
               ],
-            )
-          ],
-        )
-    );
-  }
-
-
-
-}
+            )*/

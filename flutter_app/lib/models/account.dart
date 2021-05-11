@@ -1,5 +1,4 @@
 
-import 'package:flutter/material.dart';
 import 'package:flutter_app/models/notification_handler.dart';
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
@@ -41,19 +40,15 @@ class Account {
   /// Method used for updating the account.
   /// This can be used to activate a re-construction of a flutter widget, or
   /// to activate silent sign in.
-  void update({State state}) {
-    _googleSignIn.signInSilently();
+  void update( {Function() callback} ) {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
-      if ( state == null ) {
-        _currentUser = account;
-      }
-      else {
-        state.setState(() {
-          _currentUser = account;
-        });
+      _currentUser = account;
+      if ( callback != null ) {
+        callback();
       }
       _changeUserActions();
     });
+    _googleSignIn.signInSilently();
   }
 
   /// Sign in the user using google.
@@ -92,7 +87,7 @@ class Account {
   }
 
   /// Actions when the logged in user is changed.
-  /// This occures both when the user login and logout.
+  /// This occurs both when the user login and logout.
   void _changeUserActions() async {
     _events = List.empty();
     _lastEventsFetched = null;
