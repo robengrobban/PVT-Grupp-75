@@ -38,7 +38,7 @@ public class Route {
 		  polyCoordinates = new ArrayList<LatLng>();
 		  for (var leg : directionsResult.legs) {
 			  for (var step : leg.steps) {
-				  if(step.htmlInstructions.contains("ferry"))
+				  if(step.htmlInstructions.toLowerCase().contains("ferry"))
 					  throw new RouteException("A walking route can't include a ferry");
 				  polyCoordinates.addAll(step.polyline.decodePath());
 				  distance += step.distance.inMeters;

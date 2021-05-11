@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import com.google.maps.model.LatLng;
 
 class GeoCalculatorTest {
+	private static final double TAO = 2*Math.PI;
 	private static final double DEFAULT_LATITUDE = 58.21;
 	private static final double DEFAULT_LONGITUDE = 17.34;
 	
@@ -71,7 +72,7 @@ class GeoCalculatorTest {
 		double longDiffInRad = lng2InRad - lng1InRad;
 		double x = Math.sin(longDiffInRad) * Math.cos(lat2InRad);
 		double y = Math.cos(lat1InRad) * Math.sin(lat2InRad) - Math.sin(lat1InRad) * Math.cos(lat2InRad) * Math.cos(longDiffInRad);
-		double bearingInRad = (Math.atan2(y,x) + (2*Math.PI))% (Math.PI * 2);
+		double bearingInRad = (Math.atan2(y,x) + TAO)% TAO;
 		
 		return bearingInRad;
 	}
@@ -142,7 +143,7 @@ class GeoCalculatorTest {
 	@Test
 	void getPointWithinDistanceFromReturnsCorrectAngleAndDistanceForAngleBiggerThan2Pi() {
 		LatLng startPoint = DEFAULT_LATLNG;
-		LatLng otherPoint = CALCULATOR.getPointWithinDistanceFrom(startPoint, DEFAULT_DISTANCE_IN_KM, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE +2*Math.PI);
+		LatLng otherPoint = CALCULATOR.getPointWithinDistanceFrom(startPoint, DEFAULT_DISTANCE_IN_KM, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE +TAO);
 		assertEquals(DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE, calculateAngleBetweenInRadians(startPoint, otherPoint), ERROR_MARGIN_FOR_DOUBLES);
 		assertEquals(DEFAULT_DISTANCE_IN_KM, calculateDistanceBetweenInKm(startPoint, otherPoint), ERROR_MARGIN_FOR_DOUBLES);
 	}
@@ -151,7 +152,7 @@ class GeoCalculatorTest {
 	void getPointWithinDistanceFromReturnsCorrectAngleAndDistanceForNegativeAngles() {
 		LatLng startPoint = DEFAULT_LATLNG;
 		LatLng otherPoint = CALCULATOR.getPointWithinDistanceFrom(startPoint, DEFAULT_DISTANCE_IN_KM, -DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE);
-		assertEquals(2*Math.PI - DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE, calculateAngleBetweenInRadians(startPoint, otherPoint), ERROR_MARGIN_FOR_DOUBLES);
+		assertEquals(TAO - DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE, calculateAngleBetweenInRadians(startPoint, otherPoint), ERROR_MARGIN_FOR_DOUBLES);
 		assertEquals(DEFAULT_DISTANCE_IN_KM, calculateDistanceBetweenInKm(startPoint, otherPoint), ERROR_MARGIN_FOR_DOUBLES);
 	}
 	
@@ -252,7 +253,7 @@ class GeoCalculatorTest {
 	@Test
 	void getPointWithClosestBearingReturnsNullIfListOfPlacesIsEmpty() {
 		LatLng point = CALCULATOR.findPointWithClosestBearing(new ArrayList<LatLng>(), DEFAULT_LATLNG, DEFAULT_ANGLE_IN_RADIANS_QUADRANT_ONE);
-		assertNull(point);
+		assertNull(point); 
 	}
 	
 	@Test
@@ -332,21 +333,21 @@ class GeoCalculatorTest {
 	
 	@Test
 	void getPointWithClosestIdentifiesCorrectPointIfGoalBearingIsLargerThan2Pi() {
-		LatLng closestPoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI+1 - DEFAULT_SMALL_RADIAN_CHANGE);
-		LatLng mediumClosePoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI+1 + DEFAULT_MEDIUM_RADIAN_CHANGE);
-		LatLng mostDistantPoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI+1 + DEFAULT_LARGE_RADIAN_CHANGE);
+		LatLng closestPoint = calculateNewPoint(DEFAULT_LATLNG, TAO+1 - DEFAULT_SMALL_RADIAN_CHANGE);
+		LatLng mediumClosePoint = calculateNewPoint(DEFAULT_LATLNG, TAO+1 + DEFAULT_MEDIUM_RADIAN_CHANGE);
+		LatLng mostDistantPoint = calculateNewPoint(DEFAULT_LATLNG, TAO+1 + DEFAULT_LARGE_RADIAN_CHANGE);
 		ArrayList<LatLng> places = new ArrayList<>();
 		places.add(mediumClosePoint);
 		places.add(mostDistantPoint);
 		places.add(closestPoint);
-		assertEquals(closestPoint,CALCULATOR.findPointWithClosestBearing(places, DEFAULT_LATLNG ,2*Math.PI+1));
+		assertEquals(closestPoint,CALCULATOR.findPointWithClosestBearing(places, DEFAULT_LATLNG ,TAO+1));
 	}
 	
 	@Test
 	void getPointWithClosestIdentifiesCorrectPointIfClosestPointIsCloseOnOtherSideOf0() {
-		LatLng closestPoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI - 0.01);
-		LatLng mediumClosePoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI - 0.02);
-		LatLng mostDistantPoint = calculateNewPoint(DEFAULT_LATLNG, 2*Math.PI - 0.03);
+		LatLng closestPoint = calculateNewPoint(DEFAULT_LATLNG, TAO - 0.01);
+		LatLng mediumClosePoint = calculateNewPoint(DEFAULT_LATLNG, TAO - 0.02);
+		LatLng mostDistantPoint = calculateNewPoint(DEFAULT_LATLNG, TAO - 0.03);
 		ArrayList<LatLng> places = new ArrayList<>();
 		places.add(mediumClosePoint);
 		places.add(mostDistantPoint);

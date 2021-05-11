@@ -19,7 +19,7 @@ import com.google.maps.errors.ApiException;
 import com.google.maps.errors.InvalidRequestException;
 import com.google.maps.errors.ZeroResultsException;
 import com.google.maps.model.LatLng;
-import com.google.maps.model.PlaceType;
+
 
 @Controller
 @RequestMapping(path="/route")
@@ -38,14 +38,13 @@ public class RouteController {
 	
 	  @GetMapping(path="/generate")
 	  public ResponseEntity<Route> getCircularRoute(@RequestParam double lat, double lng, int duration, double radians, Optional<String> type) {
+		  if (duration<0) {
+			  return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		  }
 		  Route route = null;
 		  
 			try {
-				if(type.isPresent()) {
-					route = service.getRoute(new LatLng(lat, lng), duration, radians, type.get().toUpperCase());
-				 } else {
-					route = service.getRoute(new LatLng(lat, lng), duration, radians);
-				 }
+					route = service.getRoute(new LatLng(lat, lng), duration, radians, type.orElse(null));
 			} catch(RouteException | ZeroResultsException e){
 				e.printStackTrace();
 				return new ResponseEntity<Route>(HttpStatus.NOT_FOUND);
