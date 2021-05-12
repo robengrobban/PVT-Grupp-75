@@ -35,7 +35,6 @@ class _MenuScreenState extends State<MenuScreen> {
         backgroundColor: Colors.white,
         body: Container(
             alignment: Alignment.center,
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -53,19 +52,22 @@ class _MenuScreenState extends State<MenuScreen> {
                     constraints: BoxConstraints(
                       minHeight: viewportConstraints.maxHeight,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        MenuItem(Icons.person, "Profil", _itemPadding, _openProfile),
-                        MenuItem(Icons.military_tech, "Framsteg", _itemPadding, _openAchievements),
-                        MenuItem(Icons.analytics, "Weekly summary", _itemPadding, _openWeeklySummary),
-                        MenuItem(Icons.logout, "Logga ut", _itemPadding, _getOUT),
-                        MenuItem(Icons.notifications, "DEBUG NOTIFICATION", _itemPadding, () {
-                          Navigator.of(context).pushNamed("/debug-noti");
-                        })
-                      ],
-                    )
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          MenuItem(Icons.person, "Profil", _itemPadding, _openProfile),
+                          MenuItem(Icons.military_tech, "Framsteg", _itemPadding, _openAchievements),
+                          MenuItem(Icons.analytics, "Weekly summary", _itemPadding, _openWeeklySummary),
+                          MenuItem(Icons.logout, "Logga ut", _itemPadding, _getOUT),
+                          MenuItem(Icons.notifications, "DEBUG NOTIFICATION", _itemPadding, () {
+                            Navigator.of(context).pushNamed("/debug-noti");
+                          })
+                        ],
+                      )
+                    ),
                   )
                 );
               }
