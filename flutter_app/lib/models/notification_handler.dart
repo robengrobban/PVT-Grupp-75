@@ -1,6 +1,7 @@
 import 'package:flutter_app/models/event.dart';
 import 'package:flutter_app/models/account.dart';
 import "package:flutter_app/models/notification_spot.dart";
+import 'package:flutter_app/models/weather.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -28,6 +29,8 @@ class NotificationHandler {
   final int _defaultOffset = 10;
 
   SharedPreferences _preferences;
+
+  Weather _weather = Weather();
 
   /// The maximum number of scheduled notifications.
   int _maxNotifications;

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/account.dart';
+import 'package:flutter_app/models/weather.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 import 'package:flutter_app/widgets/menu_item.dart';
 
@@ -64,6 +65,10 @@ class _MenuScreenState extends State<MenuScreen> {
                           MenuItem(Icons.logout, "Logga ut", _itemPadding, _getOUT),
                           MenuItem(Icons.notifications, "DEBUG NOTIFICATION", _itemPadding, () {
                             Navigator.of(context).pushNamed("/debug-noti");
+                          }),
+                          MenuItem(Icons.cloud_off, "DEBUG WEATHER", _itemPadding, () {
+                            Weather weather = Weather();
+                            weather.todaysWeather();
                           })
                         ],
                       )

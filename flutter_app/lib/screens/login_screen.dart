@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
           leading: Padding(
             padding: EdgeInsets.all(8.0),
             child: Image.asset(
-              'assets/img/new_improved_logo_with_more_style.png',
+              'assets/img/🐜.png',
               fit:BoxFit.contain,
             ),
           ),
