@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:flutter_app/models/notification_handler.dart';
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
@@ -32,6 +34,8 @@ class Account {
   /// Last time events was fetched, used for caching information.
   DateTime _lastEventsFetched;
 
+  StreamSubscription<GoogleSignInAccount> lastCallback;
+
   /// Factory constructor to facilitate the Singleton design principle.
   factory Account() {
     return _instance;
@@ -40,15 +44,24 @@ class Account {
   /// Method used for updating the account.
   /// This can be used to activate a re-construction of a flutter widget, or
   /// to activate silent sign in.
-  void update( {Function() callback} ) {
+  void onOneTimeUserChange(Function() callback) {
+    lastCallback = _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+      if ( lastCallback != null ) {
+        lastCallback.cancel();
+      }
+      callback();
+      print("INSTALL");
+    });
+  }
+
+  void init() {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       _currentUser = account;
-      if ( callback != null ) {
-        callback();
-      }
       _changeUserActions();
+      print("START UP CHANGER");
     });
     _googleSignIn.signInSilently();
+    print("START UP");
   }
 
   /// Sign in the user using google.

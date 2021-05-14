@@ -62,7 +62,7 @@ class _MenuScreenState extends State<MenuScreen> {
                           MenuItem(Icons.person, "Profil", _itemPadding, _openProfile),
                           MenuItem(Icons.military_tech, "Framsteg", _itemPadding, _openAchievements),
                           MenuItem(Icons.analytics, "Veckosummering", _itemPadding, _openWeeklySummary),
-                          MenuItem(Icons.logout, "Logga ut", _itemPadding, _getOUT),
+                          _getAccountButton(),
                           MenuItem(Icons.notifications, "DEBUG NOTIFICATION", _itemPadding, () {
                             Navigator.of(context).pushNamed("/debug-noti");
                           }),
@@ -82,7 +82,7 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   void _openProfile() {
-    print("Opening Profile");
+    print(Account().isLoggedIn().toString());
   }
 
   void _openAchievements() {
@@ -93,8 +93,19 @@ class _MenuScreenState extends State<MenuScreen> {
     print("Opening Weekly Summary");
   }
 
+  Widget _getAccountButton() {
+    if ( Account().isLoggedIn() ) {
+      return MenuItem(Icons.logout, "Logga ut", _itemPadding, _getOUT);
+    }
+    return MenuItem(Icons.logout, "Logga in", _itemPadding, _getIN);
+  }
+
   void _getOUT() {
     _showLogoutAlert();
+  }
+
+  void _getIN() {
+    Navigator.of(context).pushNamed("/login");
   }
 
   void _openSettings() {
@@ -122,7 +133,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   child: Text('Logga ut'),
                   onPressed: () {
                     Account().handleSignOut();
-                    Navigator.of(context).pushNamedAndRemoveUntil('/login', (Route<dynamic> route) => false);
+                    Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
                   },
                 )
             ),

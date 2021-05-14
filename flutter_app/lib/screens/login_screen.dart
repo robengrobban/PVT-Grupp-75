@@ -14,7 +14,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    Account().update( callback: () {
+    Account().onOneTimeUserChange(() {
       if ( Account().isLoggedIn() ) {
         Navigator.of(context).pushReplacementNamed("/home");
       }
@@ -26,14 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          leading: Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Image.asset(
-              'assets/img/🐜.png',
-              fit:BoxFit.contain,
-            ),
-          ),
-          title: Text("Walk in Progress"),
+          title: Text("Logga in"),
         ),
         backgroundColor: Colors.white,
         body: Container(

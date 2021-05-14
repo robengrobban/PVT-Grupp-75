@@ -48,13 +48,12 @@ class NotificationHandler {
     _notifications.initialize(initializationSettings);
     tz.initializeTimeZones();
 
-    List<PendingNotificationRequest> pending;
-    await _fetchNotifications().then((value) => pending = value);
+    wipeNotifications();
 
     _preferences = await SharedPreferences.getInstance();
     _loadNotificationSettings();
 
-    _notificationsLeft = _maxNotifications - pending.length;
+    _notificationsLeft = _maxNotifications;
     _timeRequired = _walkLength + _defaultOffset;
 
     print(_maxNotifications);
@@ -81,7 +80,6 @@ class NotificationHandler {
     _walkLength = walkLength;
     _timeRequired = _walkLength + _defaultOffset;
     _saveNotificationSettings();
-    wipeNotifications();
     generateCalendarNotifications();
   }
 
@@ -121,6 +119,8 @@ class NotificationHandler {
 
   /// Generate notifications to be scheduled.
   Future<void> generateCalendarNotifications() async {
+    // Wipe existing notifications
+    wipeNotifications();
 
     print("Should generate?");
     if ( _notificationsLeft == 0 || !Account().isLoggedIn() ) {
@@ -130,7 +130,6 @@ class NotificationHandler {
     print("Yes");
 
     List<Event> events = await _fetchEvents();
-    List<PendingNotificationRequest> pending = await _fetchNotifications();
     List<NotificationSpot> spots = _generateNotificationSpots(events);
 
     for ( NotificationSpot spot in spots ) {
@@ -148,18 +147,8 @@ class NotificationHandler {
       tz.TZDateTime time = tz.TZDateTime.from( spot.startTime(), tz.local );
 
       _schedule(id, title, message, time);
-      bool conflict = false;
 
-      for ( PendingNotificationRequest request in pending ) {
-        if ( request.id == id ) {
-          conflict = true;
-          break;
-        }
-      }
-
-      if ( !conflict ) {
-        _notificationsLeft--;
-      }
+      _notificationsLeft--;
 
       print(spot.id());
       print(spot.startTime());
