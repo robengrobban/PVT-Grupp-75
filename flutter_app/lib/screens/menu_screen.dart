@@ -61,7 +61,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         children: [
                           MenuItem(Icons.person, "Profil", _itemPadding, _openProfile),
                           MenuItem(Icons.military_tech, "Framsteg", _itemPadding, _openAchievements),
-                          MenuItem(Icons.analytics, "Weekly summary", _itemPadding, _openWeeklySummary),
+                          MenuItem(Icons.analytics, "Veckosummering", _itemPadding, _openWeeklySummary),
                           MenuItem(Icons.logout, "Logga ut", _itemPadding, _getOUT),
                           MenuItem(Icons.notifications, "DEBUG NOTIFICATION", _itemPadding, () {
                             Navigator.of(context).pushNamed("/debug-noti");

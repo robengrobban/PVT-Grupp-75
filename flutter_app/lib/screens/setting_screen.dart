@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/models/notification_handler.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 
 class SettingScreen extends StatefulWidget {
@@ -12,6 +13,7 @@ class _SettingScreenState extends State<SettingScreen> {
 
   TextEditingController _maxNotificationsController;
   TextEditingController _walkLengthController;
+  int _value = NotificationHandler().walkLength();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -52,20 +54,26 @@ class _SettingScreenState extends State<SettingScreen> {
                           child: Form(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
+                                Text(
+                                  "Önskat antal notifikationer",
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16),
+                                ),
                                 Container(
+                                  alignment: Alignment.center,
                                   padding: const EdgeInsets.all(12),
-                                  margin: const EdgeInsets.symmetric(vertical: 10),
+                                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: Colors.black,
+                                      width: 1,
+                                    )
                                   ),
                                   child: TextField(
-                                      decoration: InputDecoration(
-                                        labelText: "Antalet schemaläggda notifikationer",
-                                        border: OutlineInputBorder()
-                                      ),
                                       controller: _maxNotificationsController,
                                       keyboardType: TextInputType.number,
                                       inputFormatters: <TextInputFormatter>[
@@ -73,24 +81,35 @@ class _SettingScreenState extends State<SettingScreen> {
                                       ]
                                   ),
                                 ),
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  margin: const EdgeInsets.symmetric(vertical: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: TextField(
-                                      decoration: InputDecoration(
-                                          labelText: "Promenadlängd för notifikationer",
-                                          border: OutlineInputBorder()
+                                Column(
+                                  children: <Widget>[
+                                    SizedBox(height: 60,),
+                                    Text(
+                                        "Promenadlängd i minuter",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                    )
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.all(12),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.all(Radius.circular(12)),
                                       ),
-                                      controller: _walkLengthController,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ]
-                                  ),
+                                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                                      child: NumberPicker(
+                                      value: _value,
+                                      minValue: 10,
+                                      maxValue: 100,
+                                      onChanged: (value) => setState(() => _value = value),
+                                    ),
+                                    )],
                                 ),
                                 Container(
                                   alignment: Alignment.center,
@@ -99,20 +118,15 @@ class _SettingScreenState extends State<SettingScreen> {
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      minWidth: viewportConstraints.maxWidth,
-                                    ),
-                                    child: ElevatedButton(
-                                      child: Text("Spara"),
-                                      style: ButtonStyle(
+                                  child: ElevatedButton(
+                                    child: Text("Spara"),
+                                    style: ButtonStyle(
                                         backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
                                         foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
                                         shadowColor: MaterialStateProperty.all<Color>(Colors.transparent)
-                                      ),
-                                      onPressed: _saveActions,
                                     ),
-                                  )
+                                    onPressed: _saveActions,
+                                  ),
                                 )
                               ],
                             )
@@ -128,7 +142,7 @@ class _SettingScreenState extends State<SettingScreen> {
   void _saveActions() {
     try {
       int newMaxNotifications = int.parse(_maxNotificationsController.text);
-      int newWalkLength = int.parse(_walkLengthController.text);
+      int newWalkLength = _value;
       NotificationHandler().updatedSettings(newMaxNotifications, newWalkLength);
     }
     catch(e) {
