@@ -42,7 +42,7 @@ class NotificationHandler {
   }
 
   /// Initialising the NotificationHandler object.
-  void init() async {
+  Future<void> init() async {
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings("@drawable/new_more_and_better_improved_logo");
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
     _notifications.initialize(initializationSettings);
