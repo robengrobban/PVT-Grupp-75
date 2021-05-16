@@ -17,7 +17,6 @@ class Weather {
     List<double> coordinates = await _currentPosition();
     http.Response response = await _fetchWeather(coordinates[0], coordinates[1]);
     Map<String, dynamic> result = json.decode(response.body);
-
     HashMap<int, bool> weatherMap = HashMap.identity();
     List<dynamic> timeSeries = result['timeSeries'];
     for ( int i = 0; i < 24; i++ ) {
@@ -28,19 +27,18 @@ class Weather {
   }
 
   Future<List<double>> _currentPosition() async{
-    LocationHandler bing = LocationHandler();
-    await bing.init();
+    LocationHandler loc = LocationHandler();
     List<double> latlon = List.empty(growable: true);
-    print(bing.getLat());
-    print(bing.getLon());
-    latlon.add(59.31);
-    latlon.add(18.26);
+    latlon.add(loc.getLat());
+    latlon.add(loc.getLon());
     return latlon;
   }
 
   Future<http.Response> _fetchWeather(double lat, double lon) async {
+    String url = "https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"+lon.toStringAsFixed(6)+"/lat/"+lat.toStringAsFixed(6)+"/data.json";
+    print(url);
     return http.get(
-      Uri.parse("https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/"+lon.toString()+"/lat/"+lat.toString()+"/data.json")
+      Uri.parse(url)
     );
   }
 

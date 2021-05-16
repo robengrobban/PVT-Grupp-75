@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/location_handler.dart';
 import 'package:flutter_app/screens/menu_screen.dart';
 import 'package:flutter_app/screens/notification_screen.dart';
 import 'package:flutter_app/screens/setting_screen.dart';
@@ -13,6 +14,7 @@ void main() {
 
   Account().init();
   NotificationHandler().init();
+  LocationHandler().init();
 }
 
 class WalkInProgressApp extends StatelessWidget {

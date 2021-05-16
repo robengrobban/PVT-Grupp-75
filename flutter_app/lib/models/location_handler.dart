@@ -2,49 +2,69 @@ import 'package:location/location.dart';
 
 class LocationHandler{
 
-  Location location;
+  Location _location;
   LocationData _locationData;
 
-  LocationHandler._privateConstructor();
+  bool _initialized = false;
+
+  static const double _noLocationFound = 0.0;
 
   static final LocationHandler _instance = LocationHandler._privateConstructor();
+
+  LocationHandler._privateConstructor();
 
   factory LocationHandler() {
     return _instance;
   }
 
   Future<void> init() async{
-    Location location = new Location();
+    _location =  new Location();
 
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
 
-    _serviceEnabled = await location.serviceEnabled();
+    _serviceEnabled = await _location.serviceEnabled();
     if (!_serviceEnabled) {
-      _serviceEnabled = await location.requestService();
+      _serviceEnabled = await _location.requestService();
       if (!_serviceEnabled) {
         return;
       }
     }
 
-    _permissionGranted = await location.hasPermission();
+    _permissionGranted = await _location.hasPermission();
     if (_permissionGranted == PermissionStatus.DENIED) {
-      _permissionGranted = await location.requestPermission();
+      _permissionGranted = await _location.requestPermission();
       if (_permissionGranted != PermissionStatus.GRANTED) {
         return;
       }
     }
 
-    _locationData = await location.getLocation();
+    _locationData = await _location.getLocation();
+    _initialize();
   }
 
 
   double getLat(){
+    if(!_initialized){
+      return _noLocationFound;
+    }
     return _locationData.latitude;
   }
 
   double getLon(){
+    if(!_initialized){
+      return _noLocationFound;
+    }
     return _locationData.longitude;
+  }
+
+  bool isInitialized(){
+    return _initialized;
+  }
+
+  void _initialize(){
+    _initialized = true;
+    return;
   }
 
 }
