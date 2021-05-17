@@ -36,6 +36,14 @@ class NotificationScreenState extends State<NotificationScreen> {
                   child: Text("Visa alla notifikationer"),
                   onPressed: NotificationHandler().showNotifications,
                 )
+            ),
+            Center(
+                child: ElevatedButton(
+                  child: Text("Skicka test notifikation"),
+                  onPressed: () {
+                    NotificationHandler().send(120, "TITEL", "MEDDELANDE");
+                  },
+                )
             )
           ],
         )

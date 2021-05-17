@@ -32,6 +32,8 @@ class NotificationHandler {
 
   SharedPreferences _preferences;
 
+  NotificationDetails _notificationDetails;
+
   Weather _weather = Weather();
 
   /// The maximum number of scheduled notifications.
@@ -49,6 +51,15 @@ class NotificationHandler {
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
     _notifications.initialize(initializationSettings);
     tz.initializeTimeZones();
+
+    _notificationDetails = const NotificationDetails(
+        android: AndroidNotificationDetails(
+            'WalkInProgress',
+            'Calendar Notifications',
+            'Notifications for walking opportunities.',
+            priority: Priority.high,
+            importance: Importance.high,
+            fullScreenIntent: true));
 
     wipeNotifications();
 
@@ -152,7 +163,7 @@ class NotificationHandler {
 
       tz.TZDateTime time = tz.TZDateTime.from( spot.startTime(), tz.local );
 
-      _schedule(id, title, message, time);
+      schedule(id, title, message, time);
 
       _notificationsLeft--;
 
@@ -182,36 +193,21 @@ class NotificationHandler {
   }
 
   /// Schedule a notification.
-  void _schedule(int id, String title, String message, tz.TZDateTime time) async {
+  void schedule(int id, String title, String message, tz.TZDateTime time) async {
     await _notifications.zonedSchedule(
         id,
         title,
         message,
         time,
-        const NotificationDetails(
-            android: AndroidNotificationDetails(
-                'WalkInProgress',
-                'Calendar Notifications',
-                'Notifications for walking opportunities.',
-                priority: Priority.high,
-                importance: Importance.high,
-                fullScreenIntent: true)),
+        _notificationDetails,
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime);
   }
 
   /// Send a notification, instantly
-  void _send(int id, String title, String message) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-        'WalkInProgress', 'Calendar Notifications', 'Notifications for walking opportunities.',
-        importance: Importance.max,
-        priority: Priority.high,
-        showWhen: false);
-
-    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
-
-    await _notifications.show(id, title, message, platformChannelSpecifics, payload: '');
+  void send(int id, String title, String message) async {
+    await _notifications.show(id, title, message, _notificationDetails, payload: '');
   }
 
 
