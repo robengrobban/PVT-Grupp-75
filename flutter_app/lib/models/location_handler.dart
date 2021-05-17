@@ -45,7 +45,7 @@ class LocationHandler{
   }
 
 
-  Future<Pair<double, double>> lonLat() async{
+  Future<Pair<double, double>> latlon() async{
     if(!_initialized){
       return _noLocationFound;
     }

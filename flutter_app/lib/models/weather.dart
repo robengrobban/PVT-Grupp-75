@@ -28,7 +28,7 @@ class Weather {
   }
 
   Future<Pair<double, double>> _currentPosition() async{
-    return LocationHandler().lonLat();
+    return LocationHandler().latlon();
   }
 
   Future<http.Response> _fetchWeather(double lat, double lon) async {
