@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter_app/models/event.dart';
 import 'package:flutter_app/models/account.dart';
 import "package:flutter_app/models/notification_spot.dart";
@@ -75,7 +77,7 @@ class NotificationHandler {
 
   }
 
-  void updatedSettings(int maxNotifications, int walkLength) {
+  void updateSettings(int maxNotifications, int walkLength) async {
     _maxNotifications = maxNotifications;
     _walkLength = walkLength;
     _timeRequired = _walkLength + _defaultOffset;
@@ -131,12 +133,16 @@ class NotificationHandler {
 
     List<Event> events = await _fetchEvents();
     List<NotificationSpot> spots = _generateNotificationSpots(events);
+    HashMap<int, bool> weatherData = await _weather.todaysWeather();
 
     for ( NotificationSpot spot in spots ) {
       if ( _notificationsLeft == 0 ) {
         break;
       }
       if ( spot.durationInMinutes() < _timeRequired ) {
+        continue;
+      }
+      if ( !weatherData[ spot.startTime().hour ] ) {
         continue;
       }
 

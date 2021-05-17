@@ -18,13 +18,14 @@ class Weather {
     Pair<double, double> coordinates = await _currentPosition();
     http.Response response = await _fetchWeather(coordinates.first(), coordinates.second());
     Map<String, dynamic> result = json.decode(response.body);
-    HashMap<int, bool> weatherMap = HashMap.identity();
+    final HashMap<int, bool> weatherMap = HashMap.identity();
     List<dynamic> timeSeries = result['timeSeries'];
     for ( int i = 0; i < 24; i++ ) {
       DateTime time = DateTime.parse(timeSeries[i]['validTime']).toLocal();
       int forecast = timeSeries[i]['parameters'][18]['values'][0];
+      weatherMap[time.hour] = forecast <= 7;
     }
-
+    return weatherMap;
   }
 
   Future<Pair<double, double>> _currentPosition() async{

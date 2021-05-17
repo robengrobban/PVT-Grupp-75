@@ -54,32 +54,37 @@ class _SettingScreenState extends State<SettingScreen> {
                           child: Form(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Text(
-                                  "Önskat antal notifikationer",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16),
-                                ),
-                                Container(
-                                  alignment: Alignment.center,
-                                  padding: const EdgeInsets.all(12),
-                                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: Colors.black,
-                                      width: 1,
-                                    )
-                                  ),
-                                  child: TextField(
-                                      controller: _maxNotificationsController,
-                                      keyboardType: TextInputType.number,
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly
-                                      ]
-                                  ),
+                                Column(
+                                    children: <Widget>[
+                                      Text(
+                                        "Önskat antal notifikationer",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16),
+                                      ),
+                                      Container(
+                                        alignment: Alignment.center,
+                                        padding: const EdgeInsets.all(12),
+                                        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(12),
+                                            border: Border.all(
+                                              color: Colors.black,
+                                              width: 1,
+                                            )
+                                        ),
+                                        child: TextField(
+                                            controller: _maxNotificationsController,
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: <TextInputFormatter>[
+                                              FilteringTextInputFormatter.digitsOnly
+                                            ]
+                                        ),
+                                      )
+                                    ]
                                 ),
                                 Column(
                                   children: <Widget>[
@@ -102,7 +107,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                         ),
                                         borderRadius: BorderRadius.all(Radius.circular(12)),
                                       ),
-                                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                                       child: NumberPicker(
                                       value: _value,
                                       minValue: 10,
@@ -111,22 +116,14 @@ class _SettingScreenState extends State<SettingScreen> {
                                     ),
                                     )],
                                 ),
-                                Container(
-                                  alignment: Alignment.center,
-                                  margin: const EdgeInsets.symmetric(vertical: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
+                                ElevatedButton(
+                                  child: Text("Spara"),
+                                  style: ButtonStyle(
+                                      backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+                                      foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
+                                      //shadowColor: MaterialStateProperty.all<Color>(Colors.transparent)
                                   ),
-                                  child: ElevatedButton(
-                                    child: Text("Spara"),
-                                    style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent),
-                                        foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
-                                        shadowColor: MaterialStateProperty.all<Color>(Colors.transparent)
-                                    ),
-                                    onPressed: _saveActions,
-                                  ),
+                                  onPressed: _saveActions,
                                 )
                               ],
                             )
@@ -143,7 +140,11 @@ class _SettingScreenState extends State<SettingScreen> {
     try {
       int newMaxNotifications = int.parse(_maxNotificationsController.text);
       int newWalkLength = _value;
-      NotificationHandler().updatedSettings(newMaxNotifications, newWalkLength);
+      NotificationHandler().updateSettings(newMaxNotifications, newWalkLength);
+      final snackBar = SnackBar(
+        content: Text('Inställningar uppdaterade!')
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
     catch(e) {
       print("There are 🐜🐜🐜 in the spooky setting screen");
