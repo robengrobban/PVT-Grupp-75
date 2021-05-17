@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/pair.dart';
 import "package:http/http.dart" as http;
 import 'dart:convert' show json;
 
@@ -14,8 +15,8 @@ class Weather {
   //https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/xxx/lat/xxx/data.json
 
   Future<HashMap<int, bool>> todaysWeather() async {
-    List<double> coordinates = await _currentPosition();
-    http.Response response = await _fetchWeather(coordinates[0], coordinates[1]);
+    Pair<double, double> coordinates = await _currentPosition();
+    http.Response response = await _fetchWeather(coordinates.first(), coordinates.second());
     Map<String, dynamic> result = json.decode(response.body);
     HashMap<int, bool> weatherMap = HashMap.identity();
     List<dynamic> timeSeries = result['timeSeries'];
@@ -26,12 +27,8 @@ class Weather {
 
   }
 
-  Future<List<double>> _currentPosition() async{
-    LocationHandler loc = LocationHandler();
-    List<double> latlon = List.empty(growable: true);
-    latlon.add(loc.getLat());
-    latlon.add(loc.getLon());
-    return latlon;
+  Future<Pair<double, double>> _currentPosition() async{
+    return LocationHandler().lonLat();
   }
 
   Future<http.Response> _fetchWeather(double lat, double lon) async {

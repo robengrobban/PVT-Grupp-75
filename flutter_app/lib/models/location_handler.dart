@@ -1,3 +1,4 @@
+import 'package:flutter_app/models/pair.dart';
 import 'package:location/location.dart';
 
 class LocationHandler{
@@ -7,7 +8,7 @@ class LocationHandler{
 
   bool _initialized = false;
 
-  static const double _noLocationFound = 0.0;
+  static final Pair<double, double> _noLocationFound = new Pair(0.0, 0.0);
 
   static final LocationHandler _instance = LocationHandler._privateConstructor();
 
@@ -44,20 +45,32 @@ class LocationHandler{
   }
 
 
-  double getLat(){
+  Future<Pair<double, double>> lonLat() async{
     if(!_initialized){
       return _noLocationFound;
+    }
+    _locationData = await _location.getLocation();
+    Pair<double, double> latLonPair = new Pair(_locationData.latitude, _locationData.longitude);
+
+    return latLonPair;
+  }
+
+  /*double getLat(){
+    if(!_initialized){
+      return 0.0;
     }
     return _locationData.latitude;
   }
 
   double getLon(){
     if(!_initialized){
-      return _noLocationFound;
+      return 0.0;
     }
+
     return _locationData.longitude;
   }
-
+  */
+  
   bool isInitialized(){
     return _initialized;
   }
