@@ -12,7 +12,7 @@ class NotificationSpot {
   DateTime _endTime;
 
   /// Constructor
-  NotificationSpot(@required this._id, @required this._startTime, @required this._endTime);
+  NotificationSpot(this._id,this._startTime,this._endTime);
 
   /// Spot duration in minutes
   int durationInMinutes() {

@@ -3,7 +3,7 @@ import 'package:flutter_app/models/location_handler.dart';
 import 'package:flutter_app/screens/menu_screen.dart';
 import 'package:flutter_app/screens/notification_screen.dart';
 import 'package:flutter_app/screens/setting_screen.dart';
-import 'models/account.dart';
+import 'models/account_handler.dart';
 import 'screens/login_screen.dart';
 import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/screens/home_screen.dart';
@@ -14,8 +14,7 @@ import 'package:custom_loading_indicator/custom_loading_indicator.dart';
 
 void main() {
   runApp(WalkInProgressApp());
-
-  Account().init();
+  AccountHandler().init();
   NotificationHandler().init();
   LocationHandler().init();
 }

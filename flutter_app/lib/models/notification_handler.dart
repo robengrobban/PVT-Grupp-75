@@ -1,9 +1,10 @@
 import 'dart:collection';
 
 import 'package:flutter_app/models/event.dart';
-import 'package:flutter_app/models/account.dart';
+import 'package:flutter_app/models/account_handler.dart';
 import "package:flutter_app/models/notification_spot.dart";
-import 'package:flutter_app/models/weather.dart';
+import 'package:flutter_app/models/weather_handler.dart';
+import 'package:flutter_app/models/weather_data.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
@@ -34,7 +35,7 @@ class NotificationHandler {
 
   NotificationDetails _notificationDetails;
 
-  Weather _weather = Weather();
+  WeatherHandler _weather = WeatherHandler();
 
   /// The maximum number of scheduled notifications.
   int _maxNotifications;
@@ -68,10 +69,6 @@ class NotificationHandler {
 
     _notificationsLeft = _maxNotifications;
     _timeRequired = _walkLength + _defaultOffset;
-
-    print(_maxNotifications);
-    print(_walkLength);
-    print(_notificationsLeft);
   }
 
   void _saveNotificationSettings() {
@@ -111,7 +108,7 @@ class NotificationHandler {
 
   /// Retrieve all events from the currently logged in account.
   Future<List<Event>> _fetchEvents() async {
-    return await Account().events();
+    return await AccountHandler().events();
   }
 
   /// Retrieve all scheduled notifications.
@@ -135,16 +132,13 @@ class NotificationHandler {
     // Wipe existing notifications
     wipeNotifications();
 
-    print("Should generate?");
-    if ( _notificationsLeft == 0 || !Account().isLoggedIn() ) {
-      print("No");
+    if ( _notificationsLeft == 0 || !AccountHandler().isLoggedIn() ) {
       return;
     }
-    print("Yes");
 
     List<Event> events = await _fetchEvents();
     List<NotificationSpot> spots = _generateNotificationSpots(events);
-    HashMap<int, bool> weatherData = await _weather.todaysWeather();
+    HashMap<int, WeatherData> weatherData = await _weather.todaysWeather();
 
     for ( NotificationSpot spot in spots ) {
       if ( _notificationsLeft == 0 ) {
@@ -153,12 +147,12 @@ class NotificationHandler {
       if ( spot.durationInMinutes() < _timeRequired ) {
         continue;
       }
-      if ( !weatherData[ spot.startTime().hour ] ) {
+      if ( !(weatherData[ spot.startTime().hour ].forecast() <= 7) ) {
         continue;
       }
 
       int id = spot.id();
-      String title = "Det finns en möjlig promenad 🐜 🐜 🐜";
+      String title = "Det finns en möjlig 🐜";
       String message = spot.startTime().toString();
 
       tz.TZDateTime time = tz.TZDateTime.from( spot.startTime(), tz.local );

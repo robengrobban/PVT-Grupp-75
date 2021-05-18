@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/account.dart';
+import 'package:flutter_app/models/account_handler.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 
 class LoginScreen extends StatefulWidget {
@@ -14,8 +14,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    Account().onOneTimeUserChange(() {
-      if ( Account().isLoggedIn() ) {
+    AccountHandler().onOneTimeUserChange(() {
+      if ( AccountHandler().isLoggedIn() ) {
         Navigator.of(context).pushReplacementNamed("/home");
       }
     });
@@ -61,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   onPressed: () async {
-                    await Account().handleSignIn();
+                    await AccountHandler().handleSignIn();
                   },
                 )
               ],
@@ -71,51 +71,3 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
 }
-/*Center(
-                child: Text(Account().displayName())
-            ),
-            FutureBuilder<List<Event>>(
-              future: Account().events(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Container (
-                            color: Colors.cyan,
-                            child: ListTile(
-                                title: Text("${snapshot.data[index].summary()}"),
-                                subtitle: Text("${snapshot.data[index].startTime()} - ${snapshot.data[index].endTime()}")
-                            )
-                        );
-                      }
-                  );
-                }
-                else if ( snapshot.hasError ) {
-                  return Center( child: Text("kan inte ladda kalendar", style: TextStyle(fontStyle: FontStyle.italic),) );
-                }
-                else {
-                  return Center( child: Text("Laddar kalendar"));
-                }
-              },
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextButton(
-                  child: Text("Logga in"),
-                  onPressed: () {
-                    Account().handleSignIn();
-                  },
-                ),
-                TextButton(
-                  child: Text("Logga ut"),
-                  onPressed: () {
-                    Account().handleSignOut();
-                  },
-                )
-              ],
-            )*/

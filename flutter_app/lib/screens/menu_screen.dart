@@ -1,8 +1,8 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app/models/account.dart';
-import 'package:flutter_app/models/weather.dart';
+import 'package:flutter_app/models/account_handler.dart';
+import 'package:flutter_app/models/weather_handler.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 import 'package:flutter_app/widgets/menu_item.dart';
 
@@ -67,8 +67,11 @@ class _MenuScreenState extends State<MenuScreen> {
                             Navigator.of(context).pushNamed("/debug-noti");
                           }),
                           MenuItem(Icons.cloud_off, "DEBUG WEATHER", _itemPadding, () {
-                            Weather weather = Weather();
-                            weather.todaysWeather();
+                            WeatherHandler().todaysWeather();
+                            WeatherHandler().currentWeather().then((value) {
+                              print("Temperature");
+                              print(value.temperature());
+                            });
                           })
                         ],
                       )
@@ -82,7 +85,7 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   void _openProfile() {
-    print(Account().isLoggedIn().toString());
+    print(AccountHandler().isLoggedIn().toString());
   }
 
   void _openAchievements() {
@@ -94,7 +97,7 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   Widget _getAccountButton() {
-    if ( Account().isLoggedIn() ) {
+    if ( AccountHandler().isLoggedIn() ) {
       return MenuItem(Icons.logout, "Logga ut", _itemPadding, _getOUT);
     }
     return MenuItem(Icons.logout, "Logga in", _itemPadding, _getIN);
@@ -132,7 +135,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 child: ElevatedButton(
                   child: Text('Logga ut'),
                   onPressed: () {
-                    Account().handleSignOut();
+                    AccountHandler().handleSignOut();
                     Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
                   },
                 )

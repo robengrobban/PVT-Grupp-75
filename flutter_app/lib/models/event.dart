@@ -14,7 +14,7 @@ class Event {
   DateTime _endTime;
 
   /// Constructor
-  Event(@required this._id, @required this._summary, @required this._startTime, @required this._endTime);
+  Event(this._id,this._summary,this._startTime,this._endTime);
 
   /// Get event ID
   String id() {
