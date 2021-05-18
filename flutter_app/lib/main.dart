@@ -4,6 +4,8 @@ import 'package:flutter_app/screens/menu_screen.dart';
 import 'package:flutter_app/screens/notification_screen.dart';
 import 'package:flutter_app/screens/setting_screen.dart';
 import 'models/account.dart';
+import 'screens/camera_previews_screen.dart';
+import 'screens/camera_screen.dart';
 import 'screens/login_screen.dart';
 import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/screens/home_screen.dart';
@@ -25,20 +27,22 @@ class WalkInProgressApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GlobalLoaderOverlay(
-        child: MaterialApp(
-      title: 'Walk in Progress',
-      theme: WalkInProgressThemeData,
-      initialRoute: '/home',
-      routes: {
-        '/home': (context) => HomeScreen(),
-        '/login': (context) => LoginScreen(),
-        '/menu': (context) => MenuScreen(),
-        '/settings': (context) => SettingScreen(),
-        '/debug-noti': (context) => NotificationScreen(),
-      },
-    ),
-    overlayOpacity: 0.8,
-);
+      child: MaterialApp(
+        title: 'Walk in Progress',
+        theme: WalkInProgressThemeData,
+        initialRoute: '/home',
+        routes: {
+          '/home': (context) => HomeScreen(),
+          '/login': (context) => LoginScreen(),
+          '/menu': (context) => MenuScreen(),
+          '/settings': (context) => SettingScreen(),
+          '/debug-noti': (context) => NotificationScreen(),
+          '/camera': (context) => CameraScreen(),
+          '/camera-previews': (context) => PreviewScreen(),
+        },
+      ),
+      overlayOpacity: 0.8,
+    );
   }
 }
 /*

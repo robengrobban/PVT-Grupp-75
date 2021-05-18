@@ -179,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           icon: Icon(Icons.camera,
                               size: 40,
                               color: Theme.AppColors.brandOrange[400]),
-                          onPressed: null),
+                          onPressed: (){Navigator.of(context).pushNamed("/camera");}),
                       Spacer(flex: 1),
                       IconButton(
                           icon: Icon(Icons.music_note,
