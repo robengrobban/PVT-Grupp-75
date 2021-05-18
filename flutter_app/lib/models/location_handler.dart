@@ -40,8 +40,8 @@ class LocationHandler{
       }
     }
 
+    _initialized = true;
     _locationData = await _location.getLocation();
-    _initialize();
   }
 
 
@@ -75,9 +75,5 @@ class LocationHandler{
     return _initialized;
   }
 
-  void _initialize(){
-    _initialized = true;
-    return;
-  }
 
 }

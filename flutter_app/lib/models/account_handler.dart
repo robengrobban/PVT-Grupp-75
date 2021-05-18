@@ -8,13 +8,13 @@ import 'dart:convert' show json;
 import 'package:flutter_app/models/event.dart';
 
 /// Singleton class used to handle the users account.
-class Account {
+class AccountHandler {
 
   /// Define private constructor
-  Account._privateConstructor();
+  AccountHandler._privateConstructor();
 
   /// The Account Instance
-  static final Account _instance = Account._privateConstructor();
+  static final AccountHandler _instance = AccountHandler._privateConstructor();
 
   /// GoogleSignIn object to handle sign-ins and sign-outs.
   /// Also defines scope for the logged in account.
@@ -36,8 +36,10 @@ class Account {
 
   StreamSubscription<GoogleSignInAccount> lastCallback;
 
+  final int _cacheInMinutes = 1;
+
   /// Factory constructor to facilitate the Singleton design principle.
-  factory Account() {
+  factory AccountHandler() {
     return _instance;
   }
 
@@ -50,7 +52,6 @@ class Account {
         lastCallback.cancel();
       }
       callback();
-      print("INSTALL");
     });
   }
 
@@ -58,10 +59,8 @@ class Account {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       _currentUser = account;
       _changeUserActions();
-      print("START UP CHANGER");
     });
     _googleSignIn.signInSilently();
-    print("START UP");
   }
 
   /// Sign in the user using google.
@@ -160,7 +159,7 @@ class Account {
     if (_currentUser == null ) {
       return Future.error("Not logged in");
     }
-    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inSeconds > 0 ) {
+    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inMinutes > _cacheInMinutes ) {
       _events = await _generateCalendar();
       _lastEventsFetched = DateTime.now();
     }
