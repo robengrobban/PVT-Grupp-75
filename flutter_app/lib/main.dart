@@ -8,6 +8,9 @@ import 'screens/login_screen.dart';
 import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/screens/home_screen.dart';
 import 'theme.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:flutter_app/theme.dart' as Theme;
+import 'package:custom_loading_indicator/custom_loading_indicator.dart';
 
 void main() {
   runApp(WalkInProgressApp());
@@ -21,7 +24,8 @@ class WalkInProgressApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GlobalLoaderOverlay(
+        child: MaterialApp(
       title: 'Walk in Progress',
       theme: WalkInProgressThemeData,
       initialRoute: '/home',
@@ -32,7 +36,9 @@ class WalkInProgressApp extends StatelessWidget {
         '/settings': (context) => SettingScreen(),
         '/debug-noti': (context) => NotificationScreen(),
       },
-    );
+    ),
+    overlayOpacity: 0.8,
+);
   }
 }
 /*
