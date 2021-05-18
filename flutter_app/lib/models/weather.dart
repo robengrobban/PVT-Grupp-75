@@ -16,15 +16,21 @@ class Weather {
 
   Future<HashMap<int, bool>> todaysWeather() async {
     Pair<double, double> coordinates = await _currentPosition();
-    http.Response response = await _fetchWeather(coordinates.first(), coordinates.second());
-    Map<String, dynamic> result = json.decode(response.body);
     final HashMap<int, bool> weatherMap = HashMap.identity();
+
+    http.Response response = await _fetchWeather(coordinates.first(), coordinates.second());
+    if ( response.statusCode != 200 ) {
+      return weatherMap;
+    }
+    Map<String, dynamic> result = json.decode(response.body);
+
     List<dynamic> timeSeries = result['timeSeries'];
     for ( int i = 0; i < 24; i++ ) {
       DateTime time = DateTime.parse(timeSeries[i]['validTime']).toLocal();
       int forecast = timeSeries[i]['parameters'][18]['values'][0];
       weatherMap[time.hour] = forecast <= 7;
     }
+
     return weatherMap;
   }
 
