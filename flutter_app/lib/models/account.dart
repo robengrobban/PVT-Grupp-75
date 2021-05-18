@@ -50,7 +50,6 @@ class Account {
         lastCallback.cancel();
       }
       callback();
-      print("INSTALL");
     });
   }
 
@@ -58,10 +57,8 @@ class Account {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       _currentUser = account;
       _changeUserActions();
-      print("START UP CHANGER");
     });
     _googleSignIn.signInSilently();
-    print("START UP");
   }
 
   /// Sign in the user using google.
