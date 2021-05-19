@@ -16,10 +16,10 @@ import 'package:flutter_app/theme.dart' as Theme;
 import 'package:custom_loading_indicator/custom_loading_indicator.dart';
 
 void main() {
-  runApp(WalkInProgressApp());
   AccountHandler().init();
   NotificationHandler().init();
   LocationHandler().init();
+  runApp(WalkInProgressApp());
 }
 
 class WalkInProgressApp extends StatelessWidget {
