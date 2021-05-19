@@ -44,6 +44,16 @@ class NotificationScreenState extends State<NotificationScreen> {
                     NotificationHandler().send(120, "TITEL", "MEDDELANDE");
                   },
                 )
+            ),
+            Center(
+                child: ElevatedButton(
+                  child: Text("Visa inställningar"),
+                  onPressed: () {
+                    print("Max: " + NotificationHandler().maxNotifications().toString());
+                    print("Walk length: " + NotificationHandler().walkLength().toString());
+                    print("Affected by weather: " + NotificationHandler().affectedByWeather().toString());
+                  },
+                )
             )
           ],
         )

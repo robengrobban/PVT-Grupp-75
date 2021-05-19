@@ -31,6 +31,9 @@ class NotificationHandler {
   int _timeRequired;
   final int _defaultOffset = 10;
 
+  bool _affectedByWeather;
+  final bool _defaultAffectedByWeather = true;
+
   SharedPreferences _preferences;
 
   NotificationDetails _notificationDetails;
@@ -40,6 +43,8 @@ class NotificationHandler {
   /// The maximum number of scheduled notifications.
   int _maxNotifications;
   final int _defaultMaxNotifications = 2;
+
+  final int _weatherThreshold = 7; // 7
 
   /// Factory constructor to facilitate the Singleton design principle.
   factory NotificationHandler() {
@@ -75,6 +80,7 @@ class NotificationHandler {
 
     _preferences.setInt("maxNotifications", _maxNotifications);
     _preferences.setInt("walkLength", _walkLength);
+    _preferences.setBool("affectedByWeather", _affectedByWeather);
 
   }
 
@@ -82,13 +88,15 @@ class NotificationHandler {
 
     _maxNotifications = _preferences.getInt("maxNotifications") ?? _defaultMaxNotifications;
     _walkLength = _preferences.getInt("walkLength") ?? _defaultWalkLength;
+    _affectedByWeather = _preferences.getBool("affectedByWeather") ?? _defaultAffectedByWeather;
 
   }
 
-  void updateSettings(int maxNotifications, int walkLength) async {
+  void updateSettings(int maxNotifications, int walkLength, bool affectedByWeather) async {
     _maxNotifications = maxNotifications;
     _walkLength = walkLength;
     _timeRequired = _walkLength + _defaultOffset;
+    _affectedByWeather = affectedByWeather;
     _saveNotificationSettings();
     generateCalendarNotifications();
   }
@@ -147,7 +155,7 @@ class NotificationHandler {
       if ( spot.durationInMinutes() < _timeRequired ) {
         continue;
       }
-      if ( !(weatherData[ spot.startTime().hour ].forecast() <= 7) ) {
+      if ( _affectedByWeather && !(weatherData[ spot.startTime().hour ].forecast() <= _weatherThreshold) ) {
         continue;
       }
 
@@ -204,8 +212,9 @@ class NotificationHandler {
     await _notifications.show(id, title, message, _notificationDetails, payload: '');
   }
 
-
- 
+  bool affectedByWeather() {
+    return _affectedByWeather;
+  }
 
 
 }

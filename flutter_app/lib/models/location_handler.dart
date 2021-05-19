@@ -41,14 +41,13 @@ class LocationHandler{
     }
 
     _initialized = true;
-    _locationData = await _location.getLocation();
   }
 
 
   Future<Pair<double, double>> latlon() async{
-    if(!_initialized){
-      return _noLocationFound;
-    }
+    //if(!_initialized){
+    //  return _noLocationFound;
+    //} TEMPORÄRT
     _locationData = await _location.getLocation();
     Pair<double, double> latLonPair = new Pair(_locationData.latitude, _locationData.longitude);
 

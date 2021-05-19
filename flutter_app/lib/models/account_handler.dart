@@ -159,7 +159,7 @@ class AccountHandler {
     if (_currentUser == null ) {
       return Future.error("Not logged in");
     }
-    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inMinutes > _cacheInMinutes ) {
+    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inMinutes >= _cacheInMinutes ) {
       _events = await _generateCalendar();
       _lastEventsFetched = DateTime.now();
     }

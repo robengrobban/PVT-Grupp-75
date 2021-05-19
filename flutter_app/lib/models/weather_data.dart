@@ -1,4 +1,7 @@
 
+import 'package:flutter/material.dart';
+import 'package:weather_icons/weather_icons.dart';
+
 class WeatherData {
 
   DateTime _time;
@@ -13,6 +16,52 @@ class WeatherData {
 
   int forecast() {
     return _forecast;
+  }
+
+  IconData forecastIcon() {
+    switch (_forecast) {
+      case 1:
+      case 2:
+        return WeatherIcons.day_sunny;
+      case 3:
+      case 4:
+        return WeatherIcons.day_cloudy;
+      case 5:
+      case 6:
+        return WeatherIcons.cloudy;
+      case 7:
+        return WeatherIcons.fog;
+      case 8:
+      case 9:
+      case 10:
+        return WeatherIcons.showers;
+      case 11:
+        return WeatherIcons.thunderstorm;
+      case 12:
+      case 13:
+      case 14:
+        return WeatherIcons.sleet;
+      case 15:
+      case 16:
+      case 17:
+        return WeatherIcons.snow;
+      case 18:
+      case 19:
+      case 20:
+        return WeatherIcons.rain;
+      case 21:
+        return WeatherIcons.lightning;
+      case 22:
+      case 23:
+      case 24:
+        return WeatherIcons.sleet;
+      case 25:
+      case 26:
+      case 27:
+        return WeatherIcons.snow;
+      default:
+        return WeatherIcons.volcano;
+    }
   }
 
   double temperature() {

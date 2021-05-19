@@ -14,12 +14,16 @@ class _SettingScreenState extends State<SettingScreen> {
   TextEditingController _maxNotificationsController;
   int _value = NotificationHandler().walkLength();
   //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _currentAffectedByWeather;
+
 
   @override
   void initState() {
     super.initState();
     _maxNotificationsController = TextEditingController(text: NotificationHandler().maxNotifications().toString());
     //_walkLengthController = TextEditingController(text: NotificationHandler().walkLength().toString());
+    _currentAffectedByWeather = NotificationHandler().affectedByWeather();
   }
 
   @override
@@ -32,7 +36,6 @@ class _SettingScreenState extends State<SettingScreen> {
         backgroundColor: Colors.white,
         body: Container(
             alignment: Alignment.center,
-            padding: const EdgeInsets.all(32.0),
             decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -46,6 +49,7 @@ class _SettingScreenState extends State<SettingScreen> {
             child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints viewportConstraints) {
                   return SingleChildScrollView(
+                      padding: EdgeInsets.all(32.0),
                       child: ConstrainedBox(
                           constraints: BoxConstraints(
                             minHeight: viewportConstraints.maxHeight,
@@ -87,7 +91,6 @@ class _SettingScreenState extends State<SettingScreen> {
                                 ),
                                 Column(
                                   children: <Widget>[
-                                    SizedBox(height: 60,),
                                     Text(
                                         "Promenadlängd i minuter",
                                     style: TextStyle(
@@ -116,6 +119,49 @@ class _SettingScreenState extends State<SettingScreen> {
                                     ),
                                     )],
                                 ),
+                                Column(
+                                  children: <Widget>[
+                                    Text(
+                                        "Låt väder påverka notifikationer",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                        )
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.all(12),
+                                      alignment: Alignment.center,
+                                      /*decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 1,
+                                        ),
+                                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                                      ),*/
+                                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                        ),
+                                        child: ToggleButtons(
+                                          children: [
+                                            Icon(_affectedIcon())
+                                          ],
+                                          onPressed: _toggleAffectedByWeather,
+                                          isSelected: [_currentAffectedByWeather],
+                                          selectedColor: Colors.green,
+                                          color: Colors.red,
+
+                                          selectedBorderColor: Colors.black,
+                                          borderColor: Colors.black,
+
+                                          fillColor: Colors.transparent,
+                                          borderWidth: 1,
+                                        ),
+                                      )
+                                    )],
+                                ),
                                 ElevatedButton(
                                   child: Text("Spara"),
                                   style: ButtonStyle(
@@ -136,11 +182,22 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
+  void _toggleAffectedByWeather(int index) {
+    setState(() {
+      _currentAffectedByWeather = !_currentAffectedByWeather;
+    });
+  }
+
+  IconData _affectedIcon() {
+    return _currentAffectedByWeather ? Icons.cloud_outlined : Icons.cloud_off_outlined;
+  }
+
   void _saveActions() {
     try {
       int newMaxNotifications = int.parse(_maxNotificationsController.text);
       int newWalkLength = _value;
-      NotificationHandler().updateSettings(newMaxNotifications, newWalkLength);
+      bool newAffectedByWeather = _currentAffectedByWeather;
+      NotificationHandler().updateSettings(newMaxNotifications, newWalkLength, newAffectedByWeather);
       final snackBar = SnackBar(
         content: Text('Inställningar uppdaterade!')
       );

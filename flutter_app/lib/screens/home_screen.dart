@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/models/Route.dart';
 import 'package:flutter_app/models/pair.dart';
+import 'package:flutter_app/models/weather_handler.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 import 'package:flutter_app/widgets/map_info_box.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -13,6 +14,7 @@ import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:weather_icons/weather_icons.dart';
 
 class HomeScreen extends StatefulWidget {
   final int initialDurationInMinutes;
@@ -32,11 +34,17 @@ class _HomeScreenState extends State<HomeScreen> {
   LatLng _currentPosition = LatLng(58, 17);
   int _calories = 729;
   int _steps = 3526;
-  int _temperature = 17;
+  double _temperature = 17.1;
+  IconData _weatherIcon = Icons.cloud_off_outlined;
 
   @override
   initState() {
     super.initState();
+    WeatherHandler().currentWeather().then((value) {
+      _temperature = value.temperature();
+      print(_temperature);
+      _weatherIcon = value.forecastIcon();
+    });
     rootBundle
         .loadString('assets/mapStyles/darkMapStyle.txt')
         .then((string) => {_mapStyle = string});
@@ -150,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 _steps.toString()),
                             InfoBox(Icons.fastfood, "CALORIES",
                                 _calories.toString()),
-                            InfoBox(Icons.wb_sunny, "WEATHER",
+                            InfoBox(_weatherIcon, "WEATHER",
                                 _temperature.toString() + "\u00B0"),
                           ]),
                       Align(alignment: Alignment.topLeft,

@@ -15,7 +15,7 @@ import 'package:loader_overlay/loader_overlay.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 import 'package:custom_loading_indicator/custom_loading_indicator.dart';
 
-void main() {
+void main() async {
   runApp(WalkInProgressApp());
   LocationHandler().init();
   AccountHandler().init();

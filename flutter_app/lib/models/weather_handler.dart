@@ -37,8 +37,8 @@ class WeatherHandler {
   }
 
   Future<void> _generateOrCacheWeatherData() async {
-    if ( _lastWeatherFetched == null || DateTime.now().difference(_lastWeatherFetched).inMinutes > _cacheInMinutes ) {
-      _weatherMap = await _generateWeatherData();
+    if ( _lastWeatherFetched == null || DateTime.now().difference(_lastWeatherFetched).inMinutes >= _cacheInMinutes ) {
+      await _generateWeatherData().then((value) => _weatherMap = value);
       _lastWeatherFetched = DateTime.now();
     }
   }
