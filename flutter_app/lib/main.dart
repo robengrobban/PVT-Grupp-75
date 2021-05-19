@@ -17,9 +17,9 @@ import 'package:custom_loading_indicator/custom_loading_indicator.dart';
 
 void main() {
   runApp(WalkInProgressApp());
+  LocationHandler().init();
   AccountHandler().init();
   NotificationHandler().init();
-  LocationHandler().init();
 }
 
 class WalkInProgressApp extends StatelessWidget {
