@@ -4,7 +4,6 @@ import 'package:flutter_app/screens/menu_screen.dart';
 import 'package:flutter_app/screens/notification_screen.dart';
 import 'package:flutter_app/screens/setting_screen.dart';
 import 'models/account_handler.dart';
-import 'models/account.dart';
 import 'screens/camera_previews_screen.dart';
 import 'screens/camera_screen.dart';
 import 'screens/login_screen.dart';
