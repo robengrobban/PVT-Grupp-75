@@ -30,7 +30,7 @@ class CircularRoute {
     map["waypoints"] = wayPointsLocations;
     map["startPoint"] = MyLocation.fromLatLng(startPoint);
     map["distance"]= distance;
-    map["duration"] = duration;
+    map["durationInSeconds"] = duration;
     map["northEastBound"] = MyLocation.fromLatLng(northEastBound);
     map["southWestBound"] = MyLocation.fromLatLng(southWestBound);
     return map;
@@ -45,13 +45,21 @@ class CircularRoute {
     (json['waypoints'] as List).forEach((element) {
       waypoints.add(LatLng(element['lat'], element['lng']));
     });
+    print(json);
+
+    int fuckingWork = 30;
+    if (json['durationInSeconds'] is int) {
+      fuckingWork = (((json['durationInSeconds'] as int)/ 60)).toInt();
+    } else if (json['durationInSeconds'] is int) {
+      (((json['durationInSeconds'] as double)/ 60).toInt());
+    }
 
     return CircularRoute(
         polyCoordinates: polyCoordinates,
         waypoints: waypoints,
         startPoint: MyLocation.fromJson(json['startPoint']).toLatLng(),
-        distance: (json['distance'] as double).toInt(),
-        duration: ((json["durationInSeconds"] / 60).toInt()),
+        distance: (json['distance'] is double) ? (json['distance'] as double).toInt() : (json['distance'] as int),
+        duration: fuckingWork,
         northEastBound: MyLocation.fromJson(json['northEastBound']).toLatLng(),
         southWestBound: MyLocation.fromJson(json['southWestBound']).toLatLng());
   }

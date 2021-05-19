@@ -12,8 +12,11 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
+  final int initialDurationInMinutes;
+  HomeScreen({this.initialDurationInMinutes});
   @override
   State createState() => _HomeScreenState();
 }
@@ -23,8 +26,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String _mapStyle;
   var _loc = Location();
   int _numberOfRouteTries = 0;
-  int _currentDurationOfRoute = 0;
-  Set<Polyline> _polylines = {};
+  CircularRoute _currentRoute;
+  int _preferredDuration = 20;
+  String _preferredAttraction = "None";
   LatLng _currentPosition = LatLng(58, 17);
   int _calories = 729;
   int _steps = 3526;
@@ -36,7 +40,22 @@ class _HomeScreenState extends State<HomeScreen> {
     rootBundle
         .loadString('assets/mapStyles/darkMapStyle.txt')
         .then((string) => {_mapStyle = string});
-    _getCurrentLocation();
+    _setUpRoute();
+  }
+
+  void _setUpRoute() async {
+    context.loaderOverlay.show();
+    _currentPosition = LatLng(58.9142, 17.9380);
+
+    if(widget.initialDurationInMinutes == null) {
+      _getDurationFromPreferences();
+    } else {
+      _preferredDuration = widget.initialDurationInMinutes;
+    }
+    _getAttractionFromPreferences();
+    await fetchRoute(_currentPosition, _preferredDuration, _preferredAttraction);
+
+    context.loaderOverlay.hide();
   }
 
   @override
@@ -81,21 +100,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Pair result = await _showWalkPreferenceDialog();
               if (result != null) {
                 context.loaderOverlay.show();
-                CircularRoute _route = await fetchRoute(
-                    _currentPosition, result.first(), result.second());
-                setState(() {
-                  _polylines = Set<Polyline>.of({
-                    Polyline(
-                      polylineId: PolylineId("route"),
-                      points: _route.polyCoordinates,
-                      color: Colors.amber,
-                    )
-                  });
-                  _currentDurationOfRoute = _route.duration;
-                  print("$_currentDurationOfRoute");
-                  moveMapToBound(_route.northEastBound, _route.southWestBound);
-                  context.loaderOverlay.hide();
-                });
+                  fetchRoute(
+                      _currentPosition, result.first(), result.second());
+                context.loaderOverlay.hide();
               }
             }),
         body: Container(
@@ -111,16 +118,22 @@ class _HomeScreenState extends State<HomeScreen> {
             )),
             child: Stack(children: [
               GoogleMap(
-                initialCameraPosition: CameraPosition(target: LatLng(58, 17)),
+                initialCameraPosition: CameraPosition(target: _currentPosition, zoom: 15),
                 zoomControlsEnabled: false,
                 myLocationEnabled: true,
-                polylines: _polylines,
+                myLocationButtonEnabled: false,
+                polylines: _currentRoute != null ? Set<Polyline>.of({
+                  Polyline(
+                    polylineId: PolylineId("route"),
+                    points: _currentRoute.polyCoordinates,
+                    color: Theme.AppColors.brandOrange[500],
+                  )
+                }) : Set.of([]),
                 onMapCreated: (controller) async {
                   _mapController = controller;
                   _mapController.setMapStyle(_mapStyle);
-                  await _getCurrentLocation();
                   setState(() {
-                    _moveMapToPosition(_currentPosition, 15);
+                    _getCurrentLocation();
                   });
                 },
               ),
@@ -143,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Align(alignment: Alignment.topLeft,
                           child:Container(color: Colors.white54, padding: EdgeInsets.all(10), margin: EdgeInsets.all(10), width: 100,
 
-                      child: Text(_currentDurationOfRoute.toString() + " Min")))
+                      child: Text("${_currentRoute != null ? _currentRoute.duration : 0} min")))
                     ],
                   )),
             ])),
@@ -167,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           icon: Icon(Icons.star,
                               size: 40,
                               color: Theme.AppColors.brandOrange[400]),
-                          onPressed: null),
+                          onPressed:() {_saveRoute(_currentRoute);}),
                       Spacer(flex: 1),
                       IconButton(
                           icon: Icon(Icons.people,
@@ -194,34 +207,47 @@ class _HomeScreenState extends State<HomeScreen> {
         extendBody: true);
   }
 
-  void _getCurrentLocation() async {
-    var currentData = await _loc.getLocation();
+  Future<void>_getDurationFromPreferences() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      int res = prefs.getInt('preferredDuration');
+      if( res != null) {
+        setState(() {
+          _preferredDuration = res;
+        });
+      }
+  }
+
+  Future<void> _getAttractionFromPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String res = prefs.getString('preferredAttraction');
+    if( res != null) {
+      setState(() {
+        _preferredAttraction = res;
+      });
+    }
+  }
+
+  Future<void>_getCurrentLocation() async {
+    await _loc.getLocation().then((currentData) => {
+    setState(() {
     _currentPosition = LatLng(currentData.latitude, currentData.longitude);
+    })
+  });
+
   }
 
-  void _moveMapToPosition(LatLng position, int zoom) {
-    _mapController.animateCamera(
-      CameraUpdate.newCameraPosition(
-        CameraPosition(
-          target: position,
-          zoom: 15.0,
-        ),
-      ),
-    );
-  }
-
-  void _moveMapToBound(LatLng northEastBound, LatLng southWestBound) {
+  void _moveMapToBound() {
     print("nELa: " +
-        northEastBound.latitude.toString() +
+        _currentRoute.northEastBound.latitude.toString() +
         " neLo " +
-        northEastBound.longitude.toString());
+        _currentRoute.northEastBound.longitude.toString());
     print("nELa: " +
-        southWestBound.latitude.toString() +
+        _currentRoute.southWestBound.latitude.toString() +
         " neLo " +
-        southWestBound.longitude.toString());
+        _currentRoute.southWestBound.longitude.toString());
     _mapController.animateCamera(CameraUpdate.newLatLngBounds(
-        LatLngBounds(southwest: southWestBound, northeast: northEastBound),
-        50));
+        LatLngBounds(southwest: _currentRoute.southWestBound, northeast: _currentRoute.northEastBound),
+        100));
   }
 
   Future<Pair> _showWalkPreferenceDialog() {
@@ -378,22 +404,22 @@ class _HomeScreenState extends State<HomeScreen> {
     Map<String, dynamic> route = jsonDecode(responseBody);
     return CircularRoute.fromJson(route);
   }
+  Future<CircularRoute> _saveRoute(CircularRoute route) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var stringRoutes = prefs.getString("Routes");
+    List<CircularRoute> routes = List.of({});
+    if (stringRoutes != null) {
+      for(var d in jsonDecode(stringRoutes)) {
+        routes.add(CircularRoute.fromJson(d));
+      }
+      (routes.forEach((element) {print("${element.distance}" + " distance is here"); }));
+    }
+    routes.add(route);
+    prefs.setString('Routes', jsonEncode(routes));
 
-  void moveMapToBound(LatLng northEastBound, LatLng southWestBound) {
-    print("nELa: " +
-        northEastBound.latitude.toString() +
-        " neLo " +
-        northEastBound.longitude.toString());
-    print("nELa: " +
-        southWestBound.latitude.toString() +
-        " neLo " +
-        southWestBound.longitude.toString());
-    _mapController.animateCamera(CameraUpdate.newLatLngBounds(
-        LatLngBounds(southwest: southWestBound, northeast: northEastBound),
-        100));
   }
 
-  Future<CircularRoute> fetchRoute(
+  void fetchRoute(
       LatLng startPosition, int durationInMinutes, String attraction) async {
     attraction.replaceAll(" ", "_");
     _numberOfRouteTries++;
@@ -409,13 +435,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (response.statusCode == 200) {
       _numberOfRouteTries = 0;
-      return _parseRoute(response.body);
+      setState(() {
+        _currentRoute = _parseRoute(response.body);
+        _moveMapToBound();
+      });
+
+
     } else if (response.statusCode == 404 && _numberOfRouteTries < 10) {
       return fetchRoute(startPosition, durationInMinutes, attraction);
     } else {
+      setState(() {
+        _currentRoute = null;
+      });
+
       print(response.statusCode);
       context.loaderOverlay.hide();
       throw Exception('Unable to fetch products from the REST API');
     }
+    setState(() {
+
+    });
   }
+
+
 }

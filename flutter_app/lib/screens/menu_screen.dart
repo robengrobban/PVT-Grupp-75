@@ -89,6 +89,7 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   void _openAchievements() {
+    Navigator.of(context).pushNamed("/success");
     print("Opening Achievements");
   }
 
