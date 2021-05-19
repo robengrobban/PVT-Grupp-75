@@ -16,8 +16,8 @@ import 'package:flutter_app/theme.dart' as Theme;
 import 'package:custom_loading_indicator/custom_loading_indicator.dart';
 
 void main() {
-  LocationHandler().init();
   runApp(WalkInProgressApp());
+  LocationHandler().init();
   AccountHandler().init();
   NotificationHandler().init();
 }
