@@ -12,15 +12,14 @@ class SettingScreen extends StatefulWidget {
 class _SettingScreenState extends State<SettingScreen> {
 
   TextEditingController _maxNotificationsController;
-  TextEditingController _walkLengthController;
   int _value = NotificationHandler().walkLength();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
     _maxNotificationsController = TextEditingController(text: NotificationHandler().maxNotifications().toString());
-    _walkLengthController = TextEditingController(text: NotificationHandler().walkLength().toString());
+    //_walkLengthController = TextEditingController(text: NotificationHandler().walkLength().toString());
   }
 
   @override
@@ -110,8 +109,9 @@ class _SettingScreenState extends State<SettingScreen> {
                                       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                                       child: NumberPicker(
                                       value: _value,
-                                      minValue: 10,
-                                      maxValue: 100,
+                                      minValue: 20,
+                                      maxValue: 120,
+                                      step: 5,
                                       onChanged: (value) => setState(() => _value = value),
                                     ),
                                     )],
