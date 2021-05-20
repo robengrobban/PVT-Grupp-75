@@ -46,6 +46,10 @@ class NotificationHandler {
 
   final int _weatherThreshold = 7; // 7
 
+  bool _initialized = false;
+
+  String _payload;
+
   /// Factory constructor to facilitate the Singleton design principle.
   factory NotificationHandler() {
     return _instance;
@@ -53,9 +57,12 @@ class NotificationHandler {
 
   /// Initialising the NotificationHandler object.
   Future<void> init() async {
+    if ( _initialized ) {
+      return;
+    }
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings("@drawable/new_more_and_better_improved_logo");
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
-    _notifications.initialize(initializationSettings);
+    _notifications.initialize(initializationSettings, onSelectNotification: onNotificationOpen);
     tz.initializeTimeZones();
 
     _notificationDetails = const NotificationDetails(
@@ -67,6 +74,8 @@ class NotificationHandler {
             importance: Importance.high,
             fullScreenIntent: true));
 
+    _payload = (await _notifications.getNotificationAppLaunchDetails()).payload;
+
     wipeNotifications();
 
     _preferences = await SharedPreferences.getInstance();
@@ -74,6 +83,20 @@ class NotificationHandler {
 
     _notificationsLeft = _maxNotifications;
     _timeRequired = _walkLength + _defaultOffset;
+    _initialized = true;
+  }
+
+  Future onNotificationOpen(String payload) async {
+    _payload = payload;
+  }
+
+  String payload() {
+    return _payload;
+  }
+
+  Future<void> debugLaunch() async {
+    NotificationAppLaunchDetails details = await _notifications.getNotificationAppLaunchDetails();
+    print(details.didNotificationLaunchApp.toString() + " 🐜 " + details.payload.toString()) ;
   }
 
   void _saveNotificationSettings() {
@@ -155,7 +178,7 @@ class NotificationHandler {
       if ( spot.durationInMinutes() < _timeRequired ) {
         continue;
       }
-      if ( _affectedByWeather && !(weatherData[ spot.startTime().hour ].forecast() <= _weatherThreshold) ) {
+      if ( _affectedByWeather && weatherData[ spot.startTime().hour ] != null && !(weatherData[ spot.startTime().hour ].forecast() <= _weatherThreshold) ) {
         continue;
       }
 
@@ -165,7 +188,7 @@ class NotificationHandler {
 
       tz.TZDateTime time = tz.TZDateTime.from( spot.startTime(), tz.local );
 
-      schedule(id, title, message, time);
+      schedule(id, title, message, time, payload: _walkLength.toString());
 
       _notificationsLeft--;
 
@@ -195,21 +218,22 @@ class NotificationHandler {
   }
 
   /// Schedule a notification.
-  void schedule(int id, String title, String message, tz.TZDateTime time) async {
+  void schedule(int id, String title, String message, tz.TZDateTime time, {String payload}) async {
     await _notifications.zonedSchedule(
         id,
         title,
         message,
         time,
         _notificationDetails,
+        payload: payload,
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime);
   }
 
   /// Send a notification, instantly
-  void send(int id, String title, String message) async {
-    await _notifications.show(id, title, message, _notificationDetails, payload: '');
+  void send(int id, String title, String message, {String payload}) async {
+    await _notifications.show(id, title, message, _notificationDetails, payload: payload);
   }
 
   bool affectedByWeather() {

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/models/Route.dart';
+import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/models/pair.dart';
 import 'package:flutter_app/models/weather_handler.dart';
 import 'package:flutter_app/theme.dart' as Theme;
@@ -17,8 +18,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:weather_icons/weather_icons.dart';
 
 class HomeScreen extends StatefulWidget {
-  final int initialDurationInMinutes;
-  HomeScreen({this.initialDurationInMinutes});
+  final String payload;
+  HomeScreen({this.payload});
   @override
   State createState() => _HomeScreenState();
 }
@@ -36,10 +37,14 @@ class _HomeScreenState extends State<HomeScreen> {
   int _steps = 3526;
   double _temperature = 17.1;
   IconData _weatherIcon = Icons.cloud_off_outlined;
+  int initialDurationInMinutes;
 
   @override
   initState() {
     super.initState();
+    if ( widget.payload.isNotEmpty && int.tryParse(widget.payload) != null ) {
+      initialDurationInMinutes = int.parse(widget.payload);
+    }
     WeatherHandler().currentWeather().then((value) {
       _temperature = value.temperature();
       print(_temperature);
@@ -55,10 +60,10 @@ class _HomeScreenState extends State<HomeScreen> {
     context.loaderOverlay.show();
     _currentPosition = LatLng(58.9142, 17.9380);
 
-    if(widget.initialDurationInMinutes == null) {
+    if(initialDurationInMinutes == null) {
       _getDurationFromPreferences();
     } else {
-      _preferredDuration = widget.initialDurationInMinutes;
+      _preferredDuration = initialDurationInMinutes;
     }
     _getAttractionFromPreferences();
     await fetchRoute(_currentPosition, _preferredDuration, _preferredAttraction);
@@ -427,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   }
 
-  void fetchRoute(
+  Future<void> fetchRoute(
       LatLng startPosition, int durationInMinutes, String attraction) async {
     attraction.replaceAll(" ", "_");
     _numberOfRouteTries++;

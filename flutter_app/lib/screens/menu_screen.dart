@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/account_handler.dart';
+import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/models/weather_handler.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 import 'package:flutter_app/widgets/menu_item.dart';
@@ -72,6 +73,9 @@ class _MenuScreenState extends State<MenuScreen> {
                               print("Temperature");
                               print(value.temperature());
                             });
+                          }),
+                          MenuItem(Icons.construction, "DEBUG FORCE REBUILD", _itemPadding, () {
+                            Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
                           })
                         ],
                       )

@@ -16,10 +16,11 @@ import 'package:flutter_app/theme.dart' as Theme;
 import 'package:custom_loading_indicator/custom_loading_indicator.dart';
 
 void main() async {
-  runApp(WalkInProgressApp());
-  LocationHandler().init();
+  WidgetsFlutterBinding.ensureInitialized();
   AccountHandler().init();
-  NotificationHandler().init();
+  await LocationHandler().init();
+  await NotificationHandler().init();
+  runApp(WalkInProgressApp());
 }
 
 class WalkInProgressApp extends StatelessWidget {
@@ -32,7 +33,7 @@ class WalkInProgressApp extends StatelessWidget {
         theme: walkInProgressThemeData,
         initialRoute: '/home',
         routes: {
-          '/home': (context) => HomeScreen(),
+          '/home': (context) => HomeScreen(payload: NotificationHandler().payload() ?? ""),
           '/login': (context) => LoginScreen(),
           '/menu': (context) => MenuScreen(),
           '/settings': (context) => SettingScreen(),
@@ -40,7 +41,7 @@ class WalkInProgressApp extends StatelessWidget {
           '/success': (context) => SuccessScreen(),
           '/camera': (context) => CameraScreen(),
           '/camera-previews': (context) => PreviewScreen(),
-        },
+        }
       ),
       overlayOpacity: 0.5,
       overlayColor: Theme.AppColors.brandOrange[900],
