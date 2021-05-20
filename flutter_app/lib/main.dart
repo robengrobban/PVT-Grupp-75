@@ -29,7 +29,7 @@ class WalkInProgressApp extends StatelessWidget {
     return GlobalLoaderOverlay(
       child: MaterialApp(
         title: 'Walk in Progress',
-        theme: WalkInProgressThemeData,
+        theme: walkInProgressThemeData,
         initialRoute: '/home',
         routes: {
           '/home': (context) => HomeScreen(),

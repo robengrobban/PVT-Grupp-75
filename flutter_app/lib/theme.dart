@@ -1,7 +1,7 @@
 
 import 'package:flutter/material.dart';
 
-final ThemeData WalkInProgressThemeData = new ThemeData(
+final ThemeData walkInProgressThemeData = new ThemeData(
   primarySwatch: MaterialColor(AppColors.brandPink[500].value, AppColors.brandPink),
   primaryColor: AppColors.brandPink[500],
   accentColor: AppColors.brandOrange[500],
