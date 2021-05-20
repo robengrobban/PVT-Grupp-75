@@ -16,7 +16,8 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
     AccountHandler().onOneTimeUserChange(() {
       if ( AccountHandler().isLoggedIn() ) {
-        Navigator.of(context).pushReplacementNamed("/home");
+        //Navigator.of(context).pushReplacementNamed("/home");
+        Navigator.of(context).popUntil(ModalRoute.withName('/home'));
       }
     });
   }

@@ -137,7 +137,8 @@ class _MenuScreenState extends State<MenuScreen> {
                   child: Text('Logga ut'),
                   onPressed: () {
                     AccountHandler().handleSignOut();
-                    Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+                    //Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+                    Navigator.of(context).popUntil(ModalRoute.withName('/home'));
                   },
                 )
             ),
