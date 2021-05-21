@@ -90,6 +90,8 @@ class _MenuScreenState extends State<MenuScreen> {
 
   void _openProfile() {
     print(AccountHandler().isLoggedIn().toString());
+    print(AccountHandler().id().toString());
+    AccountHandler().debugThingy();
   }
 
   void _openAchievements() {

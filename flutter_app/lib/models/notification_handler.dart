@@ -94,11 +94,6 @@ class NotificationHandler {
     return _payload;
   }
 
-  Future<void> debugLaunch() async {
-    NotificationAppLaunchDetails details = await _notifications.getNotificationAppLaunchDetails();
-    print(details.didNotificationLaunchApp.toString() + " 🐜 " + details.payload.toString()) ;
-  }
-
   void _saveNotificationSettings() {
 
     _preferences.setInt("maxNotifications", _maxNotifications);

@@ -28,6 +28,9 @@ class AccountHandler {
   /// The current user
   GoogleSignInAccount _currentUser;
 
+  /// The ID for the account
+  int _id;
+
   /// List of events on this users calendar
   List<Event> _events = List.empty(growable: true);
 
@@ -72,6 +75,14 @@ class AccountHandler {
     }
   }
 
+  int id() {
+    return _id;
+  }
+
+  void debugThingy() async {
+    print((await _currentUser.authentication).accessToken.toString());
+  }
+
   /// Sign out the user using google.
   /// This will also wipe all pending notifications.
   Future<void> handleSignOut() async {
@@ -81,7 +92,11 @@ class AccountHandler {
 
   /// Creates a entry for the user in the database
   void _registerUser(String email) async {
-    _createAccount(email);
+    http.Response response = await _createAccount(email);
+    if ( response.statusCode == 409 || response.statusCode == 200 ) {
+      Map<String, dynamic> accountInfo = json.decode(response.body);
+      _id = accountInfo['id'];
+    }
   }
 
   /// Sends a post request to create account
@@ -103,6 +118,7 @@ class AccountHandler {
   void _changeUserActions() async {
     _events = List.empty();
     _lastEventsFetched = null;
+    _id = null;
     await NotificationHandler().generateCalendarNotifications();
     if ( isLoggedIn() ) {
       _registerUser(_currentUser.email);

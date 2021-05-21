@@ -42,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   initState() {
     super.initState();
-    if ( widget.payload.isNotEmpty && int.tryParse(widget.payload) != null ) {
+    if ( widget.payload != null && widget.payload.isNotEmpty && int.tryParse(widget.payload) != null ) {
       initialDurationInMinutes = int.parse(widget.payload);
     }
     WeatherHandler().currentWeather().then((value) {
