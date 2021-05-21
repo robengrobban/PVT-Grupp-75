@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/widgets/settings_numberpicker.dart';
-import 'package:numberpicker/numberpicker.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 
 class SettingScreen extends StatefulWidget {
@@ -12,19 +10,14 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
 
-  //TextEditingController _maxNotificationsController;
   int _walkLengthValue = NotificationHandler().walkLength();
   int _noNotificationsValue = NotificationHandler().maxNotifications();
-  //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _currentAffectedByWeather;
 
 
   @override
   void initState() {
     super.initState();
-    //_maxNotificationsController = TextEditingController(text: NotificationHandler().maxNotifications().toString());
-    //_walkLengthController = TextEditingController(text: NotificationHandler().walkLength().toString());
     _currentAffectedByWeather = NotificationHandler().affectedByWeather();
   }
 
@@ -96,14 +89,6 @@ class _SettingScreenState extends State<SettingScreen> {
                                     Container(
                                       padding: EdgeInsets.all(12),
                                       alignment: Alignment.center,
-                                      /*decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                          color: Colors.black,
-                                          width: 1,
-                                        ),
-                                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                                      ),*/
                                       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                                       child: Container(
                                         decoration: BoxDecoration(
