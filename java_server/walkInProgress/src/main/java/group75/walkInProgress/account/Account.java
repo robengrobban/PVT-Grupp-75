@@ -17,7 +17,7 @@ class Account implements Serializable {
     private String email;
 
     @Transient
-    private String token;
+    private transient String token;
 
     // Constructors
     public Account() {}
