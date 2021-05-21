@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/models/notification_handler.dart';
+import 'package:flutter_app/widgets/settings_numberpicker.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 
@@ -68,26 +69,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                             color: Colors.white,
                                             fontSize: 16),
                                       ),
-                                      Container(
-                                        padding: EdgeInsets.all(12),
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          border: Border.all(
-                                            color: Colors.black,
-                                            width: 1,
-                                          ),
-                                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                                        ),
-                                        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                                        child: NumberPicker(
-                                          value: _noNotificationsValue,
-                                          minValue: 0,
-                                          maxValue: 3,
-                                          axis: Axis.horizontal,
-                                          onChanged: (value) => setState(() => _noNotificationsValue = value),
-                                        ),
-                                      )
+                                      SettingsNumberPicker(_noNotificationsValue, 0, 3, _setNoNotifications, axis: Axis.horizontal,),
                                     ]
                                 ),
                                 Column(
@@ -99,26 +81,8 @@ class _SettingScreenState extends State<SettingScreen> {
                                         fontSize: 16,
                                     )
                                     ),
-                                    Container(
-                                      padding: EdgeInsets.all(12),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        border: Border.all(
-                                          color: Colors.black,
-                                          width: 1,
-                                        ),
-                                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                                      ),
-                                      margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                                      child: NumberPicker(
-                                      value: _walkLengthValue,
-                                      minValue: 20,
-                                      maxValue: 120,
-                                      step: 5,
-                                      onChanged: (value) => setState(() => _walkLengthValue = value),
-                                    ),
-                                    )],
+                                    SettingsNumberPicker(_walkLengthValue, 20, 120, _setWalkLength, stepSize: 5,)
+                                    ],
                                 ),
                                 Column(
                                   children: <Widget>[
@@ -193,6 +157,17 @@ class _SettingScreenState extends State<SettingScreen> {
     return _currentAffectedByWeather ? Icons.cloud_outlined : Icons.cloud_off_outlined;
   }
 
+  void _setNoNotifications(int newValue){
+    setState(() {
+      _noNotificationsValue = newValue;
+    });
+  }
+
+  void _setWalkLength(int newValue){
+    setState(() {
+      _walkLengthValue = newValue;
+    });
+  }
   void _saveActions() {
     try {
       int newMaxNotifications = _noNotificationsValue;
