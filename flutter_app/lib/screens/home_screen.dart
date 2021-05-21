@@ -5,7 +5,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app/models/Route.dart';
-import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/models/pair.dart';
 import 'package:flutter_app/models/weather_handler.dart';
 import 'package:flutter_app/theme.dart' as Theme;
@@ -15,7 +14,6 @@ import 'package:location/location.dart';
 import 'package:http/http.dart' as http;
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:weather_icons/weather_icons.dart';
 
 class HomeScreen extends StatefulWidget {
   final String payload;
@@ -145,6 +143,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onMapCreated: (controller) async {
                   _mapController = controller;
                   _mapController.setMapStyle(_mapStyle);
+                  _moveMapToBound();
                   setState(() {
                     _getCurrentLocation();
                   });
@@ -249,18 +248,21 @@ class _HomeScreenState extends State<HomeScreen> {
 
   }
 
-  void _moveMapToBound() {
-    print("nELa: " +
-        _currentRoute.northEastBound.latitude.toString() +
-        " neLo " +
-        _currentRoute.northEastBound.longitude.toString());
-    print("nELa: " +
-        _currentRoute.southWestBound.latitude.toString() +
-        " neLo " +
-        _currentRoute.southWestBound.longitude.toString());
-    _mapController.animateCamera(CameraUpdate.newLatLngBounds(
-        LatLngBounds(southwest: _currentRoute.southWestBound, northeast: _currentRoute.northEastBound),
-        100));
+  Future<void> _moveMapToBound() async {
+    if (_mapController != null && _currentRoute != null) {
+      await _mapController.getVisibleRegion();
+      print("nELa: " +
+          _currentRoute.northEastBound.latitude.toString() +
+          " neLo " +
+          _currentRoute.northEastBound.longitude.toString());
+      print("nELa: " +
+          _currentRoute.southWestBound.latitude.toString() +
+          " neLo " +
+          _currentRoute.southWestBound.longitude.toString());
+      _mapController.animateCamera(CameraUpdate.newLatLngBounds(
+          LatLngBounds(southwest: _currentRoute.southWestBound, northeast: _currentRoute.northEastBound),
+          100));
+    }
   }
 
   Future<Pair> _showWalkPreferenceDialog() {
