@@ -11,17 +11,18 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreenState extends State<SettingScreen> {
 
-  TextEditingController _maxNotificationsController;
-  int _value = NotificationHandler().walkLength();
+  //TextEditingController _maxNotificationsController;
+  int _walkLengthValue = NotificationHandler().walkLength();
+  int _noNotificationsValue = NotificationHandler().maxNotifications();
   //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  //final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _currentAffectedByWeather;
 
 
   @override
   void initState() {
     super.initState();
-    _maxNotificationsController = TextEditingController(text: NotificationHandler().maxNotifications().toString());
+    //_maxNotificationsController = TextEditingController(text: NotificationHandler().maxNotifications().toString());
     //_walkLengthController = TextEditingController(text: NotificationHandler().walkLength().toString());
     _currentAffectedByWeather = NotificationHandler().affectedByWeather();
   }
@@ -68,23 +69,23 @@ class _SettingScreenState extends State<SettingScreen> {
                                             fontSize: 16),
                                       ),
                                       Container(
+                                        padding: EdgeInsets.all(12),
                                         alignment: Alignment.center,
-                                        padding: const EdgeInsets.all(12),
-                                        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                                         decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(
-                                              color: Colors.black,
-                                              width: 1,
-                                            )
+                                          color: Colors.white,
+                                          border: Border.all(
+                                            color: Colors.black,
+                                            width: 1,
+                                          ),
+                                          borderRadius: BorderRadius.all(Radius.circular(12)),
                                         ),
-                                        child: TextField(
-                                            controller: _maxNotificationsController,
-                                            keyboardType: TextInputType.number,
-                                            inputFormatters: <TextInputFormatter>[
-                                              FilteringTextInputFormatter.digitsOnly
-                                            ]
+                                        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
+                                        child: NumberPicker(
+                                          value: _noNotificationsValue,
+                                          minValue: 0,
+                                          maxValue: 3,
+                                          axis: Axis.horizontal,
+                                          onChanged: (value) => setState(() => _noNotificationsValue = value),
                                         ),
                                       )
                                     ]
@@ -111,11 +112,11 @@ class _SettingScreenState extends State<SettingScreen> {
                                       ),
                                       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 0),
                                       child: NumberPicker(
-                                      value: _value,
+                                      value: _walkLengthValue,
                                       minValue: 20,
                                       maxValue: 120,
                                       step: 5,
-                                      onChanged: (value) => setState(() => _value = value),
+                                      onChanged: (value) => setState(() => _walkLengthValue = value),
                                     ),
                                     )],
                                 ),
@@ -194,8 +195,8 @@ class _SettingScreenState extends State<SettingScreen> {
 
   void _saveActions() {
     try {
-      int newMaxNotifications = int.parse(_maxNotificationsController.text);
-      int newWalkLength = _value;
+      int newMaxNotifications = _noNotificationsValue;
+      int newWalkLength = _walkLengthValue;
       bool newAffectedByWeather = _currentAffectedByWeather;
       NotificationHandler().updateSettings(newMaxNotifications, newWalkLength, newAffectedByWeather);
       final snackBar = SnackBar(
