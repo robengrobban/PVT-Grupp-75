@@ -83,6 +83,10 @@ class AccountHandler {
     print((await _currentUser.authentication).accessToken.toString());
   }
 
+  Future<String> accessToken() async {
+    return (await _currentUser.authentication).accessToken;
+  }
+
   /// Sign out the user using google.
   /// This will also wipe all pending notifications.
   Future<void> handleSignOut() async {
