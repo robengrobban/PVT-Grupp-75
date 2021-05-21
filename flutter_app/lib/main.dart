@@ -16,7 +16,7 @@ import 'package:flutter_app/theme.dart' as Theme;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  AccountHandler().init();
+  await AccountHandler().init();
   await LocationHandler().init();
   await NotificationHandler().init();
   runApp(WalkInProgressApp());

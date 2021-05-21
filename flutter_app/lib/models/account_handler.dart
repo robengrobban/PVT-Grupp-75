@@ -58,12 +58,12 @@ class AccountHandler {
     });
   }
 
-  void init() {
+  Future<void> init() async {
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       _currentUser = account;
       _changeUserActions();
     });
-    _googleSignIn.signInSilently();
+    await _googleSignIn.signInSilently();
   }
 
   /// Sign in the user using google.
@@ -79,11 +79,11 @@ class AccountHandler {
     return _id;
   }
 
-  void debugThingy() async {
-    print((await _currentUser.authentication).accessToken.toString());
-  }
-
   Future<String> accessToken() async {
+    bool valid = await _isTokenStillValid();
+    if ( !valid ) {
+      await _currentUser.clearAuthCache();
+    }
     return (await _currentUser.authentication).accessToken;
   }
 
@@ -115,6 +115,17 @@ class AccountHandler {
         'email': email,
         'token': token
       }),
+    );
+  }
+
+  Future<bool> _isTokenStillValid() async {
+    final http.Response response = await _checkToken((await _currentUser.authentication).accessToken);
+    return response.statusCode == 200 && response.body == "true";
+  }
+
+  Future<http.Response> _checkToken(String token) async {
+    return http.get(
+      Uri.https("group5-75.pvt.dsv.su.se", "/account/token", {"token": token})
     );
   }
 
