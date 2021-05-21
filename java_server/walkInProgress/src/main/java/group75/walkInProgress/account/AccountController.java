@@ -44,7 +44,7 @@ public class AccountController {
     }
 
     @GetMapping(path="/exists")
-    public @ResponseBody ResponseEntity<Boolean> exsistsAccount(@RequestParam String email) {
+    public @ResponseBody ResponseEntity<Boolean> existsAccount(@RequestParam String email) {
 
         return new ResponseEntity<>(accountRepository.existsAccountByEmail(email), HttpStatus.OK);
 
