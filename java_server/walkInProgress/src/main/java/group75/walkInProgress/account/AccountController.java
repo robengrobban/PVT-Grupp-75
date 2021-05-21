@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path="/account")
 public class AccountController {
@@ -20,7 +22,9 @@ public class AccountController {
         boolean exists = accountRepository.existsAccountByEmail(email);
 
         if ( exists ) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
+            // TODO: Update to use service "/lookup"
+            account = accountRepository.findAccountByEmail(email).get(0);
+            return new ResponseEntity<>(account, HttpStatus.CONFLICT);
         }
 
         account = new Account();
@@ -30,13 +34,19 @@ public class AccountController {
         return new ResponseEntity<>(account, HttpStatus.OK);
     }
 
+    @GetMapping(path="/lookup")
+    public @ResponseBody ResponseEntity<Account> findAccountByEmail(String email) {
+        Account account = accountRepository.findAccountByEmail(email).get(0);
+        return new ResponseEntity<>(account, HttpStatus.OK);
+    }
+    
     @GetMapping(path="/all")
     public @ResponseBody Iterable<Account> getAllAccounts() {
         return accountRepository.findAll();
     }
 
     @GetMapping(path="/exists")
-    public @ResponseBody ResponseEntity<Boolean> findAccount(@RequestParam String email) {
+    public @ResponseBody ResponseEntity<Boolean> exsistsAccount(@RequestParam String email) {
 
         return new ResponseEntity<>(accountRepository.existsAccountByEmail(email), HttpStatus.OK);
 
