@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(path="/account")
 public class AccountController {
@@ -17,6 +19,17 @@ public class AccountController {
 
     @PostMapping(path="/create",consumes="application/json",produces="application/json")
     public @ResponseBody ResponseEntity<Account> saveAccount(@RequestBody Account account) {
+
+        final String target = "https://group5-75.pvt.dsv.su.se/account/token?token="+account.getToken();
+        final RestTemplate restTemplate = new RestTemplate();
+        try {
+            Boolean response = restTemplate.getForObject(target, Boolean.class);
+            if ( !response ) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (RestClientException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
         // TODO: Update to use service "/exists"
         String email = account.getEmail();
@@ -38,7 +51,7 @@ public class AccountController {
     @GetMapping(path="/token")
     public @ResponseBody ResponseEntity<Boolean> validToken(String token) {
         final String target = "https://oauth2.googleapis.com/tokeninfo?access_token="+token;
-        RestTemplate restTemplate = new RestTemplate();
+        final RestTemplate restTemplate = new RestTemplate();
         try {
             GoogleToken response = restTemplate.getForObject(target, GoogleToken.class);
             int expires = Integer.parseInt(response.expires_in);
@@ -52,20 +65,54 @@ public class AccountController {
     }
 
     @GetMapping(path="/lookup")
-    public @ResponseBody ResponseEntity<Account> findAccountByEmail(String email) {
-        final String target = "";
+    public @ResponseBody ResponseEntity<Account> findAccountByEmail(String email, String token) {
+        final String target = "https://group5-75.pvt.dsv.su.se/account/token?token="+token;
+        final RestTemplate restTemplate = new RestTemplate();
+        try {
+            Boolean response = restTemplate.getForObject(target, Boolean.class);
+            if ( !response ) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (RestClientException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
 
-        Account account = accountRepository.findAccountByEmail(email).get(0);
-        return new ResponseEntity<>(account, HttpStatus.OK);
+        List<Account> account = accountRepository.findAccountByEmail(email);
+        if ( account == null || account.isEmpty() ) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(account.get(0), HttpStatus.OK);
     }
     
     @GetMapping(path="/all")
-    public @ResponseBody Iterable<Account> getAllAccounts() {
-        return accountRepository.findAll();
+    public @ResponseBody ResponseEntity<Iterable<Account>> getAllAccounts(@RequestParam String token) {
+        final String target = "https://group5-75.pvt.dsv.su.se/account/token?token="+token;
+        final RestTemplate restTemplate = new RestTemplate();
+        try {
+            Boolean response = restTemplate.getForObject(target, Boolean.class);
+            if ( !response ) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (RestClientException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
+        return new ResponseEntity<>(accountRepository.findAll(), HttpStatus.OK);
     }
 
     @GetMapping(path="/exists")
-    public @ResponseBody ResponseEntity<Boolean> existsAccount(@RequestParam String email) {
+    public @ResponseBody ResponseEntity<Boolean> existsAccount(@RequestParam String email, String token) {
+        final String target = "https://group5-75.pvt.dsv.su.se/account/token?token="+token;
+        final RestTemplate restTemplate = new RestTemplate();
+        try {
+            Boolean response = restTemplate.getForObject(target, Boolean.class);
+            if ( !response ) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+        } catch (RestClientException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+
         return new ResponseEntity<>(accountRepository.existsAccountByEmail(email), HttpStatus.OK);
     }
 

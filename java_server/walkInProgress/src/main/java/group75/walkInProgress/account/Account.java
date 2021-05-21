@@ -1,5 +1,7 @@
 package group75.walkInProgress.account;
 
+import org.springframework.data.annotation.Transient;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -13,6 +15,9 @@ class Account implements Serializable {
 
     @Column(unique=true, nullable=false)
     private String email;
+
+    @Transient
+    private String token;
 
     // Constructors
     public Account() {}
@@ -34,9 +39,20 @@ class Account implements Serializable {
         this.email = email;
     }
 
-    @Override
-    public String toString() {
-        return "ID: " + this.id + "\tEMAIL: " + this.email;
+    public String getToken() {
+        return token;
     }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", token='" + token + '\'' +
+                '}';
+    }
 }

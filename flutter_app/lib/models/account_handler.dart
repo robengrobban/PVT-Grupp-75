@@ -95,8 +95,8 @@ class AccountHandler {
   }
 
   /// Creates a entry for the user in the database
-  void _registerUser(String email) async {
-    http.Response response = await _createAccount(email);
+  void _registerUser(String email, String token) async {
+    http.Response response = await _createAccount(email, token);
     if ( response.statusCode == 409 || response.statusCode == 200 ) {
       Map<String, dynamic> accountInfo = json.decode(response.body);
       _id = accountInfo['id'];
@@ -105,14 +105,15 @@ class AccountHandler {
 
   /// Sends a post request to create account
   /// Returns the response.
-  Future<http.Response> _createAccount(String email) async {
+  Future<http.Response> _createAccount(String email, String token) async {
     return http.post(
       Uri.https("group5-75.pvt.dsv.su.se", "/account/create"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: json.encode(<String, String>{
-        'email': email
+        'email': email,
+        'token': token
       }),
     );
   }
@@ -125,7 +126,7 @@ class AccountHandler {
     _id = null;
     await NotificationHandler().generateCalendarNotifications();
     if ( isLoggedIn() ) {
-      _registerUser(_currentUser.email);
+      _registerUser(_currentUser.email, (await _currentUser.authentication).accessToken);
     }
   }
 
