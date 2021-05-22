@@ -5,6 +5,7 @@ import 'package:flutter_app/models/account_handler.dart';
 import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/models/weather_handler.dart';
 import 'package:flutter_app/theme.dart' as Theme;
+import 'package:flutter_app/widgets/alert_text_button.dart';
 import 'package:flutter_app/widgets/menu_item.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -38,51 +39,51 @@ class _MenuScreenState extends State<MenuScreen> {
         body: Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Theme.AppColors.brandPink[500],
-                    Theme.AppColors.brandOrange[500]
-                  ],
-                ),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Theme.AppColors.brandPink[500],
+                  Theme.AppColors.brandOrange[500]
+                ],
+              ),
             ),
             child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints viewportConstraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: viewportConstraints.maxHeight,
-                    ),
-                    child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          MenuItem(Icons.person, "Profil", _itemPadding, _openProfile),
-                          MenuItem(Icons.military_tech, "Framsteg", _itemPadding, _openAchievements),
-                          MenuItem(Icons.analytics, "Veckosummering", _itemPadding, _openWeeklySummary),
-                          _getAccountButton(),
-                          MenuItem(Icons.notifications, "DEBUG NOTIFICATION", _itemPadding, () {
-                            Navigator.of(context).pushNamed("/debug-noti");
-                          }),
-                          MenuItem(Icons.cloud_off, "DEBUG WEATHER", _itemPadding, () {
-                            WeatherHandler().todaysWeather();
-                            WeatherHandler().currentWeather().then((value) {
-                              print("Temperature");
-                              print(value.temperature());
-                            });
-                          }),
-                          MenuItem(Icons.construction, "DEBUG FORCE REBUILD", _itemPadding, () {
-                            Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-                          })
-                        ],
+                builder: (BuildContext context, BoxConstraints viewportConstraints) {
+                  return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: viewportConstraints.maxHeight,
+                        ),
+                        child: Container(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                MenuItem(Icons.person, "Profil", _itemPadding, _openProfile),
+                                MenuItem(Icons.military_tech, "Framsteg", _itemPadding, _openAchievements),
+                                MenuItem(Icons.analytics, "Veckosummering", _itemPadding, _openWeeklySummary),
+                                _getAccountButton(),
+                                MenuItem(Icons.notifications, "DEBUG NOTIFICATION", _itemPadding, () {
+                                  Navigator.of(context).pushNamed("/debug-noti");
+                                }),
+                                MenuItem(Icons.cloud_off, "DEBUG WEATHER", _itemPadding, () {
+                                  WeatherHandler().todaysWeather();
+                                  WeatherHandler().currentWeather().then((value) {
+                                    print("Temperature");
+                                    print(value.temperature());
+                                  });
+                                }),
+                                MenuItem(Icons.construction, "DEBUG FORCE REBUILD", _itemPadding, () {
+                                  Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
+                                })
+                              ],
+                            )
+                        ),
                       )
-                    ),
-                  )
-                );
-              }
+                  );
+                }
             )
         )
     );
@@ -125,38 +126,21 @@ class _MenuScreenState extends State<MenuScreen> {
   Future<void> _showLogoutAlert() async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: true, // user must tap button!
+      barrierDismissible: true, // user must'nt tap button!
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text('Vill du logga ut?'),
           content: SingleChildScrollView(
-            child: /*ListBody(
-              children: <Widget>[
-                Text('This is a demo alert dialog.'),
-              ],
-            ),*/null
+              child: null
           ),
           actions: <Widget>[
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: ElevatedButton(
-                  child: Text('Logga ut'),
-                  onPressed: () {
-                    AccountHandler().handleSignOut();
-                    //Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-                    Navigator.of(context).popUntil(ModalRoute.withName('/home'));
-                  },
-                )
+            AlertTextButton('Logga ut', () {
+              AccountHandler().handleSignOut();
+              Navigator.of(context).popUntil(ModalRoute.withName('/home'));
+            },
+              true,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: TextButton(
-                child: Text('Stanna'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            )
+            AlertTextButton('Stanna', () => Navigator.of(context).pop(), false),
           ],
         );
       },
