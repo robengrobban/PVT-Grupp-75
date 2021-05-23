@@ -29,15 +29,13 @@ public class Route {
 	  private int durationInSeconds;
 	  private LatLng northEastBound;
 	  private LatLng southWestBound;
-	  private double bearingToFirstPoint;
 
 
-	Route(DirectionsRoute directionsResult, List<LatLng> waypoints, LatLng startPoint, double bearingToFirstPoint) throws RouteException {
+	Route(DirectionsRoute directionsResult, List<LatLng> waypoints, LatLng startPoint) throws RouteException {
 		  this.northEastBound = directionsResult.bounds.northeast;
 		  this.southWestBound = directionsResult.bounds.southwest;
 		  this.waypoints = waypoints;
 		  this.startPoint = startPoint;
-		  this.bearingToFirstPoint = bearingToFirstPoint;
 		  polyCoordinates = new ArrayList<LatLng>();
 		  for (var leg : directionsResult.legs) {
 			  for (var step : leg.steps) {
@@ -119,15 +117,6 @@ public class Route {
 
 	public void setSouthWestBound(LatLng southWestBound) {
 		this.southWestBound = southWestBound;
-	}
-	
-	  public double getBearingToFirstPoint() {
-		return bearingToFirstPoint;
-	}
-
-
-	public void setBearingToFirstPoint(double bearingToFirstPoint) {
-		this.bearingToFirstPoint = bearingToFirstPoint;
 	}
 	
 	

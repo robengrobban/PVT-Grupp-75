@@ -1,6 +1,8 @@
 package group75.walkInProgress.route;
 
 import java.io.IOException;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.LatLng;
@@ -32,6 +34,16 @@ public class RouteService implements IRouteService {
 		
 		return findRoute(generator, durationInMinutes);
 
+	}
+	
+	
+	@Override
+	public Route getRoute(LatLng startPoint, List<LatLng> wayPoints) throws ApiException, InterruptedException, IOException, RouteException, TypeException {
+		if(startPoint == null) {
+			throw new IllegalArgumentException("StartPoint can't be null");
+		}
+
+		return new RouteGetter().getRoute(startPoint, wayPoints);
 	}
 	
 	private Route findRoute(RouteGenerator generator, Double durationInMinutes) throws ApiException, InterruptedException, IOException, RouteException{

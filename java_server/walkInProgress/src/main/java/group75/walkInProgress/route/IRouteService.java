@@ -1,6 +1,7 @@
 package group75.walkInProgress.route;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.LatLng;
@@ -41,6 +42,9 @@ public interface IRouteService {
 	 * @throws TypeException if the supplied type is not supported 
 	 */
 	Route getRoute(LatLng startPoint, double durationInMinutes, double radians, String type)
+			throws ApiException, InterruptedException, IOException, RouteException, TypeException;
+	
+	Route getRoute(LatLng startPoint, List<LatLng> wayPoints)
 			throws ApiException, InterruptedException, IOException, RouteException, TypeException;
 
 }
