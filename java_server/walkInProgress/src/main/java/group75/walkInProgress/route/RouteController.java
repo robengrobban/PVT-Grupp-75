@@ -25,14 +25,8 @@ import com.google.maps.model.LatLng;
 public class RouteController {
 
 	@Autowired
-	private RouteRepository routeRepository;
-	@Autowired
 	private IRouteService service;
 
-	@PostMapping(path = "/save", consumes = "application/json", produces = "application/json")
-	public @ResponseBody Route saveRoute(@RequestBody Route route) {
-		return routeRepository.save(route);
-	}
 
 	/**
 	 * 	 * Ties to find a circular walking route starting and ending at the
