@@ -31,7 +31,7 @@ class RouteHandler {
       var uri = Uri(
           scheme: 'https',
           host: 'group5-75.pvt.dsv.su.se',
-          path: 'route/generate',
+          path: 'route/generate/bearing',
           query:
           'lat=${startPosition.latitude}&lng=${startPosition.longitude}&duration=$durationInMinutes&radians=$angle${attraction != null ? "&type=$attraction" : ""}');
       print(uri.toString());
