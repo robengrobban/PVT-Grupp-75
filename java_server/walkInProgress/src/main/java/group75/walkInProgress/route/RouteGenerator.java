@@ -50,7 +50,7 @@ public class RouteGenerator {
 			throw new IllegalArgumentException("Duration can't be negative");
 		}
 		this.startPoint = startPoint;
-		this.walkingDistanceInKm = (durationInMinutes/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING;;
+		this.walkingDistanceInKm = (durationInMinutes/MINUTES_PER_HOUR)*KM_PER_HOUR_WALKING;
 		this.bearingToFirstPointInRadians = bearingToFirstPointInRadians;
 	}
 	
@@ -109,7 +109,6 @@ public class RouteGenerator {
 		double distance = walkingDistanceInKm * crowFactor;
 		waypoints.addAll(generateWaypoints(distance));
 		Route route = getRouteFromGoogle();
-		System.out.println("Try number " + getNumberOfTries() + " gave duration " + route.getDurationInSeconds()/60 + " with crowfactor " + crowFactor);
 		return route;
 	}
 	
@@ -138,7 +137,7 @@ public class RouteGenerator {
 			.avoid(RouteRestriction.FERRIES, RouteRestriction.HIGHWAYS)
 			.optimizeWaypoints(false);
 		DirectionsResult result = sendDirectionsRequest(request);
-		return new Route(result.routes[0], waypoints, startPoint);
+		return new Route(result.routes[0], waypoints, startPoint, bearingToFirstPointInRadians);
 	}
 	
 	DirectionsApiRequest getDirectionsRequest() {
@@ -154,11 +153,11 @@ public class RouteGenerator {
 			throw new IllegalArgumentException("Walk distance can't be negative");
 		}
 		List<LatLng> points = new ArrayList<LatLng>(); 
-		
+		double bearing = bearingToFirstPointInRadians;
 		for (int i = 0; i < NUMBER_OF_GENERATED_WAYPOINTS; i++) {
 			double legDistance = walkDistanceInKm / NUMBER_OF_LEGS;
-			points.add(CALCULATOR.getPointWithinDistanceFrom( startPoint, legDistance, bearingToFirstPointInRadians)); 
-			bearingToFirstPointInRadians += RADIANS_BETWEEN_LEGS; 
+			points.add(CALCULATOR.getPointWithinDistanceFrom( startPoint, legDistance, bearing)); 
+			bearing += RADIANS_BETWEEN_LEGS; 
 		} 
 		
 		return points;
