@@ -54,6 +54,7 @@ public class AccountController {
         final RestTemplate restTemplate = new RestTemplate();
         try {
             GoogleToken response = restTemplate.getForObject(target, GoogleToken.class);
+            System.out.println(response);
             int expires = Integer.parseInt(response.expires_in);
             if ( expires <= 0 ) {
                 return new ResponseEntity<>(false, HttpStatus.OK);
@@ -61,6 +62,30 @@ public class AccountController {
             return new ResponseEntity<>(true, HttpStatus.OK);
         } catch (RestClientException e) {
             return new ResponseEntity<>(false, HttpStatus.OK);
+        }
+    }
+    
+    @GetMapping(path="/userFromToken")
+    public @ResponseBody ResponseEntity<Account> userFromToken(@RequestParam String token) {
+        final String target = "https://oauth2.googleapis.com/tokeninfo?access_token="+token;
+        final RestTemplate restTemplate = new RestTemplate();
+        try {
+            GoogleToken response = restTemplate.getForObject(target, GoogleToken.class);
+            int expires = Integer.parseInt(response.expires_in);
+            if ( expires <= 0 ) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+            //Hopefully I understand this correctly
+            if(!response.aud.equals("1097591538869-bbhopqak3kh5b7d6ceqbm9ieef9l1vdl.apps.googleusercontent.com")) {
+            	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+            List<Account> account = accountRepository.findAccountByEmail(response.email);
+            if ( account == null || account.isEmpty() ) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(account.get(0), HttpStatus.OK);
+        } catch (RestClientException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
