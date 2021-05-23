@@ -10,17 +10,14 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-import com.google.maps.DirectionsApi.RouteRestriction;
-import com.google.maps.DirectionsApiRequest;
+
 import com.google.maps.NearbySearchRequest;
 import com.google.maps.errors.ApiException;
-import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.Geometry;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlaceType;
 import com.google.maps.model.PlacesSearchResponse;
 import com.google.maps.model.PlacesSearchResult;
-import com.google.maps.model.TravelMode;
 
 class RouteGeneratorTest {
 	private static final double DEFAULT_LATITUDE = 58.21;
@@ -115,27 +112,39 @@ class RouteGeneratorTest {
 	}
 	
 	
-	//try to find route
-	
-	private static class RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi extends RouteGenerator {
-		double distanceRecievedByGenerateWaypoints;
+	private static class FakeRouteGetter extends RouteGetter{
+		LatLng givenStartPoint;
+		List<LatLng> givenWayPoints;
 
-		StoringDirectionsApiRequest request;
+		public FakeRouteGetter() {
+			super();
+			
+		}
+		@Override
+		public
+		Route getRoute(LatLng startPoint, List<LatLng> waypoints) {
+			givenStartPoint = startPoint;
+			givenWayPoints = waypoints;
+			return null;
+		}
 		
-		public RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(StoringDirectionsApiRequest request) {
+		
+	}
+	
+	//try to find route
+	private static class RouteGeneratorWithFakeWayPointsAndRouteGetter extends RouteGenerator {
+		double distanceRecievedByGenerateWaypoints;
+		FakeRouteGetter getter;
+
+		
+		public RouteGeneratorWithFakeWayPointsAndRouteGetter(FakeRouteGetter getter) {
 			super(DEFAULT_LATLNG, DEFAULT_DURATION_IN_MINUTES, DEFAULT_ANGLE_IN_RADIANS);
-			this.request = request;
+			this.getter = getter;
 		}
 		
 		@Override
-		StoringDirectionsApiRequest getDirectionsRequest() {
-			return request;
-		}
-		
-		@Override
-		DirectionsResult sendDirectionsRequest(DirectionsApiRequest request) throws ApiException, InterruptedException, IOException {
-			return ((StoringDirectionsApiRequest)request).send();
-			 
+		RouteGetter getRouteGetter() {
+			return getter;
 		}
 		
 		@Override
@@ -146,33 +155,26 @@ class RouteGeneratorTest {
 	}
 	
 	@Test 
-    void tryToFindRouteSetsSpecifiedStartPointAsStartPoint() throws ApiException, InterruptedException, IOException, RouteException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
+    void tryToFindRouteUsesSpecifiedStartPointToCreateRoute() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
+		FakeRouteGetter getter = new FakeRouteGetter();
+		RouteGeneratorWithFakeWayPointsAndRouteGetter generator = new RouteGeneratorWithFakeWayPointsAndRouteGetter(getter);
 		generator.tryToFindRoute();
-		assertEquals(DEFAULT_LATLNG, request.startPoint);
+		assertEquals(DEFAULT_LATLNG, getter.givenStartPoint);
 	}
 	
-	@Test 
-    void tryToFindRouteSetsSpecifiedStartPointAsDestination() throws ApiException, InterruptedException, IOException, RouteException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
-		generator.tryToFindRoute();
-		assertEquals(DEFAULT_LATLNG, request.destination);
-	}
 	
 	@Test 
     void tryToFindRouteSetsWayPointsToGeneratedWayPointsWhenNoTypeSet() throws ApiException, InterruptedException, IOException, RouteException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
+		FakeRouteGetter getter = new FakeRouteGetter();
+		RouteGeneratorWithFakeWayPointsAndRouteGetter generator = new RouteGeneratorWithFakeWayPointsAndRouteGetter(getter);
 		generator.tryToFindRoute();
-		assertEquals(setupWayPoints(), Arrays.asList(request.waypoints));
+		assertEquals(setupWayPoints(), getter.givenWayPoints);
 	}
 	
 	@Test 
     void tryToFindRouteSetsWayPointsToFirstPointWithPointOfInterestAndThenGeneratedWayPoints() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request) {
+		FakeRouteGetter getter = new FakeRouteGetter();
+		RouteGeneratorWithFakeWayPointsAndRouteGetter generator = new RouteGeneratorWithFakeWayPointsAndRouteGetter(getter) {
 			@Override
 			public List<LatLng> getPlacesNearby(double distanceInKm, PlaceType type) {
 				List<LatLng> places = new ArrayList<>();
@@ -184,53 +186,13 @@ class RouteGeneratorTest {
 		generator.tryToFindRoute();
 		List<LatLng> expectedWaypoints = setupWayPoints();
 		expectedWaypoints.add(0, OTHER_LATLNG);
-		assertEquals(expectedWaypoints, Arrays.asList(request.waypoints));
-	}
-	
-	@Test 
-    void tryToFindRouteSetsTravelModeToWalking() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
-		generator.tryToFindRoute();
-		assertEquals(TravelMode.WALKING, request.travelMode);
-	}
-	
-	@Test 
-    void tryToFindRouteSetsRestrictionOnFerries() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
-		generator.tryToFindRoute();
-		assertTrue(Arrays.asList(request.restrictions).contains(RouteRestriction.FERRIES));
-	}
-	
-	@Test 
-    void tryToFindRouteSetsRestrictionOnHighways() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
-		generator.tryToFindRoute();
-		assertTrue(Arrays.asList(request.restrictions).contains(RouteRestriction.HIGHWAYS));
-	}
-	
-	@Test 
-    void tryToFindRouteDoesntOptimizeWaypoints() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
-		generator.tryToFindRoute();
-		assertFalse(request.optimizedWayPoints);
-	}
-	
-	@Test 
-    void tryToFindRouteSendsRequest() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
-		generator.tryToFindRoute();
-		assertTrue(request.sent);
+		assertEquals(expectedWaypoints, getter.givenWayPoints);
 	}
 	
 	@Test 
     void tryToFindRouteIncreasesNumberOfTries() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
+		FakeRouteGetter getter = new FakeRouteGetter();
+		RouteGeneratorWithFakeWayPointsAndRouteGetter generator = new RouteGeneratorWithFakeWayPointsAndRouteGetter(getter);
 		int numberOfTriesBefore = generator.getNumberOfTries();
 		generator.tryToFindRoute();
 		assertEquals(++numberOfTriesBefore, generator.getNumberOfTries());
@@ -238,34 +200,10 @@ class RouteGeneratorTest {
 	
 	@Test 
     void tryToFindRouteUsesCrowDistanceToGenerateWayPoints() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
+		FakeRouteGetter getter = new FakeRouteGetter();
+		RouteGeneratorWithFakeWayPointsAndRouteGetter generator = new RouteGeneratorWithFakeWayPointsAndRouteGetter(getter);
 		generator.tryToFindRoute();
 		assertEquals(DEFAULT_WALK_DISTANCE*generator.getCrowFactor(), generator.distanceRecievedByGenerateWaypoints);
-	}
-	
-	@Test 
-    void tryToFindRouteUsesFirstRouteFromResultToCreateRoute() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
-		Route route = generator.tryToFindRoute();
-		assertEquals(request.polyCoordinatesForFirstRoute, route.getPolyCoordinates());
-	}
-	
-	@Test 
-    void tryToFindRouteUsesSpecifiedStartPointToCreateRoute() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
-		Route route = generator.tryToFindRoute();
-		assertEquals(DEFAULT_LATLNG, route.getStartPoint());
-	}
-	
-	@Test 
-    void tryToFindRouteUsesGeneratedWaypointsToCreateRoute() throws ApiException, InterruptedException, IOException, RouteException, TypeException {
-		StoringDirectionsApiRequest request = new StoringDirectionsApiRequest();
-		RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi generator = new RouteGeneratorWithFakeWayPointsAndStoringDirectionsApi(request);
-		Route route = generator.tryToFindRoute();
-		assertEquals(setupWayPoints(), route.getWaypoints());
 	}
 	
 	

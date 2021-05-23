@@ -4,17 +4,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.maps.DirectionsApi;
-import com.google.maps.DirectionsApiRequest;
 import com.google.maps.NearbySearchRequest;
 import com.google.maps.PlacesApi;
-import com.google.maps.DirectionsApi.RouteRestriction;
 import com.google.maps.errors.ApiException;
-import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.LatLng;
 import com.google.maps.model.PlaceType;
 import com.google.maps.model.PlacesSearchResponse;
-import com.google.maps.model.TravelMode;
 
 public class RouteGenerator {
 	private static final double DEFAULT_ROAD_TO_CROWS_FACTOR = 0.7;
@@ -40,7 +35,6 @@ public class RouteGenerator {
 	private double bearingToFirstPointInRadians;
 	
 	private LatLng pointOfInterest;
-	private List<LatLng> waypoints;
 	
 	public RouteGenerator(LatLng startPoint, double durationInMinutes, double bearingToFirstPointInRadians) {
 		if(startPoint == null) {
@@ -102,14 +96,18 @@ public class RouteGenerator {
 
 	public Route tryToFindRoute() throws ApiException, InterruptedException, IOException, RouteException {
 		numberOfTries++;
-		waypoints = new ArrayList<>();
+		List<LatLng> waypoints = new ArrayList<>();
 		if(pointOfInterest != null) {
 			waypoints.add(pointOfInterest);
 		}
 		double distance = walkingDistanceInKm * crowFactor;
 		waypoints.addAll(generateWaypoints(distance));
-		Route route = getRouteFromGoogle();
-		return route;
+		
+		return getRouteGetter().getRoute(startPoint, waypoints);
+	}
+	
+	RouteGetter getRouteGetter() throws ApiException, InterruptedException, IOException, RouteException {
+		return new RouteGetter();
 	}
 	
 	public void increaseCrowFactor() {
@@ -126,26 +124,6 @@ public class RouteGenerator {
 		}
 		hasBeenDecreased = true;
 		crowFactor -= crowStep;
-	}
-	
-	private Route getRouteFromGoogle() throws ApiException, InterruptedException, IOException, RouteException {
-		DirectionsApiRequest request = getDirectionsRequest();
-		request.origin(startPoint)
-			.destination(startPoint)
-			.waypoints(waypoints.toArray(new LatLng[waypoints.size()]))
-			.mode(TravelMode.WALKING)
-			.avoid(RouteRestriction.FERRIES, RouteRestriction.HIGHWAYS)
-			.optimizeWaypoints(false);
-		DirectionsResult result = sendDirectionsRequest(request);
-		return new Route(result.routes[0], waypoints, startPoint, bearingToFirstPointInRadians);
-	}
-	
-	DirectionsApiRequest getDirectionsRequest() {
-		return DirectionsApi.newRequest(MapsContext.getInstance());
-	}
-	
-	DirectionsResult sendDirectionsRequest(DirectionsApiRequest request) throws ApiException, InterruptedException, IOException {
-		return request.await();
 	}
 	
 	List<LatLng> generateWaypoints(double walkDistanceInKm) {

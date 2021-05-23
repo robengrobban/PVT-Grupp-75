@@ -2,13 +2,12 @@ package group75.walkInProgress.route;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
+import java.net.http.HttpResponse.ResponseInfo;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +60,42 @@ public class RouteController {
 	 * @return a response entity with route in Json format in the body if found
 	 * 
 	 */
-	@GetMapping(path = "/generate")
-	public ResponseEntity<Route> getCircularRoute(@RequestParam double lat, double lng, int duration, double radians,
+	
+	@GetMapping(path = "/generate/waypoints", consumes = "application/json", produces = "application/json")
+	
+	public ResponseEntity<Route> getCircularRouteFromWaypoints(@RequestBody BasicRouteInfo routeInfo) {
+		System.out.println(routeInfo);
+		System.out.println(routeInfo.startPoint);
+		System.out.println(routeInfo.waypoints);
+		if(routeInfo == null || routeInfo.startPoint == null || routeInfo.waypoints == null) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+
+
+		Route route = null;
+		try {
+			route = service.getRoute(routeInfo.startPoint, routeInfo.waypoints);
+		} catch (RouteException | ZeroResultsException e) {
+			e.printStackTrace();
+			return new ResponseEntity<Route>(HttpStatus.NOT_FOUND);
+		} catch (InvalidRequestException | TypeException e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		} catch (ApiException | InterruptedException | IOException e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		if (route != null) {
+			return new ResponseEntity<Route>(route, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Route>(HttpStatus.NOT_FOUND);
+		}
+	}
+	
+	
+	
+	@GetMapping(path = "/generate/bearing")
+	public ResponseEntity<Route> getCircularRouteFromBearing(@RequestParam double lat, double lng, int duration, double radians,
 			Optional<String> type) {
 		if (duration < 0) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

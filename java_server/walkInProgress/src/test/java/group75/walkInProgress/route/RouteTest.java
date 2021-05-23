@@ -22,7 +22,6 @@ class RouteTest {
 	private static final LatLng OTHER_LATLNG = new LatLng(55.7, 19.6);
 	private static final LatLng ONE_MORE_LATLNG = new LatLng(60.7, 40.8);
 	private static final double ERROR_MARGIN_FOR_DOUBLES = 0.05;
-	private static final double DEFAULT_BEARING = 1.3;
 	
 	private static DirectionsRoute getDummyDirectionsRoute() {
 		DirectionsRoute route = new DirectionsRoute();
@@ -112,7 +111,7 @@ class RouteTest {
 		DirectionsRoute dRoute = getDummyDirectionsRoute();
 		dRoute.bounds.northeast = OTHER_LATLNG;
 		dRoute.bounds.southwest = ONE_MORE_LATLNG;
-		Route route = new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG, DEFAULT_BEARING);
+		Route route = new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG);
 		assertEquals(OTHER_LATLNG, route.getNorthEastBound());
 		assertEquals(ONE_MORE_LATLNG, route.getSouthWestBound());
 	}
@@ -120,14 +119,14 @@ class RouteTest {
 	@Test
 	void constuctorSetsSpecifiedWayPoints() throws RouteException {
 		DirectionsRoute dRoute = getDummyDirectionsRoute();
-		Route route = new Route(dRoute, setupWayPoints(), DEFAULT_LATLNG, DEFAULT_BEARING);
+		Route route = new Route(dRoute, setupWayPoints(), DEFAULT_LATLNG);
 		assertEquals(setupWayPoints(), route.getWaypoints());
 	}
 	
 	@Test
 	void constuctorSetsSpecifiedStartPoint() throws RouteException {
 		DirectionsRoute dRoute = getDummyDirectionsRoute();
-		Route route = new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG, DEFAULT_BEARING);
+		Route route = new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG);
 		assertEquals(DEFAULT_LATLNG, route.getStartPoint());
 	}
 	
@@ -156,7 +155,7 @@ class RouteTest {
 		expectedPolyLines.addAll(getDefaultPolyLines4());
 		expectedPolyLines.addAll(getDefaultPolyLines5());
 		expectedPolyLines.addAll(getDefaultPolyLines6());
-		Route route = new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG, DEFAULT_BEARING);
+		Route route = new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG);
 		List<LatLng> actualPolylines = route.getPolyCoordinates();
 		assertEquals(expectedPolyLines.size(), actualPolylines.size());
 		for(int i = 0; i<expectedPolyLines.size(); i++) {
@@ -183,7 +182,7 @@ class RouteTest {
 					)
 		};
 		dRoute.legs = legs;
-		Route route = new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG, DEFAULT_BEARING);
+		Route route = new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG);
 		int expectedDuration = 10+20+30+40+50+60;
 		assertEquals(expectedDuration, route.getDurationInSeconds());
 	}
@@ -206,7 +205,7 @@ class RouteTest {
 					)
 		};
 		dRoute.legs = legs;
-		Route route = new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG, DEFAULT_BEARING);
+		Route route = new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG);
 		int expectedDistance = 10+20+30+40+50+60;
 		assertEquals(expectedDistance, route.getDistance());
 	}
@@ -220,7 +219,7 @@ class RouteTest {
 					),
 		};
 		dRoute.legs = legs;
-		assertThrows(RouteException.class, ()-> {new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG, DEFAULT_BEARING);});
+		assertThrows(RouteException.class, ()-> {new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG);});
 	}
 	
 	@Test
@@ -232,7 +231,7 @@ class RouteTest {
 					),
 		};
 		dRoute.legs = legs;
-		assertThrows(RouteException.class, ()-> {new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG, DEFAULT_BEARING);});
+		assertThrows(RouteException.class, ()-> {new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG);});
 	}
 	
 	@Test
@@ -244,7 +243,7 @@ class RouteTest {
 					),
 		};
 		dRoute.legs = legs;
-		assertThrows(RouteException.class, ()-> {new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG, DEFAULT_BEARING);});
+		assertThrows(RouteException.class, ()-> {new Route(dRoute, new ArrayList<LatLng>(), DEFAULT_LATLNG);});
 	}
 
 
