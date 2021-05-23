@@ -67,12 +67,16 @@ class AccountHandler {
   }
 
   /// Sign in the user using google.
-  Future<void> handleSignIn() async {
+  Future<bool> handleSignIn() async {
     try {
-      await _googleSignIn.signIn();
+      var result = await _googleSignIn.signIn();
+      if(result != null) {
+        return true;
+      }
     } catch (error) {
       print(error);
     }
+    return false;
   }
 
   int id() {

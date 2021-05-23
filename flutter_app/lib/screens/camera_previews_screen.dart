@@ -25,15 +25,7 @@ class _PreviewScreenState extends State<PreviewScreen> {
         backgroundColor: Colors.white,
         body: Container(
           padding: const EdgeInsets.only(left: 32.0, right: 32.0),
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.AppColors.brandPink[500],
-              Theme.AppColors.brandOrange[500]
-            ],
-          )),
+          decoration: BoxDecoration(gradient: Theme.appGradiant),
           child: Container(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

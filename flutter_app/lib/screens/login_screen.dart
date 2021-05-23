@@ -32,15 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.white,
         body: Container(
             padding: const EdgeInsets.all(32.0),
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.AppColors.brandPink[500],
-                Theme.AppColors.brandOrange[500]
-              ],
-            )),
+            decoration: BoxDecoration(gradient: Theme.appGradiant,),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,

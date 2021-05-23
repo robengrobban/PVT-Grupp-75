@@ -4,6 +4,7 @@ import 'package:flutter_app/screens/menu_screen.dart';
 import 'package:flutter_app/screens/notification_screen.dart';
 import 'package:flutter_app/screens/settings_screen.dart';
 import 'package:flutter_app/screens/success_screen.dart';
+import 'package:flutter_app/util/shared_prefs.dart';
 import 'models/account_handler.dart';
 import 'screens/camera_previews_screen.dart';
 import 'screens/camera_screen.dart';
@@ -19,6 +20,7 @@ void main() async {
   await AccountHandler().init();
   await LocationHandler().init();
   await NotificationHandler().init();
+  await SharedPrefs().init();
   runApp(WalkInProgressApp());
 }
 

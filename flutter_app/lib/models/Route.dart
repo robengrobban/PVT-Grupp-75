@@ -1,5 +1,6 @@
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:collection/collection.dart';
 
 class CircularRoute {
   List<LatLng> polyCoordinates;
@@ -45,7 +46,6 @@ class CircularRoute {
     (json['waypoints'] as List).forEach((element) {
       waypoints.add(LatLng(element['lat'], element['lng']));
     });
-    print(json);
 
     int fuckingWork = 30;
     if (json['durationInSeconds'] is int) {
@@ -64,8 +64,16 @@ class CircularRoute {
         southWestBound: MyLocation.fromJson(json['southWestBound']).toLatLng());
   }
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CircularRoute &&
+          runtimeType == other.runtimeType &&
+          ListEquality().equals(waypoints,other.waypoints) &&
+          startPoint == other.startPoint;
 
-
+  @override
+  int get hashCode => waypoints.hashCode ^ startPoint.hashCode;
 }
 
 class MyLocation extends LatLng {

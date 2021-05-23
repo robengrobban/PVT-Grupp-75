@@ -37,3 +37,9 @@ class AppColors {
   };
 
 }
+
+LinearGradient appGradiant = LinearGradient(
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+  colors: [AppColors.brandPink[500], AppColors.brandOrange[500]],
+);

@@ -38,16 +38,7 @@ class _MenuScreenState extends State<MenuScreen> {
         backgroundColor: Colors.white,
         body: Container(
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Theme.AppColors.brandPink[500],
-                  Theme.AppColors.brandOrange[500]
-                ],
-              ),
-            ),
+            decoration: BoxDecoration(gradient: Theme.appGradiant,),
             child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints viewportConstraints) {
                   return SingleChildScrollView(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/Route.dart';
 
 import 'package:flutter_app/theme.dart' as Theme;
+import 'package:flutter_app/widgets/big_gradient_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SuccessScreen extends StatefulWidget {
@@ -35,15 +36,7 @@ class _SuccessScreenState extends State<SuccessScreen> {
         backgroundColor: Colors.white,
         body: Container(
             padding: const EdgeInsets.all(32.0),
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Theme.AppColors.brandPink[500],
-                Theme.AppColors.brandOrange[500]
-              ],
-            )),
+            decoration: BoxDecoration(gradient: Theme.appGradiant),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -165,45 +158,49 @@ class _SuccessScreenState extends State<SuccessScreen> {
         builder: (BuildContext context) {
           return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
-            return AlertDialog(
-                title: Text("Medals Won"),
-                backgroundColor: Theme.AppColors.brandOrange[500],
-                content: Container(
-                  height: 400,
-                  width: 400,
-                  child: ShaderMask(
-                      shaderCallback: (Rect rect) {
-                        return LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.white,
-                            Colors.transparent,
-                          ],
-                          stops: [
-                            0.9,
-                            1.0
-                          ], // 10% purple, 80% transparent, 10% purple
-                        ).createShader(rect);
-                      },
-                      child: ListView.builder(
-                          clipBehavior: Clip.antiAlias,
-                          itemCount: routes.length,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              child: CustomListItem(
-                                date: DateTime.now(),
-                                duration: routes[index].duration,
-                                distance: routes[index].distance,
-                                thumbnail: Image(
-                                  image: NetworkImage(
-                                      'https://images.theconversation.com/files/387712/original/file-20210304-15-n1wg4d.jpg?ixlib=rb-1.1.0&rect=133%2C110%2C3701%2C2473&q=45&auto=format&w=496&fit=clip'),
-                                ),
-                                title: routes[index].southWestBound.toString(),
-                              ),
-                            );
-                          })),
-                ));
+            return BigGradientDialogShell(
+                  title: "Medals won",
+                  child: Column(
+                    children: [
+                      Container(
+                        height: 400,
+                        width: 400,
+                        child: ShaderMask(
+                            shaderCallback: (Rect rect) {
+                              return LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.white,
+                                  Colors.transparent,
+                                ],
+                                stops: [
+                                  0.9,
+                                  1.0
+                                ], // 10% purple, 80% transparent, 10% purple
+                              ).createShader(rect);
+                            },
+                            child: ListView.builder(
+                                clipBehavior: Clip.antiAlias,
+                                itemCount: routes.length,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    child: CustomListItem(
+                                      date: DateTime.now(),
+                                      duration: routes[index].duration,
+                                      distance: routes[index].distance,
+                                      thumbnail: Image(
+                                        image: NetworkImage(
+                                            'https://images.theconversation.com/files/387712/original/file-20210304-15-n1wg4d.jpg?ixlib=rb-1.1.0&rect=133%2C110%2C3701%2C2473&q=45&auto=format&w=496&fit=clip'),
+                                      ),
+                                      title: routes[index].southWestBound.toString(),
+                                    ),
+                                  );
+                                })),
+                      ),
+                    ],
+                  ),
+                );
           });
         });
   }

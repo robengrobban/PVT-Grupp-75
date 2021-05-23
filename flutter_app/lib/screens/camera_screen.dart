@@ -70,15 +70,7 @@ class _CameraScreenState extends State {
         backgroundColor: Colors.white,
         body: Container(
           padding: const EdgeInsets.only(left: 32.0, right: 32.0),
-          decoration: BoxDecoration(
-              gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.AppColors.brandPink[500],
-              Theme.AppColors.brandOrange[500]
-            ],
-          )),
+          decoration: BoxDecoration(gradient: Theme.appGradiant),
           child: Container(
             child: SafeArea(
               child: Column(
@@ -150,14 +142,7 @@ class _CameraScreenState extends State {
                 ),
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Theme.AppColors.brandPink[500],
-                        Theme.AppColors.brandOrange[500]
-                      ],
-                    )),
+                    gradient: Theme.appGradiant),
               ),
               onPressed: () {
                 _onCapturePressed(context);
