@@ -47,19 +47,12 @@ class CircularRoute {
       waypoints.add(LatLng(element['lat'], element['lng']));
     });
 
-    int fuckingWork = 30;
-    if (json['durationInSeconds'] is int) {
-      fuckingWork = (((json['durationInSeconds'] as int)/ 60)).toInt();
-    } else if (json['durationInSeconds'] is int) {
-      (((json['durationInSeconds'] as double)/ 60).toInt());
-    }
-
     return CircularRoute(
         polyCoordinates: polyCoordinates,
         waypoints: waypoints,
         startPoint: MyLocation.fromJson(json['startPoint']).toLatLng(),
-        distance: (json['distance'] is double) ? (json['distance'] as double).toInt() : (json['distance'] as int),
-        duration: fuckingWork,
+        distance: (json['distance'] as double).toInt(),
+        duration: ((json["durationInSeconds"] / 60).toInt()),
         northEastBound: MyLocation.fromJson(json['northEastBound']).toLatLng(),
         southWestBound: MyLocation.fromJson(json['southWestBound']).toLatLng());
   }
