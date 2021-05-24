@@ -1,7 +1,7 @@
 package group75.walkInProgress.account;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -66,7 +66,7 @@ public class AccountController {
     }
     
     @GetMapping(path="/userFromToken")
-    public @ResponseBody ResponseEntity<Account> userFromToken(@RequestParam String token) {
+    public @ResponseBody ResponseEntity<Account> userFromToken(String token) {
         final String target = "https://oauth2.googleapis.com/tokeninfo?access_token="+token;
         final RestTemplate restTemplate = new RestTemplate();
         try {
@@ -75,10 +75,7 @@ public class AccountController {
             if ( expires <= 0 ) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-            //Hopefully I understand this correctly
-            if(!response.aud.equals("1097591538869-bbhopqak3kh5b7d6ceqbm9ieef9l1vdl.apps.googleusercontent.com")) {
-            	return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-            }
+
             List<Account> account = accountRepository.findAccountByEmail(response.email);
             if ( account == null || account.isEmpty() ) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

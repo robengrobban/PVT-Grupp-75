@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
-import java.net.http.HttpResponse.ResponseInfo;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
