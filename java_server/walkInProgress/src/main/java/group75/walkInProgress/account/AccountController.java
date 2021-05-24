@@ -71,17 +71,18 @@ public class AccountController {
         final RestTemplate restTemplate = new RestTemplate();
         try {
             GoogleToken response = restTemplate.getForObject(target, GoogleToken.class);
+            
             int expires = Integer.parseInt(response.expires_in);
             if ( expires <= 0 ) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
-
             List<Account> account = accountRepository.findAccountByEmail(response.email);
             if ( account == null || account.isEmpty() ) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
             return new ResponseEntity<>(account.get(0), HttpStatus.OK);
         } catch (RestClientException e) {
+        	System.out.println(e);
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }

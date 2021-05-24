@@ -74,7 +74,7 @@ public class BookmarkController {
         }
     }
     
-    @GetMapping(path="/")
+    @GetMapping(path="")
     public @ResponseBody ResponseEntity<Iterable<Bookmark>> getAllBookmarks(@RequestParam String token) {
         final String target = "https://group5-75.pvt.dsv.su.se/account/userFromToken?token="+token;
         final RestTemplate restTemplate = new RestTemplate();

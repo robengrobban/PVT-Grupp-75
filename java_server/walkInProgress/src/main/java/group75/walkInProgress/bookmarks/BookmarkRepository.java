@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.google.maps.model.LatLng;
 
 
 public interface BookmarkRepository extends CrudRepository<Bookmark, Integer>{
