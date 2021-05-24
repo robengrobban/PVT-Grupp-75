@@ -29,6 +29,10 @@ class WeatherHandler {
     return _instance;
   }
 
+  void clearCache() {
+    _lastWeatherFetched = null;
+  }
+
   Future<void> init({SMHIFetcher smhi}) async {
     _smhi = smhi ?? SMHIFetcher();
   }

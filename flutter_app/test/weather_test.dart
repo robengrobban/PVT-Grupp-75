@@ -60,6 +60,7 @@ void main() {
 
     test('Should cache before first call and should not cache after first call', () async {
       await WeatherHandler().init();
+      WeatherHandler().clearCache();
       expect(WeatherHandler().shouldCache(), true);
       await WeatherHandler().currentWeather( stockholm );
       expect(WeatherHandler().shouldCache(), false);
@@ -69,6 +70,8 @@ void main() {
 
       FakeSMHIFetcher fake = FakeSMHIFetcher();
       await WeatherHandler().init(smhi: fake);
+
+      WeatherHandler().clearCache();
 
       HashMap<int, WeatherData> testData = await WeatherHandler().todaysWeather(stockholm);
 
