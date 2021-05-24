@@ -10,6 +10,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
+import 'location_handler.dart';
+
 /// Singleton class for handling all of the apps notifications.
 class NotificationHandler {
 
@@ -164,7 +166,7 @@ class NotificationHandler {
 
     List<Event> events = await _fetchEvents();
     List<NotificationSpot> spots = _generateNotificationSpots(events);
-    HashMap<int, WeatherData> weatherData = await _weather.todaysWeather();
+    HashMap<int, WeatherData> weatherData = await _weather.todaysWeather( await LocationHandler().latlon() );
 
     for ( NotificationSpot spot in spots ) {
       if ( _notificationsLeft == 0 ) {

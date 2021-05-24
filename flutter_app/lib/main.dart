@@ -6,6 +6,7 @@ import 'package:flutter_app/screens/settings_screen.dart';
 import 'package:flutter_app/screens/success_screen.dart';
 import 'package:flutter_app/util/shared_prefs.dart';
 import 'models/account_handler.dart';
+import 'models/weather_handler.dart';
 import 'screens/camera_previews_screen.dart';
 import 'screens/camera_screen.dart';
 import 'screens/login_screen.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_app/theme.dart' as Theme;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await WeatherHandler().init();
   await AccountHandler().init();
   await LocationHandler().init();
   await NotificationHandler().init();

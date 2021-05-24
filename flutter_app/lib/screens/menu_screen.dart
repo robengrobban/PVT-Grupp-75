@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/account_handler.dart';
+import 'package:flutter_app/models/location_handler.dart';
 import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/models/weather_handler.dart';
 import 'package:flutter_app/theme.dart' as Theme;
@@ -59,9 +60,9 @@ class _MenuScreenState extends State<MenuScreen> {
                                 MenuItem(Icons.notifications, "DEBUG NOTIFICATION", _itemPadding, () {
                                   Navigator.of(context).pushNamed("/debug-noti");
                                 }),
-                                MenuItem(Icons.cloud_off, "DEBUG WEATHER", _itemPadding, () {
-                                  WeatherHandler().todaysWeather();
-                                  WeatherHandler().currentWeather().then((value) {
+                                MenuItem(Icons.cloud_off, "DEBUG WEATHER", _itemPadding, () async {
+                                  WeatherHandler().todaysWeather( await LocationHandler().latlon() );
+                                  WeatherHandler().currentWeather( await LocationHandler().latlon() ).then((value) {
                                     print("Temperature");
                                     print(value.temperature());
                                   });

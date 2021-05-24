@@ -47,10 +47,12 @@ class _HomeScreenState extends State<HomeScreen> {
         int.tryParse(widget.payload) != null) {
       initialDurationInMinutes = int.parse(widget.payload);
     }
-    WeatherHandler().currentWeather().then((value) {
-      _temperature = value.temperature();
-      print(_temperature);
-      _weatherIcon = value.forecastIcon();
+    LocationHandler().latlon().then((coordinates) {
+      WeatherHandler().currentWeather( coordinates ).then((value) {
+        _temperature = value.temperature();
+        print(_temperature);
+        _weatherIcon = value.forecastIcon();
+      });
     });
     rootBundle
         .loadString('assets/mapStyles/darkMapStyle.txt')
@@ -272,7 +274,7 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         context.loaderOverlay.hide();
         await _showMapLoadErrorDialog(
-            "We are having a hard time finding a route for you, you may try your luck again or modify your settings for better chances");
+            "We are having a hard time finding a route for you, you may try your luck again or modify your settings for better chances 🐜");
       }
     } catch (e) {
       context.loaderOverlay.hide();
