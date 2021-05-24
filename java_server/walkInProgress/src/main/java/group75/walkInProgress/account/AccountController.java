@@ -1,7 +1,7 @@
 package group75.walkInProgress.account;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +54,7 @@ public class AccountController {
         final RestTemplate restTemplate = new RestTemplate();
         try {
             GoogleToken response = restTemplate.getForObject(target, GoogleToken.class);
+            System.out.println(response);
             int expires = Integer.parseInt(response.expires_in);
             if ( expires <= 0 ) {
                 return new ResponseEntity<>(false, HttpStatus.OK);
@@ -61,6 +62,27 @@ public class AccountController {
             return new ResponseEntity<>(true, HttpStatus.OK);
         } catch (RestClientException e) {
             return new ResponseEntity<>(false, HttpStatus.OK);
+        }
+    }
+    
+    @GetMapping(path="/userFromToken")
+    public @ResponseBody ResponseEntity<Account> userFromToken(String token) {
+        final String target = "https://oauth2.googleapis.com/tokeninfo?access_token="+token;
+        final RestTemplate restTemplate = new RestTemplate();
+        try {
+            GoogleToken response = restTemplate.getForObject(target, GoogleToken.class);
+            int expires = Integer.parseInt(response.expires_in);
+            if ( expires <= 0 ) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+
+            List<Account> account = accountRepository.findAccountByEmail(response.email);
+            if ( account == null || account.isEmpty() ) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(account.get(0), HttpStatus.OK);
+        } catch (RestClientException e) {
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
