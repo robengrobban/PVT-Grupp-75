@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text("Logga in"),
+          title: Text("Log in"),
         ),
         backgroundColor: Colors.white,
         body: Container(
@@ -49,7 +49,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Icon(Icons.login),
-                        Text("Logga in med Google")
+                        Text("Sign in with Google")
                       ],
                     ),
                   ),

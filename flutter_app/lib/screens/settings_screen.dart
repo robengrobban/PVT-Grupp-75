@@ -26,7 +26,7 @@ class _SettingScreenState extends State<SettingScreen> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text("Inställningar"),
+          title: Text("Settings"),
         ),
         backgroundColor: Colors.white,
         body: Container(
@@ -48,7 +48,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 Column(
                                     children: <Widget>[
                                       Text(
-                                        "Önskat antal notifikationer",
+                                        "Number of scheduled notifications",
                                         style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 16),
@@ -59,7 +59,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 Column(
                                   children: <Widget>[
                                     Text(
-                                        "Promenadlängd i minuter",
+                                        "Preferred walk length in minutes",
                                     style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,
@@ -71,7 +71,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                 Column(
                                   children: <Widget>[
                                     Text(
-                                        "Låt väder påverka notifikationer",
+                                        "Weather affects notifications",
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
@@ -104,7 +104,7 @@ class _SettingScreenState extends State<SettingScreen> {
                                     )],
                                 ),
                                 ElevatedButton(
-                                  child: Text("Spara"),
+                                  child: Text("Save"),
                                   style: ButtonStyle(
                                       backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
                                       foregroundColor: MaterialStateProperty.all<Color>(Colors.black),
@@ -151,7 +151,7 @@ class _SettingScreenState extends State<SettingScreen> {
       bool newAffectedByWeather = _currentAffectedByWeather;
       NotificationHandler().updateSettings(newMaxNotifications, newWalkLength, newAffectedByWeather);
       final snackBar = SnackBar(
-        content: Text('Inställningar uppdaterade!')
+        content: Text('Settings updated!')
       );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
