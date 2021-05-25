@@ -39,6 +39,7 @@ dependencies:
   path: ^1.6.2
   esys_flutter_share: ^1.0.2
   weather_icons: ^2.0.2
+  flutter_background_geolocation: ^2.0.5
   mockito: ^5.0.8
 
   # The following adds the Cupertino Icons font to your application.
