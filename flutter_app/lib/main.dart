@@ -16,6 +16,13 @@ import 'theme.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 
+const String SERVER_HOST = "83.226.130.65:8080";
+const bool USES_HTTPS = false;
+
+
+//const bool USES_HTTPS = true;
+//const String SERVER_HOST = "group5-75.pvt.dsv.su.se";
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await WeatherHandler().init();

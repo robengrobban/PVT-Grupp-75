@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter_app/main.dart';
 import 'package:flutter_app/models/Route.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
@@ -28,12 +29,9 @@ class RouteHandler {
   }
 
     Future<CircularRoute> getRoute(LatLng startPosition, int durationInMinutes, double angle, String attraction) async {
-      var uri = Uri(
-          scheme: 'https',
-          host: 'group5-75.pvt.dsv.su.se',
-          path: 'route/generate/bearing',
-          query:
-          'lat=${startPosition.latitude}&lng=${startPosition.longitude}&duration=$durationInMinutes&radians=$angle${attraction != null ? "&type=$attraction" : ""}');
+    Map<String,String> query = {"lat":startPosition.latitude.toString(),"lng":startPosition.longitude.toString(), "duration":durationInMinutes.toString(), "radians":angle.toString()};
+    if (attraction != null) query["type"] = attraction.toString();
+    var uri = USES_HTTPS ?  Uri.https(SERVER_HOST, '/route/generate/bearing', query) : Uri.http(SERVER_HOST, '/route/generate/bearing', query);
       print(uri.toString());
       final response = await http.get(uri);
       if(response.statusCode == 404)

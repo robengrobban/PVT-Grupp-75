@@ -1,6 +1,7 @@
 
 import 'dart:async';
 
+import 'package:flutter_app/main.dart';
 import 'package:flutter_app/models/notification_handler.dart';
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
@@ -111,7 +112,7 @@ class AccountHandler {
   /// Returns the response.
   Future<http.Response> _createAccount(String email, String token) async {
     return http.post(
-      Uri.https("group5-75.pvt.dsv.su.se", "/account/create"),
+      USES_HTTPS ? Uri.https(SERVER_HOST, "/account/create") : Uri.http(SERVER_HOST, "/account/create"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -129,7 +130,7 @@ class AccountHandler {
 
   Future<http.Response> _checkToken(String token) async {
     return http.get(
-      Uri.https("group5-75.pvt.dsv.su.se", "/account/token", {"token": token})
+      USES_HTTPS ? Uri.https(SERVER_HOST, "/account/token", {"token": token}) : Uri.http(SERVER_HOST, "/account/token", {"token": token})
     );
   }
 

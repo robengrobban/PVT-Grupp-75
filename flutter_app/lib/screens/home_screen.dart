@@ -86,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
       geofenceModeHighAccuracy: true,
         desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
         distanceFilter: 10.0,
-        stopOnTerminate: false,
+        stopOnTerminate: true,
         startOnBoot: false,
         debug: true,
         logLevel: bg.Config.LOG_LEVEL_VERBOSE
@@ -288,6 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<CircularRoute> _saveRoute(CircularRoute route) async {
+    print(await AccountHandler().accessToken());
     print("Route saved");
 
   }
