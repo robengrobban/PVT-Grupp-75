@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_app/models/Route.dart';
 import 'package:flutter_app/models/account_handler.dart';
 import 'package:flutter_app/models/location_handler.dart';
+import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/models/pair.dart';
 import 'package:flutter_app/models/route_handler.dart';
 import 'package:flutter_app/models/weather_handler.dart';
@@ -11,9 +12,9 @@ import 'package:flutter_app/util/shared_prefs.dart';
 import 'package:flutter_app/widgets/elliptical_floating_bottom_app_bar.dart';
 import 'package:flutter_app/widgets/gradient_round_button.dart';
 import 'package:flutter_app/widgets/map_info_box.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg;
 import 'package:flutter_app/widgets/walk_preference_dialog.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-
 import 'package:loader_overlay/loader_overlay.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,10 +35,13 @@ class _HomeScreenState extends State<HomeScreen> {
   LatLng _currentPosition = LatLng(58, 17);
   int _calories = 729;
   int _steps = 3526;
-  double _temperature = 17.1;
+  double _temperature = null;
   IconData _weatherIcon = Icons.cloud_off_outlined;
   int initialDurationInMinutes;
   bool loggedIn;
+  Set<int> passed = Set();
+  Set<int> toPass = Set();
+  bool passedStartTwice = false;
 
   @override
   initState() {
@@ -50,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
     LocationHandler().latlon().then((coordinates) {
       WeatherHandler().currentWeather( coordinates ).then((value) {
         _temperature = value.temperature();
-        print(_temperature);
         _weatherIcon = value.forecastIcon();
       });
     });
@@ -58,6 +61,36 @@ class _HomeScreenState extends State<HomeScreen> {
         .loadString('assets/mapStyles/darkMapStyle.txt')
         .then((string) => {_mapStyle = string});
     _setUpRoute();
+    _setUpGeoFence();
+
+  }
+  
+  Future<void> _setUpGeoFence() async {
+    bg.BackgroundGeolocation.onGeofence((bg.GeofenceEvent event) async {
+
+      passed.add(event.extras["notId"]);
+      NotificationHandler().send(event.extras["notId"], "Past a point", "count is ${passed.length} of ${toPass.length}");
+      print("Passed: $passed topass: $toPass");
+      if(passed.containsAll(toPass)) {
+        if(!passedStartTwice) {
+          passed.remove(1001);
+          NotificationHandler().send(event.extras["notId"]+2, "Pass start again", "count is ${passed.length} of ${toPass.length}");
+          passedStartTwice = true;
+        } else {
+          NotificationHandler().send(42, "You finished the route", "Good job!");
+          await _stopGeoFencing();
+        }
+      }
+    });
+    await bg.BackgroundGeolocation.ready(bg.Config(
+      geofenceModeHighAccuracy: true,
+        desiredAccuracy: bg.Config.DESIRED_ACCURACY_HIGH,
+        distanceFilter: 10.0,
+        stopOnTerminate: false,
+        startOnBoot: false,
+        debug: true,
+        logLevel: bg.Config.LOG_LEVEL_VERBOSE
+    )).then((value) => print("started: ${value.enabled}"));
   }
 
   void _setUpRoute() async {
@@ -256,6 +289,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<CircularRoute> _saveRoute(CircularRoute route) async {
     print("Route saved");
+
   }
 
   Future<void> _getRoute(
@@ -278,6 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (e) {
       context.loaderOverlay.hide();
+      print(e);
       await _showMapLoadErrorDialog(
           "Some unknown error occurred, please try again");
     }
@@ -317,7 +352,45 @@ class _HomeScreenState extends State<HomeScreen> {
         });
   }
 
-  _startRoute() {
+  Future<void> _stopGeoFencing() async {
+    passedStartTwice = false;
+    passed.clear();
+    toPass.clear();
+    await bg.BackgroundGeolocation.removeGeofences().then((bool success) {
+      print('[removeGeofences] all geofences have been destroyed');
+    });
+    await bg.BackgroundGeolocation.stop().then((state) {
+      print('State is ${state.enabled}');
+    });
+  }
+
+  Future<void> _startRoute() async {
+
+    _stopGeoFencing();
+    int created = 0;
+    await bg.BackgroundGeolocation.addGeofence(bg.Geofence(extras: {"notId":1000+1 },notifyOnEntry: true,identifier: "${_currentRoute.startPoint.latitude},${_currentRoute.startPoint.longitude} ", radius: 50, latitude: _currentRoute.startPoint.latitude, longitude: _currentRoute.startPoint.longitude)).then((bool success) {
+      created++;
+      toPass.add(1000+1);
+      print('[addGeofences] success');
+    }).catchError((dynamic error) => {
+    print('[addGeofences] FAILURE: $error')
+    });
+
+    print(_currentRoute.polyCoordinates.length);
+    int step = _currentRoute.polyCoordinates.length~/10 +1;
+    for(int i = step; i<_currentRoute.polyCoordinates.length-step; i+=step) {
+        created++;
+        await bg.BackgroundGeolocation.addGeofence(bg.Geofence(extras: {"notId":1000+i },notifyOnEntry: true, identifier: "${_currentRoute.polyCoordinates[i].latitude},${_currentRoute.polyCoordinates[i].longitude} ", radius: 50, latitude: _currentRoute.polyCoordinates[i].latitude, longitude: _currentRoute.polyCoordinates[i].longitude)).then((bool success) {
+          toPass.add(1000+i);
+          print('[addGeofences] success');
+        }).catchError((dynamic error) => {
+        print('[addGeofences] FAILURE: $error')
+        });
+    }
+    print("created: $created");
+    NotificationHandler().send(42, "$created created", "good luck");
+    await bg.BackgroundGeolocation.startGeofences().then((value) => "state is ${value.enabled}");
+
   }
 }
 
@@ -348,7 +421,7 @@ class HomeInfoRow extends StatelessWidget {
         children: [
           InfoBox(Icons.directions_walk, "STEPS", _steps.toString()),
           InfoBox(Icons.fastfood, "CALORIES", _calories.toString()),
-          InfoBox(_weatherIcon, "WEATHER", _temperature.toString() + "\u00B0"),
+          InfoBox(_weatherIcon, "WEATHER", (_temperature == null ? "?" : _temperature.toString()) + "\u00B0"),
         ]);
   }
 }

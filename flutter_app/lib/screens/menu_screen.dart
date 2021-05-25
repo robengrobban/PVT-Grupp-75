@@ -28,7 +28,7 @@ class _MenuScreenState extends State<MenuScreen> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text("Meny"),
+          title: Text("Menu"),
           actions: [
             IconButton(
                 icon: Icon(Icons.settings),
@@ -53,9 +53,9 @@ class _MenuScreenState extends State<MenuScreen> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                MenuItem(Icons.person, "Profil", _itemPadding, _openProfile),
-                                MenuItem(Icons.military_tech, "Framsteg", _itemPadding, _openAchievements),
-                                MenuItem(Icons.analytics, "Veckosummering", _itemPadding, _openWeeklySummary),
+                                MenuItem(Icons.person, "Profile", _itemPadding, _openProfile),
+                                MenuItem(Icons.military_tech, "Achievements", _itemPadding, _openAchievements),
+                                MenuItem(Icons.analytics, "Weekly Summary", _itemPadding, _openWeeklySummary),
                                 _getAccountButton(),
                                 MenuItem(Icons.notifications, "DEBUG NOTIFICATION", _itemPadding, () {
                                   Navigator.of(context).pushNamed("/debug-noti");
@@ -98,9 +98,9 @@ class _MenuScreenState extends State<MenuScreen> {
 
   Widget _getAccountButton() {
     if ( AccountHandler().isLoggedIn() ) {
-      return MenuItem(Icons.logout, "Logga ut", _itemPadding, _getOUT);
+      return MenuItem(Icons.logout, "Log out", _itemPadding, _getOUT);
     }
-    return MenuItem(Icons.logout, "Logga in", _itemPadding, _getIN);
+    return MenuItem(Icons.logout, "Log in", _itemPadding, _getIN);
   }
 
   void _getOUT() {
@@ -121,18 +121,18 @@ class _MenuScreenState extends State<MenuScreen> {
       barrierDismissible: true, // user must'nt tap button!
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Vill du logga ut?'),
+          title: Text('Do you wish to log out?'),
           content: SingleChildScrollView(
               child: null
           ),
           actions: <Widget>[
-            AlertTextButton('Logga ut', () {
+            AlertTextButton('Log out', () {
               AccountHandler().handleSignOut();
               Navigator.of(context).popUntil(ModalRoute.withName('/home'));
             },
               true,
             ),
-            AlertTextButton('Stanna', () => Navigator.of(context).pop(), false),
+            AlertTextButton('Stay', () => Navigator.of(context).pop(), false),
           ],
         );
       },

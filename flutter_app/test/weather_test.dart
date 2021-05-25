@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_app/models/pair.dart';
@@ -25,6 +24,10 @@ void main() {
 
   final Pair<double, double> stockholm = Pair(59.326242, 17.8419717);
 
+  final DateTime time = DateTime.now();
+  final double temperature = 20.1;
+  final FakeSMHIFetcher fake = FakeSMHIFetcher();
+
   group('WeatherData', () {
 
     test('Constructor', () async {
@@ -40,18 +43,155 @@ void main() {
 
     });
 
-    test('Forecast icon clear sky', () async {
-      final DateTime time = DateTime.now();
-      final double temperature = 20.1;
+    test('Forecast icon day_sunny', () async {
+      int forecast = 1;
 
-      final int forecast = 1;
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.day_sunny);
 
-      final WeatherData testData = WeatherData(time, forecast, temperature);
-
+      testData = WeatherData(time, ++forecast, temperature);
       expect(testData.forecastIcon(), WeatherIcons.day_sunny);
     });
 
-    // TODO: ALL THE ICONS https://opendata.smhi.se/apidocs/metfcst/parameters.html
+    test('Forecast icon day_cloudy', () async {
+      int forecast = 3;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.day_cloudy);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.day_cloudy);
+
+    });
+
+    test('Forecast icon cloudy', () async {
+      int forecast = 5;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.cloudy);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.cloudy);
+
+    });
+
+    test('Forecast icon fog', () async {
+      int forecast = 7;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.fog);
+    });
+
+    test('Forecast icon showers', () async {
+      int forecast = 8;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.showers);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.showers);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.showers);
+    });
+
+    test('Forecast icon thunderstorm', () async {
+      int forecast = 11;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.thunderstorm);
+    });
+
+    test('Forecast icon sleet', () async {
+      int forecast = 12;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.sleet);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.sleet);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.sleet);
+    });
+
+    test('Forecast icon snow', () async {
+      int forecast = 15;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.snow);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.snow);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.snow);
+    });
+
+    test('Forecast icon rain', () async {
+      int forecast = 18;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.rain);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.rain);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.rain);
+    });
+
+    test('Forecast icon lightning', () async {
+      int forecast = 21;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.lightning);
+    });
+
+    test('Forecast icon sleet_2', () async {
+      int forecast = 22;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.sleet);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.sleet);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.sleet);
+    });
+
+    test('Forecast icon snow_2', () async {
+      int forecast = 25;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.snow);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.snow);
+
+      testData = WeatherData(time, ++forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.snow);
+    });
+
+    test('forecast icon default_volcano', () async {
+      int forecast = 30;
+
+      WeatherData testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.volcano);
+
+      forecast = -25;
+
+      testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.volcano);
+
+      forecast = -25;
+
+      testData = WeatherData(time, forecast, temperature);
+      expect(testData.forecastIcon(), WeatherIcons.volcano);
+    });
+
+
 
 
   });
@@ -59,7 +199,7 @@ void main() {
   group('WeatherHandler', () {
 
     test('Should cache before first call and should not cache after first call', () async {
-      await WeatherHandler().init();
+      await WeatherHandler().init(smhi: fake);
       WeatherHandler().clearCache();
       expect(WeatherHandler().shouldCache(), true);
       await WeatherHandler().currentWeather( stockholm );
@@ -68,7 +208,6 @@ void main() {
 
     test('Weather data parsing', () async {
 
-      FakeSMHIFetcher fake = FakeSMHIFetcher();
       await WeatherHandler().init(smhi: fake);
 
       WeatherHandler().clearCache();
