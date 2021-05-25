@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   LatLng _currentPosition = LatLng(58, 17);
   int _calories = 729;
   int _steps = 3526;
-  double _temperature = 17.1;
+  double _temperature = null;
   IconData _weatherIcon = Icons.cloud_off_outlined;
   int initialDurationInMinutes;
   bool loggedIn;
@@ -54,7 +54,6 @@ class _HomeScreenState extends State<HomeScreen> {
     LocationHandler().latlon().then((coordinates) {
       WeatherHandler().currentWeather( coordinates ).then((value) {
         _temperature = value.temperature();
-        print(_temperature);
         _weatherIcon = value.forecastIcon();
       });
     });
@@ -422,7 +421,7 @@ class HomeInfoRow extends StatelessWidget {
         children: [
           InfoBox(Icons.directions_walk, "STEPS", _steps.toString()),
           InfoBox(Icons.fastfood, "CALORIES", _calories.toString()),
-          InfoBox(_weatherIcon, "WEATHER", _temperature.toString() + "\u00B0"),
+          InfoBox(_weatherIcon, "WEATHER", (_temperature == null ? "?" : _temperature.toString()) + "\u00B0"),
         ]);
   }
 }
