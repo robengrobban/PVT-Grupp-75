@@ -1,5 +1,4 @@
 import 'dart:collection';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_app/models/pair.dart';
@@ -27,6 +26,7 @@ void main() {
 
   final DateTime time = DateTime.now();
   final double temperature = 20.1;
+  final FakeSMHIFetcher fake = FakeSMHIFetcher();
 
   group('WeatherData', () {
 
@@ -199,7 +199,7 @@ void main() {
   group('WeatherHandler', () {
 
     test('Should cache before first call and should not cache after first call', () async {
-      await WeatherHandler().init();
+      await WeatherHandler().init(smhi: fake);
       WeatherHandler().clearCache();
       expect(WeatherHandler().shouldCache(), true);
       await WeatherHandler().currentWeather( stockholm );
@@ -208,7 +208,6 @@ void main() {
 
     test('Weather data parsing', () async {
 
-      FakeSMHIFetcher fake = FakeSMHIFetcher();
       await WeatherHandler().init(smhi: fake);
 
       WeatherHandler().clearCache();
