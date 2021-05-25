@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import group75.walkInProgress.Server;
+
 @Controller
 @RequestMapping(path = "/performedRoutes")
 public class PerformedRouteController {
@@ -29,7 +31,7 @@ public class PerformedRouteController {
 	 
 	 @GetMapping(path="/streaks")
 	    public @ResponseBody ResponseEntity<List<Streak>> getStreaks(@RequestParam String token) {
-	        final String target = "https://group5-75.pvt.dsv.su.se/account/userFromToken?token="+token;
+	        final String target = Server.NAME + "/account/userFromToken?token="+token;
 	        final RestTemplate restTemplate = new RestTemplate();
 	        try {
 	            UserInfo response = restTemplate.getForObject(target, UserInfo.class);
@@ -45,7 +47,7 @@ public class PerformedRouteController {
 	 
 	 @GetMapping(path="/streaks/longest")
 	    public @ResponseBody ResponseEntity<Streak> getLongestStreak(@RequestParam String token) {
-	        final String target = "https://group5-75.pvt.dsv.su.se/account/userFromToken?token="+token;
+	        final String target = Server.NAME + "/account/userFromToken?token="+token;
 	        final RestTemplate restTemplate = new RestTemplate();
 	        try {
 	            UserInfo response = restTemplate.getForObject(target, UserInfo.class);
@@ -59,9 +61,25 @@ public class PerformedRouteController {
 	        }
 	    }
 	 
+	 @GetMapping(path="/streaks/current")
+	    public @ResponseBody ResponseEntity<Streak> getCurrentStreak(@RequestParam String token) {
+	        final String target = Server.NAME + "/account/userFromToken?token="+token;
+	        final RestTemplate restTemplate = new RestTemplate();
+	        try {
+	            UserInfo response = restTemplate.getForObject(target, UserInfo.class);
+	            int id = response.getId();
+	            List<PerformedRoute> userRoutes = performedRouteRepository.findByUserIdOrderByTimeFinishedAsc(id);
+	            Streak streak = streakService.getCurrentStreak(userRoutes);
+	            return new ResponseEntity<Streak>(streak, HttpStatus.OK);
+	        } catch (RestClientException e) {
+	        	System.out.println(e);
+	            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+	        }
+	    }
+	 
     @GetMapping(path="/longestDistance")
     public @ResponseBody ResponseEntity<PerformedRoute> getLongestDistanceRoute(@RequestParam String token) {
-        final String target = "https://group5-75.pvt.dsv.su.se/account/userFromToken?token="+token;
+        final String target = Server.NAME + "/account/userFromToken?token="+token;
         final RestTemplate restTemplate = new RestTemplate();
         try {
             UserInfo response = restTemplate.getForObject(target, UserInfo.class);
@@ -75,7 +93,7 @@ public class PerformedRouteController {
     
     @GetMapping(path="/totalTime")
     public @ResponseBody ResponseEntity<Integer> getTotalTimeForRoutes(@RequestParam String token) {
-        final String target = "https://group5-75.pvt.dsv.su.se/account/userFromToken?token="+token;
+        final String target = Server.NAME + "/account/userFromToken?token="+token;
         final RestTemplate restTemplate = new RestTemplate();
         try {
             UserInfo response = restTemplate.getForObject(target, UserInfo.class);
@@ -90,7 +108,7 @@ public class PerformedRouteController {
     
     @GetMapping(path="/totalDistance")
     public @ResponseBody ResponseEntity<Integer> getTotalDistanceForRoutes(@RequestParam String token) {
-        final String target = "https://group5-75.pvt.dsv.su.se/account/userFromToken?token="+token;
+        final String target = Server.NAME + "/account/userFromToken?token="+token;
         final RestTemplate restTemplate = new RestTemplate();
         try {
             UserInfo response = restTemplate.getForObject(target, UserInfo.class);
@@ -105,7 +123,7 @@ public class PerformedRouteController {
     
     @GetMapping(path="/longestDuration")
     public @ResponseBody ResponseEntity<PerformedRoute> getLongestDurationRoute(@RequestParam String token) {
-        final String target = "https://group5-75.pvt.dsv.su.se/account/userFromToken?token="+token;
+        final String target = Server.NAME + "/account/userFromToken?token="+token;
         final RestTemplate restTemplate = new RestTemplate();
         try {
             UserInfo response = restTemplate.getForObject(target, UserInfo.class);
@@ -124,7 +142,7 @@ public class PerformedRouteController {
     	if(performedRouteBody==null || performedRoute == null || performedRoute.getStartPoint()== null || performedRoute.getWaypoints()==null || performedRoute.getTimeFinished() == null) {
     		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     	}
-        final String target = "https://group5-75.pvt.dsv.su.se/userFromToken?token="+performedRouteBody.getToken();
+        final String target = Server.NAME + "/account/userFromToken?token="+performedRouteBody.getToken();
         final RestTemplate restTemplate = new RestTemplate();
         try {
             UserInfo response = restTemplate.getForObject(target, UserInfo.class);
@@ -146,12 +164,12 @@ public class PerformedRouteController {
     
     @GetMapping(path="")
     public @ResponseBody ResponseEntity<Iterable<PerformedRoute>> getAllPerformedRoutes(@RequestParam String token) {
-        final String target = "https://group5-75.pvt.dsv.su.se/account/userFromToken?token="+token;
+        final String target = Server.NAME + "/account/userFromToken?token="+token;
         final RestTemplate restTemplate = new RestTemplate();
         try {
             UserInfo response = restTemplate.getForObject(target, UserInfo.class);
             int id = response.getId();
-            return new ResponseEntity<>(performedRouteRepository.findByUserId(id), HttpStatus.OK);
+            return new ResponseEntity<>(performedRouteRepository.findByUserIdOrderByTimeFinishedDesc(id), HttpStatus.OK);
         } catch (RestClientException e) {
         	System.out.println(e);
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);

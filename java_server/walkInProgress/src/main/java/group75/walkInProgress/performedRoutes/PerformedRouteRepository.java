@@ -16,6 +16,8 @@ public interface PerformedRouteRepository  extends CrudRepository<PerformedRoute
 	List<PerformedRoute> findByUserId(int userId);
 
 	List<PerformedRoute> findByUserIdOrderByTimeFinishedAsc(int userId);
+	
+	List<PerformedRoute> findByUserIdOrderByTimeFinishedDesc(int userId);
 
 	@Query("SELECT SUM(r.actualDuration) FROM PerformedRoute r WHERE r.userId = ?1")
 	Integer findTotalTimeByUserId(int userId);
