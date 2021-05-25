@@ -112,7 +112,13 @@ class NotificationHandler {
 
   }
 
-  void updateSettings(int maxNotifications, int walkLength, bool affectedByWeather) async {
+  Future<void> updateSettings(int maxNotifications, int walkLength, bool affectedByWeather) async {
+    if ( maxNotifications < 0 ) {
+      throw( Exception("Max notifications cannot be less than zero.") );
+    }
+    if ( walkLength < _defaultWalkLength ) {
+      throw( Exception("Walk length cannot be less than " + _defaultWalkLength.toString()) );
+    }
     _maxNotifications = maxNotifications;
     _walkLength = walkLength;
     _timeRequired = _walkLength + _defaultOffset;
@@ -165,7 +171,7 @@ class NotificationHandler {
     }
 
     List<Event> events = await _fetchEvents();
-    List<NotificationSpot> spots = _generateNotificationSpots(events);
+    List<NotificationSpot> spots = generateNotificationSpots(events);
     HashMap<int, WeatherData> weatherData = await _weather.todaysWeather( await LocationHandler().latlon() );
 
     for ( NotificationSpot spot in spots ) {
@@ -198,7 +204,7 @@ class NotificationHandler {
 
   /// Generate spots for notifications.
   /// Uses a list of events to generate them
-  List<NotificationSpot> _generateNotificationSpots(List<Event> events) {
+  List<NotificationSpot> generateNotificationSpots(List<Event> events) {
     List<NotificationSpot> spots = List.empty(growable: true);
     if ( events.length >= 2 ) {
       for (int i = 0; i < events.length-1; i++) {

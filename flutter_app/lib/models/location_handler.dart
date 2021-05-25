@@ -19,7 +19,7 @@ class LocationHandler{
   }
 
   Future<void> init() async{
-    _location =  new Location();
+    _location = new Location();
 
     bool _serviceEnabled;
     PermissionStatus _permissionGranted;
@@ -45,30 +45,14 @@ class LocationHandler{
 
 
   Future<Pair<double, double>> latlon() async{
-    //if(!_initialized){
-    //  return _noLocationFound;
-    //} TEMPORÄRT
+    if(!_initialized){
+      return _noLocationFound;
+    }
     _locationData = await _location.getLocation();
     Pair<double, double> latLonPair = new Pair(_locationData.latitude, _locationData.longitude);
 
     return latLonPair;
   }
-
-  /*double getLat(){
-    if(!_initialized){
-      return 0.0;
-    }
-    return _locationData.latitude;
-  }
-
-  double getLon(){
-    if(!_initialized){
-      return 0.0;
-    }
-
-    return _locationData.longitude;
-  }
-  */
   
   bool isInitialized(){
     return _initialized;

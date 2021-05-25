@@ -191,9 +191,6 @@ void main() {
       expect(testData.forecastIcon(), WeatherIcons.volcano);
     });
 
-
-
-
   });
 
   group('WeatherHandler', () {
@@ -209,18 +206,25 @@ void main() {
     test('Weather data parsing', () async {
 
       await WeatherHandler().init(smhi: fake);
-
       WeatherHandler().clearCache();
 
       HashMap<int, WeatherData> testData = await WeatherHandler().todaysWeather(stockholm);
 
       DateTime testTime = DateTime.parse("2021-05-24T15:00:00Z").toLocal();
-
       expect(testData[testTime.hour].temperature(), 109.1);
 
       testTime = DateTime.parse("2021-05-24T22:00:00Z").toLocal();
-
       expect(testData[testTime.hour].forecast(), 683091549810583571);
+
+    });
+
+    test('Can fetch current weather', () async {
+
+      await WeatherHandler().init(smhi: fake);
+      WeatherHandler().clearCache();
+
+      WeatherData testData = await WeatherHandler().currentWeather(stockholm);
+      expect(testData != null, true);
 
     });
 
