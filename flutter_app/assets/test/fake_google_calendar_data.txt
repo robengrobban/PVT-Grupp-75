@@ -1,0 +1,76 @@
+{
+ "kind": "calendar#events",
+ "etag": "\"p334bp46bvbif00g\"",
+ "summary": "stinkyboomerbrain@gmail.com",
+ "updated": "2021-05-25T13:39:56.605Z",
+ "timeZone": "Europe/Stockholm",
+ "accessRole": "owner",
+ "defaultReminders": [
+  {
+   "method": "popup",
+   "minutes": 30
+  }
+ ],
+ "items": [
+  {
+   "kind": "calendar#event",
+   "etag": "\"3243899986020000\"",
+   "id": "7fdf65mdhi4hc4sje9fuedmp75",
+   "status": "confirmed",
+   "htmlLink": "https://www.google.com/calendar/event?eid=N2ZkZjY1bWRoaTRoYzRzamU5ZnVlZG1wNzUgc3Rpbmt5Ym9vbWVyYnJhaW5AbQ",
+   "created": "2021-05-25T13:39:53.000Z",
+   "updated": "2021-05-25T13:39:53.010Z",
+   "summary": "asd",
+   "creator": {
+    "email": "stinkyboomerbrain@gmail.com",
+    "self": true
+   },
+   "organizer": {
+    "email": "stinkyboomerbrain@gmail.com",
+    "self": true
+   },
+   "start": {
+    "dateTime": "2021-05-25T17:00:00+02:00"
+   },
+   "end": {
+    "dateTime": "2021-05-25T18:00:00+02:00"
+   },
+   "iCalUID": "7fdf65mdhi4hc4sje9fuedmp75@google.com",
+   "sequence": 0,
+   "reminders": {
+    "useDefault": true
+   },
+   "eventType": "default"
+  },
+  {
+   "kind": "calendar#event",
+   "etag": "\"3243899993210000\"",
+   "id": "6954td4smqo2e9oc38rnpkpfta",
+   "status": "confirmed",
+   "htmlLink": "https://www.google.com/calendar/event?eid=Njk1NHRkNHNtcW8yZTlvYzM4cm5wa3BmdGEgc3Rpbmt5Ym9vbWVyYnJhaW5AbQ",
+   "created": "2021-05-25T13:39:56.000Z",
+   "updated": "2021-05-25T13:39:56.605Z",
+   "summary": "asd2",
+   "creator": {
+    "email": "stinkyboomerbrain@gmail.com",
+    "self": true
+   },
+   "organizer": {
+    "email": "stinkyboomerbrain@gmail.com",
+    "self": true
+   },
+   "start": {
+    "dateTime": "2021-05-25T19:00:00+02:00"
+   },
+   "end": {
+    "dateTime": "2021-05-25T20:00:00+02:00"
+   },
+   "iCalUID": "6954td4smqo2e9oc38rnpkpfta@google.com",
+   "sequence": 0,
+   "reminders": {
+    "useDefault": true
+   },
+   "eventType": "default"
+  }
+ ]
+}

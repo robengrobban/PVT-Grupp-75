@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter_app/main.dart';
 import 'package:flutter_app/models/notification_handler.dart';
+import 'package:flutter_app/util/google_calendar_fetcher.dart';
 import "package:http/http.dart" as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'dart:convert' show json;
@@ -38,9 +39,11 @@ class AccountHandler {
   /// Last time events was fetched, used for caching information.
   DateTime _lastEventsFetched;
 
-  StreamSubscription<GoogleSignInAccount> lastCallback;
+  StreamSubscription<GoogleSignInAccount> _lastCallback;
 
   final int _cacheInMinutes = 1;
+
+  GoogleCalendarFetcher _calendarFetcher;
 
   /// Factory constructor to facilitate the Singleton design principle.
   factory AccountHandler() {
@@ -51,15 +54,16 @@ class AccountHandler {
   /// This can be used to activate a re-construction of a flutter widget, or
   /// to activate silent sign in.
   void onOneTimeUserChange(Function() callback) {
-    lastCallback = _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
-      if ( lastCallback != null ) {
-        lastCallback.cancel();
+    _lastCallback = _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+      if ( _lastCallback != null ) {
+        _lastCallback.cancel();
       }
       callback();
     });
   }
 
-  Future<void> init() async {
+  Future<void> init({GoogleCalendarFetcher fetcher}) async {
+    _calendarFetcher = fetcher ?? GoogleCalendarFetcher();
     _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
       _currentUser = account;
       _changeUserActions();
@@ -70,7 +74,7 @@ class AccountHandler {
   /// Sign in the user using google.
   Future<bool> handleSignIn() async {
     try {
-      var result = await _googleSignIn.signIn();
+      GoogleSignInAccount result = await _googleSignIn.signIn();
       if(result != null) {
         return true;
       }
@@ -149,23 +153,11 @@ class AccountHandler {
   /// Generate a list of events using the google calendar.
   /// The list will contain all of the users event from now and 24h into the future.
   Future<List<Event>> _generateCalendar() async {
-    GoogleSignInAccount user = _currentUser;
-
-    if ( user == null ) {
+    Map<String, dynamic> response = await _calendarFetcher.fetchCalendar(_googleSignIn.currentUser);
+    if ( response == null ) {
       return List.empty();
     }
-
-    DateTime startTime = new DateTime.now();
-    DateTime endTime = new DateTime.now().add(new Duration(days: 1));
-
-    final http.Response response = await http.get(
-      Uri.parse('https://www.googleapis.com/calendar/v3/calendars/'+user.email+'/events?orderBy=startTime&singleEvents=true&timeMax='+endTime.toUtc().toIso8601String()+'&timeMin='+startTime.toUtc().toIso8601String()),
-      headers: await user.authHeaders,
-    );
-    if (response.statusCode != 200) {
-      return List.empty();
-    }
-    return _buildEventList(json.decode(response.body));
+    return _buildEventList(response);
   }
 
   /// Returns a list of events from a JSON object.
@@ -193,14 +185,19 @@ class AccountHandler {
   /// Returns a list of events using the google calendar.
   /// The list will contain all of the users event from now and 24h into the future.
   Future<List<Event>> events() async {
-    if (_currentUser == null ) {
-      return Future.error("Not logged in");
-    }
-    if ( _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inMinutes >= _cacheInMinutes ) {
+    if ( shouldCache() ) {
       _events = await _generateCalendar();
       _lastEventsFetched = DateTime.now();
     }
     return _events;
+  }
+
+  bool shouldCache() {
+    return _lastEventsFetched == null || DateTime.now().difference(_lastEventsFetched).inMinutes >= _cacheInMinutes;
+  }
+
+  void clearCache() {
+    _lastEventsFetched = null;
   }
 
   /// Check if a user is logged in or not.

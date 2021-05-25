@@ -6,6 +6,7 @@ import 'package:flutter_app/models/location_handler.dart';
 import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/models/pair.dart';
 import 'package:flutter_app/models/route_handler.dart';
+import 'package:flutter_app/models/weather_data.dart';
 import 'package:flutter_app/models/weather_handler.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 import 'package:flutter_app/util/shared_prefs.dart';
@@ -46,23 +47,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   initState() {
     super.initState();
+    rootBundle
+        .loadString('assets/mapStyles/darkMapStyle.txt')
+        .then((string) => {_mapStyle = string});
+    init();
+  }
+  Future<void> init() async {
     if (widget.payload != null &&
         widget.payload.isNotEmpty &&
         int.tryParse(widget.payload) != null) {
       initialDurationInMinutes = int.parse(widget.payload);
     }
-    LocationHandler().latlon().then((coordinates) {
-      WeatherHandler().currentWeather( coordinates ).then((value) {
-        _temperature = value.temperature();
-        _weatherIcon = value.forecastIcon();
-      });
-    });
-    rootBundle
-        .loadString('assets/mapStyles/darkMapStyle.txt')
-        .then((string) => {_mapStyle = string});
-    _setUpRoute();
-    _setUpGeoFence();
-
+    Pair<double, double> coordinates = await LocationHandler().latlon();
+    WeatherData weatherData = await WeatherHandler().currentWeather(coordinates);
+    this._temperature = weatherData.temperature();
+    this._weatherIcon = weatherData.forecastIcon();
+    await _setUpRoute();
+    await _setUpGeoFence();
   }
   
   Future<void> _setUpGeoFence() async {
@@ -93,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
     )).then((value) => print("started: ${value.enabled}"));
   }
 
-  void _setUpRoute() async {
+  Future<void> _setUpRoute() async {
     await _getCurrentLocation();
     int _preferredDuration = initialDurationInMinutes ??
         (SharedPrefs().preferredDuration ?? DEFAULT_DURATION);
