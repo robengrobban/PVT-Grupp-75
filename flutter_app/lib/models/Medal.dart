@@ -22,23 +22,18 @@ extension ColorExtension on MedalType {
   Color get color {
     switch (this) {
       case MedalType.THREE_DAY_STREAK:
-        print("Three day streak");
-        return Colors.yellowAccent;
+        return Colors.orange.shade900.withOpacity(0.9);
       case MedalType.FIVE_DAY_STREAK:
-        print("Five day streak");
-        return Colors.blue;
+        return myColor.shade300.withOpacity(0.9);
       case MedalType.TEN_DAY_STREAK:
-        print("Ten day streak");
-        return Colors.lightGreenAccent;
+        return Colors.yellow.shade400.withOpacity(0.9);
       case MedalType.FIFTEEN_DAY_STREAK:
-        print("Fifteen day streak");
-        return Colors.red;
+        return Colors.grey.shade600.withOpacity(0.9);
       case MedalType.TWENTY_DAY_STREAK:
-        print("Twenty day streak");
-        return Colors.purpleAccent;
+        return Colors.purpleAccent.withOpacity(0.9);
       case MedalType.THIRTY_DAY_STREAK:
-        print("Thirty day streak");
-        return Colors.deepOrange;
+        return Colors.green.withOpacity(0.9);
+        ;
     }
   }
 }
@@ -47,17 +42,32 @@ extension TitleExtension on MedalType {
   String get string {
     switch (this) {
       case MedalType.THREE_DAY_STREAK:
-        return "Three day streak";
+        return "3 day streak";
       case MedalType.FIVE_DAY_STREAK:
-        return "Five day streak";
+        return "5 day streak";
       case MedalType.TEN_DAY_STREAK:
-        return "Ten day streak";
+        return "10 day streak";
       case MedalType.FIFTEEN_DAY_STREAK:
-        return "Fifteen day streak";
+        return "15 day streak";
       case MedalType.TWENTY_DAY_STREAK:
-        return "Twenty day streak";
+        return "20 day streak";
       case MedalType.THIRTY_DAY_STREAK:
-        return "Thirty day streak";
+        return "30 day streak";
     }
   }
 }
+
+MaterialColor myColor = MaterialColor(0xFF880E4F, color);
+
+Map<int, Color> color = {
+  50: Color.fromRGBO(4, 131, 184, .1),
+  100: Color.fromRGBO(4, 131, 184, .2),
+  200: Color.fromRGBO(4, 131, 184, .3),
+  300: Color.fromRGBO(4, 131, 184, .4),
+  400: Color.fromRGBO(4, 131, 184, .5),
+};
+
+LinearGradient medalGradiant = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [myColor.shade50, myColor.shade900]);
