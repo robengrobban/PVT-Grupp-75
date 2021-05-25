@@ -53,5 +53,9 @@ public class StreakService {
 	public Streak getLongestStreak(List<PerformedRoute> userRoutes) {
 		return getStreaks(userRoutes).stream().max(Comparator.comparing(v -> v.getDays())).orElse(null);
 	}
+	
+	public Streak getCurrentStreak(List<PerformedRoute> userRoutes) {
+		return null;
+	}
 
 }

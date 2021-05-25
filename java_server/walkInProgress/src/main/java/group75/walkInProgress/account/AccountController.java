@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import group75.walkInProgress.Server;
+
 import java.util.List;
 
 @RestController
@@ -20,7 +22,7 @@ public class AccountController {
     @PostMapping(path="/create",consumes="application/json",produces="application/json")
     public @ResponseBody ResponseEntity<Account> saveAccount(@RequestBody Account account) {
 
-        final String target = "https://group5-75.pvt.dsv.su.se/account/token?token="+account.getToken();
+        final String target = Server.NAME +"/account/token?token="+account.getToken();
         final RestTemplate restTemplate = new RestTemplate();
         try {
             Boolean response = restTemplate.getForObject(target, Boolean.class);
@@ -89,7 +91,7 @@ public class AccountController {
 
     @GetMapping(path="/lookup")
     public @ResponseBody ResponseEntity<Account> findAccountByEmail(String email, String token) {
-        final String target = "https://group5-75.pvt.dsv.su.se/account/token?token="+token;
+        final String target = Server.NAME + "/account/token?token="+token;
         final RestTemplate restTemplate = new RestTemplate();
         try {
             Boolean response = restTemplate.getForObject(target, Boolean.class);
@@ -109,7 +111,7 @@ public class AccountController {
     
     @GetMapping(path="/all")
     public @ResponseBody ResponseEntity<Iterable<Account>> getAllAccounts(@RequestParam String token) {
-        final String target = "https://group5-75.pvt.dsv.su.se/account/token?token="+token;
+        final String target = Server.NAME +"/account/token?token="+token;
         final RestTemplate restTemplate = new RestTemplate();
         try {
             Boolean response = restTemplate.getForObject(target, Boolean.class);
@@ -125,7 +127,7 @@ public class AccountController {
 
     @GetMapping(path="/exists")
     public @ResponseBody ResponseEntity<Boolean> existsAccount(@RequestParam String email, String token) {
-        final String target = "https://group5-75.pvt.dsv.su.se/account/token?token="+token;
+        final String target = Server.NAME +"/account/token?token="+token;
         final RestTemplate restTemplate = new RestTemplate();
         try {
             Boolean response = restTemplate.getForObject(target, Boolean.class);

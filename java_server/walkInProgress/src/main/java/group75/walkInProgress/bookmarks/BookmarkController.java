@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import group75.walkInProgress.Server;
+
 
 
 @Controller
@@ -35,7 +37,7 @@ public class BookmarkController {
     	if(bookmarkBody==null || bookmarkBody.getRouteInfo() == null || bookmarkBody.getRouteInfo().getStartPoint()== null || bookmarkBody.getRouteInfo().getWaypoints()==null) {
     		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     	}
-        final String target = "https://group5-75.pvt.dsv.su.se/account/userFromToken?token="+bookmarkBody.getToken();
+        final String target = Server.NAME + "/account/userFromToken?token="+bookmarkBody.getToken();
         final RestTemplate restTemplate = new RestTemplate();
         try {
             UserInfo response = restTemplate.getForObject(target, UserInfo.class);
@@ -55,7 +57,7 @@ public class BookmarkController {
     
     @DeleteMapping(path="/remove")
     public @ResponseBody ResponseEntity<Bookmark> deleteBookmark(@RequestParam String token, @RequestParam int bookmarkId) {
-        final String target = "https://group5-75.pvt.dsv.su.se/account/userFromToken?token="+token;
+        final String target = Server.NAME + "/account/userFromToken?token="+token;
         final RestTemplate restTemplate = new RestTemplate();
         try {
             UserInfo response = restTemplate.getForObject(target, UserInfo.class);
@@ -76,7 +78,7 @@ public class BookmarkController {
     
     @GetMapping(path="")
     public @ResponseBody ResponseEntity<Iterable<Bookmark>> getAllBookmarks(@RequestParam String token) {
-        final String target = "https://group5-75.pvt.dsv.su.se/account/userFromToken?token="+token;
+        final String target = Server.NAME + "/account/userFromToken?token="+token;
         final RestTemplate restTemplate = new RestTemplate();
         try {
             UserInfo response = restTemplate.getForObject(target, UserInfo.class);
