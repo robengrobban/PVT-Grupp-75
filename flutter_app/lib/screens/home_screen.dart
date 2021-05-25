@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _setUpRoute() async {
-    _currentPosition = LatLng(58.9142, 17.9380);
+    await _getCurrentLocation();
     int _preferredDuration = initialDurationInMinutes ??
         (SharedPrefs().preferredDuration ?? DEFAULT_DURATION);
     String _preferredAttraction =
