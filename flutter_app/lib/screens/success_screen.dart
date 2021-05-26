@@ -5,11 +5,13 @@ import 'package:calendar_widget/calendar_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/Medal.dart';
+import 'package:flutter_app/models/Streak.dart';
 import 'package:flutter_app/models/account_handler.dart';
 import 'package:flutter_app/models/performed_route.dart';
 import 'package:flutter_app/main.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_app/widgets/big_gradient_dialog.dart';
 
 import 'package:flutter_app/theme.dart' as Theme;
 
@@ -110,7 +112,6 @@ List<Medal> _getMedals() {
     new Medal(type: MedalType.FIVE_DAY_STREAK),
     new Medal(type: MedalType.TEN_DAY_STREAK),
     new Medal(type: MedalType.FIFTEEN_DAY_STREAK),
-    new Medal(type: MedalType.TWENTY_DAY_STREAK),
     new Medal(type: MedalType.THIRTY_DAY_STREAK),
     new Medal(type: MedalType.THREE_DAY_STREAK),
     new Medal(type: MedalType.THREE_DAY_STREAK),
@@ -131,10 +132,16 @@ class StreakScreen extends StatefulWidget {
 class _StreakScreenState extends State<StreakScreen> {
   Map<DateTime, List<PerformedRoute>> _performedRoutes = {};
 
+  Streak _longestStreak;
+
+  Streak _currentStreak;
+
   @override
   void initState() {
     super.initState();
     _getPerformedRoutes();
+    _getLongestStreak();
+    _getCurrentStreak();
   }
 
   @override
@@ -150,95 +157,138 @@ class _StreakScreenState extends State<StreakScreen> {
     return Container(
         margin: EdgeInsets.only(top: 16),
         alignment: Alignment.topCenter,
-        child: Calendar(
-            highlighter: highlighter,
-            width: MediaQuery.of(context).size.width - 32,
-            onTapListener: (DateTime dt) {
-              print(dt);
-              print(_performedRoutes.containsKey(dt));
-              _performedRoutes.containsKey(dt)
-                  ? showDialog<String>(
+        child: Column(
+          children: [
+            Calendar(
+                highlighter: highlighter,
+                width: MediaQuery.of(context).size.width - 32,
+                onTapListener: (DateTime dt) {
+                  print(dt);
+                  print(_performedRoutes.containsKey(dt));
+                  if (_performedRoutes.containsKey(dt))
+                    showDialog<String>(
                       context: context,
-                      builder: (BuildContext context) =>
-                          ListView(children: <Widget>[
-                            Center(
-                              child: AlertDialog(
-                                title: const Text('Your route'),
-                                content: SingleChildScrollView(
-                                    child: ListBody(
-                                  children: <Widget>[
-                                    Text(_performedRoutes[dt][0]
-                                        .distance
-                                        .toString()),
-                                    Text(_performedRoutes[dt][0]
-                                        .actualDuration
-                                        .toString()),
-                                  ],
-                                )),
-                              ),
-                            )
-                          ]))
-                  : null;
-            }));
+                      builder: (BuildContext context) => BigGradientDialogShell(
+                        showArrow: false,
+                        title: 'Your routes ${dt.day}/${dt.month}',
+                        titleSize: 20,
+                        child: Container(
+                          width: 200,
+                          height: 150,
+                          child: ListView(
+                            children:
+                                List.generate(_performedRoutes[dt].length, (index) {
+                              return Card(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadius.all(Radius.circular(10))),
+                                  margin: EdgeInsets.only(bottom: 10),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 8.0, bottom: 8, left: 12, right: 12),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                              "${(_performedRoutes[dt][index].timeFinished.hour)}:${(_performedRoutes[dt][index].timeFinished.minute)}",
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Theme
+                                                      .AppColors.brandOrange[500])),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                "Distance: ",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text((_performedRoutes[dt][index].distance /
+                                                          1000)
+                                                      .toStringAsFixed(2) +
+                                                  " km")
+                                            ],
+                                          ),
+                                          Row(children: [
+                                            Text("Duration: ",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold)),
+                                            Text((_performedRoutes[dt][index]
+                                                            .actualDuration ~/
+                                                        60)
+                                                    .toString() +
+                                                " min")
+                                          ])
+                                        ]),
+                                  ));
+                            }),
+                          ),
+                        ),
+                      ),
+                    );
+                }),
+            Row(
+              children: [
+                ImageIcon(
+                  AssetImage('assets/images/141054.png'),
+                  size: 50,
+                ),
+                Text("Longest Streak", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(_longestStreak == null ? "?" : _longestStreak.days.toString())
+              ],
+            ),
+            Row(
+              children: [
+                ImageIcon(
+                  AssetImage('assets/images/141054.png'),
+                  size: 50,
+                ),
+                Text("Longest Streak", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(_longestStreak == null ? "?" : _currentStreak.days.toString())
+              ],
+            )
+          ],
+        )
+    );
+  }
+
+  Future<void> _getLongestStreak() async {
+    String token = await AccountHandler().accessToken();
+    var uri = USES_HTTPS
+        ? Uri.https(SERVER_HOST, '/performedRoutes/streaks/longest', {"token": token})
+        : Uri.http(SERVER_HOST, '/performedRoutes/streaks/longest', {"token": token});
+    print(uri.toString());
+    final response = await http.get(uri);
+    setState(() {
+      if (response.statusCode == 200) {
+        _longestStreak = Streak.fromJson(jsonDecode(response.body));
+      } else {
+        _longestStreak = null;
+      }
+    });
+  }
+
+  Future<void> _getCurrentStreak() async {
+    setState(() {
+      _currentStreak = Streak(days:2, startDate: DateTime(2021,03,22), endDate: DateTime(2021,03,24), routes: []);
+    });
   }
 
   Future<void> _getPerformedRoutes() async {
-    // String token = await AccountHandler().accessToken();
-    // var uri = USES_HTTPS ?  Uri.https(SERVER_HOST, '/performedRoutes', {"token": token}) : Uri.http(SERVER_HOST, '/performedRoutes', {"token":token});
-    // print(uri.toString());
-    // final response = await http.get(uri);
-    //
-    //   setState(() {
-    //   if(response.statusCode == 200) {
-    //     _performedRoutes = _parseRoute(response.body);
-    //   } else {
-    //     return {};
-    //   }
-    //   });
-
+    String token = await AccountHandler().accessToken();
+    var uri = USES_HTTPS
+        ? Uri.https(SERVER_HOST, '/performedRoutes', {"token": token})
+        : Uri.http(SERVER_HOST, '/performedRoutes', {"token": token});
+    print(uri.toString());
+    final response = await http.get(uri);
     setState(() {
-      _performedRoutes = {
-        DateTime(2021, 05, 29): [
-          PerformedRoute(
-              waypoints: [],
-              startPoint: LatLng(58.34, 17.30000000000001),
-              distance: 10,
-              actualDuration: 0,
-              timeFinished: DateTime(2021, 05, 29))
-        ],
-        DateTime(2021, 05, 28): [
-          PerformedRoute(
-              waypoints: [],
-              startPoint: LatLng(58.34, 17.30000000000001),
-              distance: 10,
-              actualDuration: 0,
-              timeFinished: DateTime(2021, 05, 28, 21, 34, 55))
-        ],
-        DateTime(2021, 05, 26): [
-          PerformedRoute(
-              waypoints: [],
-              startPoint: LatLng(58.34, 17.30000000000001),
-              distance: 10,
-              actualDuration: 0,
-              timeFinished: DateTime(2021, 05, 26, 21, 34, 55, 000))
-        ],
-        DateTime(2021, 05, 25, 00, 00, 00): [
-          PerformedRoute(
-              waypoints: [],
-              startPoint: LatLng(58.34, 17.30000000000001),
-              distance: 10,
-              actualDuration: 0,
-              timeFinished: DateTime(2021, 05, 25, 21, 34, 55))
-        ],
-        DateTime(2021, 05, 25, 00, 00, 00): [
-          PerformedRoute(
-              waypoints: [],
-              startPoint: LatLng(58.34, 17.30000000000001),
-              distance: 10,
-              actualDuration: 0,
-              timeFinished: DateTime(2021, 05, 25, 21, 34, 55))
-        ],
-      };
+      if (response.statusCode == 200) {
+        _performedRoutes = _parseRoute(response.body);
+      } else {
+        _performedRoutes = {};
+      }
     });
   }
 

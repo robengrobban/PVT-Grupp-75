@@ -6,6 +6,7 @@ import 'package:flutter_app/models/location_handler.dart';
 import 'package:flutter_app/models/notification_handler.dart';
 import 'package:flutter_app/models/pair.dart';
 import 'package:flutter_app/models/route_handler.dart';
+import 'package:flutter_app/models/user_route_handler.dart';
 import 'package:flutter_app/models/weather_data.dart';
 import 'package:flutter_app/models/weather_handler.dart';
 import 'package:flutter_app/theme.dart' as Theme;
@@ -34,15 +35,16 @@ class _HomeScreenState extends State<HomeScreen> {
   String _mapStyle;
   CircularRoute _currentRoute;
   LatLng _currentPosition = LatLng(58, 17);
-  int _calories = 729;
-  int _steps = 3526;
-  double _temperature = null;
+  int _totalTime;
+  int _totalKm;
+  double _temperature;
   IconData _weatherIcon = Icons.cloud_off_outlined;
   int initialDurationInMinutes;
   bool loggedIn;
   Set<int> passed = Set();
   Set<int> toPass = Set();
   bool passedStartTwice = false;
+  bool _isLoggedIn = false;
 
   @override
   initState() {
@@ -59,11 +61,20 @@ class _HomeScreenState extends State<HomeScreen> {
       initialDurationInMinutes = int.parse(widget.payload);
     }
     Pair<double, double> coordinates = await LocationHandler().latlon();
-    WeatherData weatherData = await WeatherHandler().currentWeather(coordinates);
-    this._temperature = weatherData.temperature();
-    this._weatherIcon = weatherData.forecastIcon();
+    try {
+      WeatherData weatherData = await WeatherHandler().currentWeather(coordinates);
+      this._temperature = weatherData.temperature();
+      this._weatherIcon = weatherData.forecastIcon();
+    } catch(e) {
+      //fail silently
+    }
+
     await _setUpRoute();
     await _setUpGeoFence();
+
+    await _handleSignInChange();
+
+
   }
   
   Future<void> _setUpGeoFence() async {
@@ -115,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.of(context)
                     .pushNamed("/menu")
-                    .whenComplete(() => null);
+                    .whenComplete(() async {await _handleSignInChange();});
               },
             )),
         title: Text("Walk in Progress"),
@@ -163,10 +174,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   children: [
                     HomeInfoRow(
-                        steps: _steps,
-                        calories: _calories,
+                        totalTime: _totalTime,
+                        totalKm: _totalKm,
                         weatherIcon: _weatherIcon,
-                        temperature: _temperature),
+                        temperature: _temperature,
+                        isLoggedIn: _isLoggedIn),
                     Align(
                         alignment: Alignment.topLeft,
                         child: Padding(
@@ -198,6 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (!AccountHandler().isLoggedIn()) {
                         if (!await AccountHandler().handleSignIn()) return;
                       }
+                      await _handleSignInChange();
                       _saveRoute(_currentRoute);
                     },
                   ),
@@ -394,25 +407,45 @@ class _HomeScreenState extends State<HomeScreen> {
     await bg.BackgroundGeolocation.startGeofences().then((value) => "state is ${value.enabled}");
 
   }
+
+  Future<void> _handleSignInChange() async {
+    setState(() {
+      print("Logged in" + AccountHandler().isLoggedIn().toString());
+      _isLoggedIn = AccountHandler().isLoggedIn();
+    });
+    if(_isLoggedIn) {
+      int time = await UserRouteHandler().getTotalTimeWalked()~/(60*60);
+      int km = await UserRouteHandler().getTotalDistanceWalked()~/1000;
+      setState(() {
+        _totalTime = time;
+        _totalKm = km;
+      });
+    }
+  }
+
+
 }
 
 class HomeInfoRow extends StatelessWidget {
   const HomeInfoRow({
     Key key,
-    @required int steps,
-    @required int calories,
+    @required int totalTime,
+    @required int totalKm,
     @required IconData weatherIcon,
     @required double temperature,
-  })  : _steps = steps,
-        _calories = calories,
+    @required bool isLoggedIn,
+  })  : _totalTime = totalTime,
+        _totalKm = totalKm,
         _weatherIcon = weatherIcon,
         _temperature = temperature,
+        _isLoggedIn = isLoggedIn,
         super(key: key);
 
-  final int _steps;
-  final int _calories;
+  final int _totalTime;
+  final int _totalKm;
   final IconData _weatherIcon;
   final double _temperature;
+  final bool _isLoggedIn;
 
   @override
   Widget build(BuildContext context) {
@@ -421,8 +454,8 @@ class HomeInfoRow extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          InfoBox(Icons.directions_walk, "STEPS", _steps.toString()),
-          InfoBox(Icons.fastfood, "CALORIES", _calories.toString()),
+          Visibility(child: InfoBox(Icons.timelapse_rounded, "TOTAL H", _totalTime.toString() + " h"), visible: _isLoggedIn,maintainSize: true, maintainAnimation: true, maintainState: true,),
+          Visibility(child: InfoBox(Icons.directions_walk, "TOTAL KM", _totalKm.toString() + " km"), visible: _isLoggedIn, maintainSize: true, maintainAnimation: true, maintainState: true),
           InfoBox(_weatherIcon, "WEATHER", (_temperature == null ? "?" : _temperature.toString()) + "\u00B0"),
         ]);
   }

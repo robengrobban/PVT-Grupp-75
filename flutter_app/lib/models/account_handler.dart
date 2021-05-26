@@ -100,7 +100,7 @@ class AccountHandler {
   /// This will also wipe all pending notifications.
   Future<void> handleSignOut() async {
     await NotificationHandler().wipeNotifications();
-    _googleSignIn.disconnect();
+    await _googleSignIn.disconnect();
   }
 
   /// Creates a entry for the user in the database

@@ -103,8 +103,8 @@ class _MenuScreenState extends State<MenuScreen> {
     return MenuItem(Icons.logout, "Log in", _itemPadding, _getIN);
   }
 
-  void _getOUT() {
-    _showLogoutAlert();
+  Future<void> _getOUT() async {
+    await _showLogoutAlert();
   }
 
   void _getIN() {
@@ -116,7 +116,7 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   Future<void> _showLogoutAlert() async {
-    return showDialog<void>(
+    return await showDialog<void>(
       context: context,
       barrierDismissible: true, // user must'nt tap button!
       builder: (BuildContext context) {
@@ -126,8 +126,8 @@ class _MenuScreenState extends State<MenuScreen> {
               child: null
           ),
           actions: <Widget>[
-            AlertTextButton('Log out', () {
-              AccountHandler().handleSignOut();
+            AlertTextButton('Log out', () async {
+              await AccountHandler().handleSignOut();
               Navigator.of(context).popUntil(ModalRoute.withName('/home'));
             },
               true,

@@ -17,25 +17,10 @@ class PerformedRoute {
         this.actualDuration,
         this.timeFinished});
 
-
-  // Map<String,dynamic> toJson() {
-  //   List <MyLocation> polyLocations = [];
-  //   polyCoordinates.forEach((element) {polyLocations.add(MyLocation.fromLatLng(element));});
-  //   List <MyLocation> wayPointsLocations = [];
-  //   waypoints.forEach((element) {wayPointsLocations.add(MyLocation.fromLatLng(element));});
-  //   var map = Map<String,dynamic>();
-  //   map["polyCoordinates"] = polyLocations;
-  //   map["waypoints"] = wayPointsLocations;
-  //   map["startPoint"] = MyLocation.fromLatLng(startPoint);
-  //   map["distance"]= distance;
-  //   map["durationInSeconds"] = duration;
-  //   map["northEastBound"] = MyLocation.fromLatLng(northEastBound);
-  //   map["southWestBound"] = MyLocation.fromLatLng(southWestBound);
-  //   return map;
-  // }
-
   factory PerformedRoute.fromJson(Map<String, dynamic> json) {
+    print(json);
     List<LatLng> waypoints = [];
+    print("waypoints are" + (json['wayPoints']).toString());
     (json['waypoints'] as List).forEach((element) {
       waypoints.add(LatLng(element['lat'], element['lng']));
     });
@@ -47,6 +32,18 @@ class PerformedRoute {
         actualDuration: ((json["actualDuration"] / 60).toInt()),
         timeFinished: (DateTime.parse(json['timeFinished'])),
     );
+  }
+
+  Map<String,dynamic> toJson() {
+    List <MyLocation> wayPointsLocations = [];
+    waypoints.forEach((element) {wayPointsLocations.add(MyLocation.fromLatLng(element));});
+    var map = Map<String,dynamic>();
+    map["waypoints"] = wayPointsLocations;
+    map["startPoint"] = MyLocation.fromLatLng(startPoint).toJson();
+    map["distance"]= distance;
+    map["actualDuration"] = actualDuration;
+    map["timeFinished"] = timeFinished.toIso8601String();
+    return map;
   }
 
   @override

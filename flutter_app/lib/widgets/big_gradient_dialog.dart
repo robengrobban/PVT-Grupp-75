@@ -4,8 +4,10 @@ import 'package:flutter_app/theme.dart' as Theme;
 class BigGradientDialogShell extends StatelessWidget {
   final Widget child;
   final String title;
+  final bool showArrow;
+  final double titleSize;
 
-  const BigGradientDialogShell({Key key, this.child, this.title}) : super(key: key);
+  const BigGradientDialogShell({Key key, this.child, this.title, this.showArrow = true, this.titleSize = 16}) : super(key: key);
 
 
   @override
@@ -20,7 +22,7 @@ class BigGradientDialogShell extends StatelessWidget {
       content: Container(
         padding: EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 20),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(50)),
+            borderRadius: BorderRadius.all(Radius.circular(20)),
             gradient: Theme.appGradiant
         ),
         child: Column(
@@ -28,7 +30,7 @@ class BigGradientDialogShell extends StatelessWidget {
           children: [
             Text(
               title,
-              style: TextStyle(fontSize: 16,),
+              style: TextStyle(fontSize: titleSize,),
             ),
             Divider(
               color: Colors.black12,
@@ -36,7 +38,7 @@ class BigGradientDialogShell extends StatelessWidget {
               endIndent: 20,
               thickness: 2,
             ),
-            Align(
+            if(showArrow) Align(
               alignment: Alignment.topLeft,
               child: Padding(
                   padding: EdgeInsets.only(bottom: 10),

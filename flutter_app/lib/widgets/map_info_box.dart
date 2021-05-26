@@ -12,9 +12,9 @@ class InfoBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 10),
-      height: 50,
-      width: 100,
+      height:50,
+      width:100,
+      margin: EdgeInsets.all(10),
       padding: EdgeInsets.all(5),
       decoration: BoxDecoration(
           color: Colors.white,
