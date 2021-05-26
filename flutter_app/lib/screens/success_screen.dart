@@ -92,7 +92,7 @@ class _MedalScreenState extends State<MedalScreen> {
                 ),
               ),
               SizedBox(
-                width: 100,
+                width: 90,
                 child: FittedBox(
                   fit: BoxFit.fitWidth,
                   child: Text(_getMedals()[index].type.string),
@@ -159,18 +159,25 @@ class _StreakScreenState extends State<StreakScreen> {
               _performedRoutes.containsKey(dt)
                   ? showDialog<String>(
                       context: context,
-                      builder: (BuildContext context) => AlertDialog(
-                            title: const Text('Your route'),
-                            content: SingleChildScrollView(
-                                child: ListBody(
-                              children: <Widget>[
-                                Text(_performedRoutes[dt][0]
-                                    .distance
-                                    .toString()),
-                                Text('Distance:')
-                              ],
-                            )),
-                          ))
+                      builder: (BuildContext context) =>
+                          ListView(children: <Widget>[
+                            Center(
+                              child: AlertDialog(
+                                title: const Text('Your route'),
+                                content: SingleChildScrollView(
+                                    child: ListBody(
+                                  children: <Widget>[
+                                    Text(_performedRoutes[dt][0]
+                                        .distance
+                                        .toString()),
+                                    Text(_performedRoutes[dt][0]
+                                        .actualDuration
+                                        .toString()),
+                                  ],
+                                )),
+                              ),
+                            )
+                          ]))
                   : null;
             }));
   }
@@ -222,7 +229,15 @@ class _StreakScreenState extends State<StreakScreen> {
               distance: 10,
               actualDuration: 0,
               timeFinished: DateTime(2021, 05, 25, 21, 34, 55))
-        ]
+        ],
+        DateTime(2021, 05, 25, 00, 00, 00): [
+          PerformedRoute(
+              waypoints: [],
+              startPoint: LatLng(58.34, 17.30000000000001),
+              distance: 10,
+              actualDuration: 0,
+              timeFinished: DateTime(2021, 05, 25, 21, 34, 55))
+        ],
       };
     });
   }
