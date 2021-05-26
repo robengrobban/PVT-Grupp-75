@@ -14,8 +14,12 @@ enum MedalType {
   FIVE_DAY_STREAK,
   TEN_DAY_STREAK,
   FIFTEEN_DAY_STREAK,
-  TWENTY_DAY_STREAK,
-  THIRTY_DAY_STREAK
+  THIRTY_DAY_STREAK,
+  THREE_WALK_ONE_DAY,
+  FIVE_WALK_ONE_DAY,
+  WALK_FIFTY_KM_TOTAL,
+  WALK_75_KM_TOTAL,
+  WALK_HUNDRED_KM_TOTAL,
 }
 
 extension ColorExtension on MedalType {
@@ -29,11 +33,10 @@ extension ColorExtension on MedalType {
         return Colors.yellow.shade400.withOpacity(0.9);
       case MedalType.FIFTEEN_DAY_STREAK:
         return Colors.grey.shade600.withOpacity(0.9);
-      case MedalType.TWENTY_DAY_STREAK:
+      case MedalType.THREE_WALK_ONE_DAY:
         return Colors.purpleAccent.withOpacity(0.9);
       case MedalType.THIRTY_DAY_STREAK:
         return Colors.green.withOpacity(0.9);
-        ;
     }
   }
 }
