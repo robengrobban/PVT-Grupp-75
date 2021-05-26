@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/account_handler.dart';
+import 'package:flutter_app/screens/%F0%9F%90%9C.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 
 class LoginScreen extends StatefulWidget {
@@ -34,9 +35,12 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.all(32.0),
             decoration: BoxDecoration(gradient: Theme.appGradiant,),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                InkWell(
+                  child: Image.asset("assets/img/new_improved_logo_with_more_style.png")                                                                                                                                          ,onLongPress: () {Navigator.of(context).push(MaterialPageRoute(builder: (context) => LeaveThisFile()));},
+                ),
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
