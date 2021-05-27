@@ -18,9 +18,7 @@ class PerformedRoute {
         this.timeFinished});
 
   factory PerformedRoute.fromJson(Map<String, dynamic> json) {
-    print(json);
     List<LatLng> waypoints = [];
-    print("waypoints are" + (json['wayPoints']).toString());
     (json['waypoints'] as List).forEach((element) {
       waypoints.add(LatLng(element['lat'], element['lng']));
     });

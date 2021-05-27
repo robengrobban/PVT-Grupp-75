@@ -20,7 +20,8 @@ class AppColors {
     600: const Color(0xffff798f),
     700: const Color(0xffff889c),
     800: const Color(0xffff97a8),
-    900: const Color(0xffffa6b5)
+    900: const Color(0xffffa6b5),
+
   };
 
   static const Map<int, Color> brandOrange = const <int, Color> {
@@ -33,7 +34,7 @@ class AppColors {
     600: const Color(0xfff4b175),
     700: const Color(0xfff5b985),
     800: const Color(0xfff7c294),
-    900: const Color(0xfff8cba3)
+    900: const Color(0xfff8cba3),
   };
 
 }
