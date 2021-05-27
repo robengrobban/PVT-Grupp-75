@@ -75,6 +75,7 @@ class AccountHandler {
   Future<bool> handleSignIn() async {
     try {
       GoogleSignInAccount result = await _googleSignIn.signIn();
+      _currentUser = result;
       if(result != null) {
         return true;
       }

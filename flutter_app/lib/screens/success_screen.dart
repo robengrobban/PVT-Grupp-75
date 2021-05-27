@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:calendar_widget/calendar_widget.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/models/Medal.dart';
 import 'package:flutter_app/models/Streak.dart';
 import 'package:flutter_app/models/account_handler.dart';
+import 'package:flutter_app/models/medal_handler.dart';
+import 'package:flutter_app/models/medal_repository.dart';
 import 'package:flutter_app/models/performed_route.dart';
 import 'package:flutter_app/main.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_app/widgets/big_gradient_dialog.dart';
 
@@ -66,12 +66,18 @@ class MedalScreen extends StatefulWidget {
 }
 
 class _MedalScreenState extends State<MedalScreen> {
+  List<Medal> _medals = [];
+  @override
+  void initState() {
+    super.initState();
+    _getMedals();
+  }
   @override
   Widget build(BuildContext context) {
     return GridView.count(
         crossAxisCount: 3,
         children: List.generate(
-          _getMedals().length,
+          _medals.length,
           (index) {
             return Column(children: [
               Center(
@@ -79,13 +85,13 @@ class _MedalScreenState extends State<MedalScreen> {
                   child: ImageIcon(
                     AssetImage('assets/images/141054.png'),
                     size: 90,
-                    color: _getMedals()[index].type.color,
+                    color: MedalRepository().getColor(_medals[index].type, _medals[index].value),
                   ),
                   shaderCallback: (Rect bounds) {
                     return LinearGradient(
                       colors: [
                         Colors.transparent,
-                        _getMedals()[index].type.color
+                        MedalRepository().getColor(_medals[index].type, _medals[index].value)
                       ],
                       stops: [0.0, 0.5],
                     ).createShader(bounds);
@@ -97,32 +103,19 @@ class _MedalScreenState extends State<MedalScreen> {
                 width: 90,
                 child: FittedBox(
                   fit: BoxFit.fitWidth,
-                  child: Text(_getMedals()[index].type.string),
+                  child: Text(MedalRepository().getDescription(_medals[index].type, _medals[index].value)),
                 ),
               )
             ]);
           },
         ));
   }
-}
-
-List<Medal> _getMedals() {
-  return [
-    new Medal(type: MedalType.THREE_DAY_STREAK),
-    new Medal(type: MedalType.FIVE_DAY_STREAK),
-    new Medal(type: MedalType.TEN_DAY_STREAK),
-    new Medal(type: MedalType.FIFTEEN_DAY_STREAK),
-    new Medal(type: MedalType.THIRTY_DAY_STREAK),
-    new Medal(type: MedalType.THREE_DAY_STREAK),
-    new Medal(type: MedalType.THREE_DAY_STREAK),
-    new Medal(type: MedalType.THREE_DAY_STREAK),
-    new Medal(type: MedalType.THREE_DAY_STREAK),
-    new Medal(type: MedalType.THREE_DAY_STREAK),
-    new Medal(type: MedalType.THREE_DAY_STREAK),
-    new Medal(type: MedalType.THREE_DAY_STREAK),
-    new Medal(type: MedalType.THREE_DAY_STREAK),
-    new Medal(type: MedalType.THREE_DAY_STREAK),
-  ];
+  Future<void> _getMedals() async {
+    List<Medal> _userMedals= await MedalHandler().getMedals();
+    setState(() {
+      _medals = _userMedals;
+    });
+  }
 }
 
 class StreakScreen extends StatefulWidget {
@@ -163,8 +156,6 @@ class _StreakScreenState extends State<StreakScreen> {
                 highlighter: highlighter,
                 width: MediaQuery.of(context).size.width - 32,
                 onTapListener: (DateTime dt) {
-                  print(dt);
-                  print(_performedRoutes.containsKey(dt));
                   if (_performedRoutes.containsKey(dt))
                     showDialog<String>(
                       context: context,
@@ -174,7 +165,7 @@ class _StreakScreenState extends State<StreakScreen> {
                         titleSize: 20,
                         child: Container(
                           width: 200,
-                          height: 150,
+                          height: 200,
                           child: ListView(
                             children:
                                 List.generate(_performedRoutes[dt].length, (index) {
@@ -304,7 +295,6 @@ class _StreakScreenState extends State<StreakScreen> {
         routeMap[routeDate] = [];
       }
       routeMap[routeDate].add(route);
-      print(routeMap);
     }
     return routeMap;
   }

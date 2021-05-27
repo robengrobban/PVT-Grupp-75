@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/geofence_handler.dart';
 import 'package:flutter_app/models/location_handler.dart';
 import 'package:flutter_app/screens/menu_screen.dart';
 import 'package:flutter_app/screens/notification_screen.dart';
@@ -16,12 +17,12 @@ import 'theme.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 
-const String SERVER_HOST = "83.226.130.65:8080";
-const bool USES_HTTPS = false;
+//const String SERVER_HOST = "83.226.130.65:8080";
+//const bool USES_HTTPS = false;
 
 
-//const bool USES_HTTPS = true;
-//const String SERVER_HOST = "group5-75.pvt.dsv.su.se";
+const bool USES_HTTPS = true;
+const String SERVER_HOST = "group5-75.pvt.dsv.su.se";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +31,7 @@ void main() async {
   await LocationHandler().init();
   await NotificationHandler().init();
   await SharedPrefs().init();
+  await GeoFenceHandler().init();
   runApp(WalkInProgressApp());
 }
 

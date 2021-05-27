@@ -42,6 +42,8 @@ dependencies:
   flutter_background_geolocation: ^2.0.5
   mockito: ^5.0.8
   calendar_widget: ^0.1.0
+  map_launcher: ^2.0.0
+  lottie: ^1.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -75,6 +77,7 @@ flutter:
     - assets/images/141054.png
     - assets/images/1372969.png
     - assets/images/crown-clip-art-20.png
+    - assets/images/firework-animation.json
 
 
 
