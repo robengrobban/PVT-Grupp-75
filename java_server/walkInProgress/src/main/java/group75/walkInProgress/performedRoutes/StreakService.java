@@ -86,7 +86,9 @@ public class StreakService {
 				routes.addAll(foundRoutes);
 			}
 		}
-
+		if(routes.isEmpty())
+			return null;
+		
 		routes.sort((a,b)->b.getTimeFinished().compareTo(a.getTimeFinished()));
 		return new Streak(streakCount, routes.get(routes.size()-1).getTimeFinished().toLocalDate(),routes.get(0).getTimeFinished().toLocalDate(), routes);
 	}
