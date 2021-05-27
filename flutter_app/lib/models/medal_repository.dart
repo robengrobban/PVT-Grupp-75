@@ -2,6 +2,9 @@ import 'dart:collection';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/models/user_route_handler.dart';
+
+import 'Streak.dart';
 
 class MedalRepository {
   static final MedalRepository _repository = MedalRepository._internal();
@@ -48,6 +51,25 @@ class _MedalInfo {
 
 enum MedalType {
   STREAK,WALKS_ONE_DAY,KM_TOTAL
+}
+
+extension EvaluationValue on MedalType {
+  Future<int> getValueToEvaluateOn() async {
+    switch (this) {
+      case MedalType.STREAK:
+        Streak currentStreak = await UserRouteHandler().getCurrentStreak();
+        if(currentStreak.endDate == DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day)) {
+          return null;
+        }
+          return currentStreak.days;
+      case MedalType.WALKS_ONE_DAY:
+        return null;
+      case MedalType.KM_TOTAL:
+        return await UserRouteHandler().getTotalDistanceWalked();
+      default:
+        return null;
+    }
+  }
 }
 
 
