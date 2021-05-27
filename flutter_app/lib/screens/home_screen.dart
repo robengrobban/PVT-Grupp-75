@@ -410,7 +410,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _handleSignInChange() async {
     setState(() {
-      print("Logged in" + AccountHandler().isLoggedIn().toString());
+      print("Logged in " + AccountHandler().isLoggedIn().toString());
       _isLoggedIn = AccountHandler().isLoggedIn();
     });
     if(_isLoggedIn) {

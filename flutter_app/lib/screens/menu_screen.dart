@@ -8,6 +8,7 @@ import 'package:flutter_app/models/weather_handler.dart';
 import 'package:flutter_app/theme.dart' as Theme;
 import 'package:flutter_app/widgets/alert_text_button.dart';
 import 'package:flutter_app/widgets/menu_item.dart';
+import 'package:weather_icons/weather_icons.dart';
 
 class MenuScreen extends StatefulWidget {
   @override
@@ -30,10 +31,10 @@ class _MenuScreenState extends State<MenuScreen> {
           centerTitle: true,
           title: Text("Menu"),
           actions: [
-            IconButton(
-                icon: Icon(Icons.settings),
-                onPressed: _openSettings
-            )
+              IconButton(
+                  icon: Icon(Icons.settings),
+                  onPressed: _openSettings
+              )
           ],
         ),
         backgroundColor: Colors.white,
@@ -57,7 +58,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 MenuItem(Icons.military_tech, "Achievements", _itemPadding, _openAchievements),
                                 MenuItem(Icons.analytics, "Weekly Summary", _itemPadding, _openWeeklySummary),
                                 _getAccountButton(),
-                                MenuItem(Icons.notifications, "DEBUG NOTIFICATION", _itemPadding, () {
+                                /*MenuItem(Icons.notifications, "DEBUG NOTIFICATION", _itemPadding, () {
                                   Navigator.of(context).pushNamed("/debug-noti");
                                 }),
                                 MenuItem(Icons.cloud_off, "DEBUG WEATHER", _itemPadding, () async {
@@ -69,7 +70,7 @@ class _MenuScreenState extends State<MenuScreen> {
                                 }),
                                 MenuItem(Icons.construction, "DEBUG FORCE REBUILD", _itemPadding, () {
                                   Navigator.of(context).pushNamedAndRemoveUntil('/home', (Route<dynamic> route) => false);
-                                })
+                                })*/
                               ],
                             )
                         ),
