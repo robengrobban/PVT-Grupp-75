@@ -31,9 +31,9 @@ public class MedalController {
 	
     @PostMapping(path="/add",consumes="application/json",produces="application/json")
     public @ResponseBody ResponseEntity<Medal> saveMedal(@RequestBody MedalBody medalBody) {
-    	
     	Medal medal = medalBody.getMedal();
-    	if(medalBody==null || medal == null || medal.getType()== null) {
+    	System.out.println(medal.getTimeEarned());
+    	if(medalBody==null || medal == null || medal.getType()== null || medal.getTimeEarned() == null) {
     		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     	}
         final String target = Server.NAME + "/account/userFromToken?token="+medalBody.getToken();

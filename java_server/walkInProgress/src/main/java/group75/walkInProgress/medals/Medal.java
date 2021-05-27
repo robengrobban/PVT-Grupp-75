@@ -1,6 +1,7 @@
 package group75.walkInProgress.medals;
 
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,7 +17,8 @@ public class Medal {
 	
 	private int userId;
 	private String type;
-	private LocalDate dateEarned;
+	private int value;
+	private LocalDateTime timeEarned;
 	
 	Medal(){}
 
@@ -28,12 +30,20 @@ public class Medal {
 		this.type = type;
 	}
 
-	public LocalDate getDateEarned() {
-		return dateEarned;
+	public int getValue() {
+		return value;
 	}
 
-	public void setDateEarned(LocalDate dateEarned) {
-		this.dateEarned = dateEarned;
+	public void setValue(int value) {
+		this.value = value;
+	}
+
+	public LocalDateTime getTimeEarned() {
+		return timeEarned;
+	}
+
+	public void setTimeEarned(LocalDateTime timeEarned) {
+		this.timeEarned = timeEarned;
 	}
 
 	public int getUserId() {
@@ -48,8 +58,10 @@ public class Medal {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((timeEarned == null) ? 0 : timeEarned.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + userId;
+		result = prime * result + value;
 		return result;
 	}
 
@@ -62,6 +74,11 @@ public class Medal {
 		if (getClass() != obj.getClass())
 			return false;
 		Medal other = (Medal) obj;
+		if (timeEarned == null) {
+			if (other.timeEarned != null)
+				return false;
+		} else if (!timeEarned.equals(other.timeEarned))
+			return false;
 		if (type == null) {
 			if (other.type != null)
 				return false;
@@ -69,8 +86,12 @@ public class Medal {
 			return false;
 		if (userId != other.userId)
 			return false;
+		if (value != other.value)
+			return false;
 		return true;
 	}
+
+
 	
 	
 
