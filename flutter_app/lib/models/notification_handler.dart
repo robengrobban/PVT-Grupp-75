@@ -141,8 +141,8 @@ class NotificationHandler {
   }
 
   /// Retrieve all events from the currently logged in account.
-  Future<List<Event>> _fetchEvents() async {
-    return await AccountHandler().events();
+  Future<List<Event>> _fetchEvents({Duration offset}) async {
+    return await AccountHandler().events(offset: offset);
   }
 
   /// Retrieve all scheduled notifications.
@@ -162,7 +162,7 @@ class NotificationHandler {
   }
 
   /// Generate notifications to be scheduled.
-  Future<void> generateCalendarNotifications() async {
+  Future<void> generateCalendarNotifications({Duration offset}) async {
     // Wipe existing notifications
     wipeNotifications();
 
@@ -170,7 +170,7 @@ class NotificationHandler {
       return;
     }
 
-    List<Event> events = await _fetchEvents();
+    List<Event> events = await _fetchEvents(offset: offset);
     List<NotificationSpot> spots = generateNotificationSpots(events);
     HashMap<int, WeatherData> weatherData = await _weather.todaysWeather( await LocationHandler().latlon() );
 

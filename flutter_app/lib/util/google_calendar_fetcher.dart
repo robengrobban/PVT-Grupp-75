@@ -4,13 +4,14 @@ import 'dart:convert' show json;
 
 class GoogleCalendarFetcher {
 
-  Future<Map<String, dynamic>> fetchCalendar(GoogleSignInAccount user) async {
+  Future<Map<String, dynamic>> fetchCalendar(GoogleSignInAccount user, {Duration offset}) async {
     if ( user == null ) {
       return null;
     }
+    offset = offset ?? Duration(microseconds: 0);
 
-    DateTime startTime = new DateTime.now();
-    DateTime endTime = new DateTime.now().add(new Duration(days: 1));
+    DateTime startTime = new DateTime.now().add(offset);
+    DateTime endTime = new DateTime.now().add(new Duration(days: 1)).add(offset);
 
     final http.Response response = await http.get(
       Uri.parse('https://www.googleapis.com/calendar/v3/calendars/'+user.email+'/events?orderBy=startTime&singleEvents=true&timeMax='+endTime.toUtc().toIso8601String()+'&timeMin='+startTime.toUtc().toIso8601String()),

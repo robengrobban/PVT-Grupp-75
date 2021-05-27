@@ -152,8 +152,8 @@ class AccountHandler {
 
   /// Generate a list of events using the google calendar.
   /// The list will contain all of the users event from now and 24h into the future.
-  Future<List<Event>> _generateCalendar() async {
-    Map<String, dynamic> response = await _calendarFetcher.fetchCalendar(_googleSignIn.currentUser);
+  Future<List<Event>> _generateCalendar({Duration offset}) async {
+    Map<String, dynamic> response = await _calendarFetcher.fetchCalendar(_googleSignIn.currentUser, offset: offset);
     if ( response == null ) {
       return List.empty();
     }
@@ -184,9 +184,9 @@ class AccountHandler {
 
   /// Returns a list of events using the google calendar.
   /// The list will contain all of the users event from now and 24h into the future.
-  Future<List<Event>> events() async {
+  Future<List<Event>> events({Duration offset}) async {
     if ( shouldCache() ) {
-      _events = await _generateCalendar();
+      _events = await _generateCalendar(offset: offset);
       _lastEventsFetched = DateTime.now();
     }
     return _events;
