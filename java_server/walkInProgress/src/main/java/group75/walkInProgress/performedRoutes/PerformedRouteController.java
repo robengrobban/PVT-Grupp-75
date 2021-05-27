@@ -1,10 +1,12 @@
 package group75.walkInProgress.performedRoutes;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -153,6 +155,20 @@ public class PerformedRouteController {
             }
 
             return new ResponseEntity<>(performedRouteRepository.save(performedRoute), HttpStatus.OK);
+        } catch (RestClientException e) {
+        	System.out.println(e);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        }
+    }
+    
+    @GetMapping(path="/between")
+    public @ResponseBody ResponseEntity<Iterable<PerformedRoute>> getPerformedRoutesBetween(@RequestParam String token, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startTime, @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endTime) {
+        final String target = Server.NAME + "/account/userFromToken?token="+token;
+        final RestTemplate restTemplate = new RestTemplate();
+        try {
+            UserInfo response = restTemplate.getForObject(target, UserInfo.class);
+            int id = response.getId();
+            return new ResponseEntity<>(performedRouteRepository.findByUserIdAndTimeFinishedBetween(id, startTime, endTime), HttpStatus.OK);
         } catch (RestClientException e) {
         	System.out.println(e);
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
