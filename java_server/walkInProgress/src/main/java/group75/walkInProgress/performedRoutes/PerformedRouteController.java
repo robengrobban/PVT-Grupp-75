@@ -36,8 +36,7 @@ public class PerformedRouteController {
 	        try {
 	            UserInfo response = restTemplate.getForObject(target, UserInfo.class);
 	            int id = response.getId();
-	            List<PerformedRoute> userRoutes = performedRouteRepository.findByUserIdOrderByTimeFinishedAsc(id);
-	            List<Streak> streaks = streakService.getStreaks(userRoutes);
+	            List<Streak> streaks = streakService.getStreaks(id);
 	            return new ResponseEntity<>(streaks, HttpStatus.OK);
 	        } catch (RestClientException e) {
 	        	System.out.println(e);
@@ -52,8 +51,7 @@ public class PerformedRouteController {
 	        try {
 	            UserInfo response = restTemplate.getForObject(target, UserInfo.class);
 	            int id = response.getId();
-	            List<PerformedRoute> userRoutes = performedRouteRepository.findByUserIdOrderByTimeFinishedAsc(id);
-	            Streak streak = streakService.getLongestStreak(userRoutes);
+	            Streak streak = streakService.getLongestStreak(id);
 	            return new ResponseEntity<Streak>(streak, HttpStatus.OK);
 	        } catch (RestClientException e) {
 	        	System.out.println(e);
@@ -68,8 +66,7 @@ public class PerformedRouteController {
 	        try {
 	            UserInfo response = restTemplate.getForObject(target, UserInfo.class);
 	            int id = response.getId();
-	            List<PerformedRoute> userRoutes = performedRouteRepository.findByUserIdOrderByTimeFinishedAsc(id);
-	            Streak streak = streakService.getCurrentStreak(userRoutes);
+	            Streak streak = streakService.getCurrentStreak(id);
 	            return new ResponseEntity<Streak>(streak, HttpStatus.OK);
 	        } catch (RestClientException e) {
 	        	System.out.println(e);

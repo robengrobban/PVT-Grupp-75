@@ -1,6 +1,7 @@
 package group75.walkInProgress.performedRoutes;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -18,6 +19,8 @@ public interface PerformedRouteRepository  extends CrudRepository<PerformedRoute
 	List<PerformedRoute> findByUserIdOrderByTimeFinishedAsc(int userId);
 	
 	List<PerformedRoute> findByUserIdOrderByTimeFinishedDesc(int userId);
+	
+	List<PerformedRoute> findByUserIdAndTimeFinishedBetween(int userId, LocalDateTime start, LocalDateTime end);
 
 	@Query("SELECT SUM(r.actualDuration) FROM PerformedRoute r WHERE r.userId = ?1")
 	Integer findTotalTimeByUserId(int userId);
