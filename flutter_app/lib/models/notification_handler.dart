@@ -141,8 +141,8 @@ class NotificationHandler {
   }
 
   /// Retrieve all events from the currently logged in account.
-  Future<List<Event>> _fetchEvents({Duration offset}) async {
-    return await AccountHandler().events(offset: offset);
+  Future<List<Event>> _fetchEvents() async {
+    return await AccountHandler().events();
   }
 
   /// Retrieve all scheduled notifications.
@@ -166,11 +166,14 @@ class NotificationHandler {
     // Wipe existing notifications
     wipeNotifications();
 
+    print("Should generate?");
     if ( _notificationsLeft == 0 || !AccountHandler().isLoggedIn() ) {
+      print("No");
       return;
     }
+    print("Yes");
 
-    List<Event> events = await _fetchEvents(offset: offset);
+    List<Event> events = await _fetchEvents();
     List<NotificationSpot> spots = generateNotificationSpots(events);
     HashMap<int, WeatherData> weatherData = await _weather.todaysWeather( await LocationHandler().latlon() );
 
@@ -182,6 +185,9 @@ class NotificationHandler {
         continue;
       }
       if ( _affectedByWeather && weatherData[ spot.startTime().hour ] != null && !(weatherData[ spot.startTime().hour ].forecast() <= _weatherThreshold) ) {
+        continue;
+      }
+      if ( spot.startTime().difference( DateTime.now().add(offset ?? Duration(microseconds: 0)) ).inSeconds < 0 ) {
         continue;
       }
 

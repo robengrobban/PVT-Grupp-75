@@ -24,7 +24,9 @@ class NotificationScreenState extends State<NotificationScreen> {
             Center(
                 child: ElevatedButton(
                   child: Text("Generera notifikationer"),
-                  onPressed: NotificationHandler().generateCalendarNotifications,
+                  onPressed: () {
+                    NotificationHandler().generateCalendarNotifications(offset: Duration(minutes: 0));
+                  },
                 )
             ),
             Center(
