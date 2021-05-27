@@ -10,6 +10,7 @@ import 'package:flutter_app/models/medal_handler.dart';
 import 'package:flutter_app/models/medal_repository.dart';
 import 'package:flutter_app/models/performed_route.dart';
 import 'package:flutter_app/main.dart';
+import 'package:flutter_app/models/user_route_handler.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_app/widgets/big_gradient_dialog.dart';
 
@@ -226,8 +227,8 @@ class _StreakScreenState extends State<StreakScreen> {
                   AssetImage('assets/images/141054.png'),
                   size: 50,
                 ),
-                Text("Longest Streak", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(_longestStreak == null ? "?" : _longestStreak.days.toString())
+                Text("Longest Streak ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(_longestStreak == null ? "?" : _longestStreak.days.toString()  + " days")
               ],
             ),
             Row(
@@ -236,8 +237,8 @@ class _StreakScreenState extends State<StreakScreen> {
                   AssetImage('assets/images/141054.png'),
                   size: 50,
                 ),
-                Text("Longest Streak", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(_longestStreak == null ? "?" : _currentStreak.days.toString())
+                Text("Current Streak ", style: TextStyle(fontWeight: FontWeight.bold)),
+                Text(_currentStreak == null ? "?" : _currentStreak.days.toString() + " days")
               ],
             )
           ],
@@ -246,24 +247,18 @@ class _StreakScreenState extends State<StreakScreen> {
   }
 
   Future<void> _getLongestStreak() async {
-    String token = await AccountHandler().accessToken();
-    var uri = USES_HTTPS
-        ? Uri.https(SERVER_HOST, '/performedRoutes/streaks/longest', {"token": token})
-        : Uri.http(SERVER_HOST, '/performedRoutes/streaks/longest', {"token": token});
-    print(uri.toString());
-    final response = await http.get(uri);
-    setState(() {
-      if (response.statusCode == 200) {
-        _longestStreak = Streak.fromJson(jsonDecode(response.body));
-      } else {
-        _longestStreak = null;
-      }
+    await UserRouteHandler().getLongestStreak().then((streak) {
+      setState(() {
+        _longestStreak = streak;
+      });
     });
   }
 
   Future<void> _getCurrentStreak() async {
-    setState(() {
-      _currentStreak = Streak(days:2, startDate: DateTime(2021,03,22), endDate: DateTime(2021,03,24), routes: []);
+    await UserRouteHandler().getCurrentStreak().then((streak) {
+      setState(() {
+        _currentStreak = streak;
+      });
     });
   }
 
