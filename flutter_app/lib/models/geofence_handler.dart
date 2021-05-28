@@ -40,6 +40,11 @@ class GeoFenceHandler {
       if(!_passedStartTwice) {
         _passed.remove(1000);
         _passedStartTwice = true;
+        await bg.BackgroundGeolocation.setConfig(bg.Config(
+            notification: bg.Notification(
+                text: "Almost done"
+            )
+        ));
       } else {
         int actualDuration = DateTime.now().difference(_startTime).inSeconds;
         PerformedRoute performedRoute = PerformedRoute(waypoints: _activeRoute.waypoints, startPoint: _activeRoute.startPoint, distance: _activeRoute.distance, actualDuration: actualDuration, timeFinished: DateTime.now());
@@ -69,6 +74,9 @@ class GeoFenceHandler {
         ),
         debug: true,
         notification: bg.Notification(
+          largeIcon: "drawable/new_improved_logo_with_more_style",
+            smallIcon: "drawable/new_improved_logo_with_more_style",
+            color: "#ff6a83",
             title: "Walk In Progress",
             text: "Keep Walking"
         )
@@ -95,6 +103,11 @@ class GeoFenceHandler {
     await stopAndClear();
     _activeRoute = route;
     _startTime = DateTime.now();
+    await bg.BackgroundGeolocation.setConfig(bg.Config(
+        notification: bg.Notification(
+            text: "Keep Walking"
+        )
+    ));
     await _addGeoFence(1000, route.startPoint);
     int step = route.polyCoordinates.length ~/ 10 + 1;
     for (int i = step; i < route.polyCoordinates.length - step;i += step) {

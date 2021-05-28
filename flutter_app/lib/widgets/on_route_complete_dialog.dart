@@ -31,7 +31,7 @@ class RouteCompleteDialog extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(top: 20),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Text("You also earned ${_medals.length} medals!",
+              Text("You also earned ${_medals.length} ${_medals.length>1 ? "medals" : "medal"}",
                   style: TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 20)),
               Container(
