@@ -217,25 +217,31 @@ class _StreakScreenState extends State<StreakScreen> {
                       ),
                     );
                 }),
-            Row(
-              children: [
-                ImageIcon(
-                  AssetImage('assets/images/141054.png'),
-                  size: 50,
-                ),
-                Text("Longest Streak ", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(_longestStreak == null ? "?" : _longestStreak.days.toString()  + " days")
-              ],
-            ),
-            Row(
-              children: [
-                ImageIcon(
-                  AssetImage('assets/images/141054.png'),
-                  size: 50,
-                ),
-                Text("Current Streak ", style: TextStyle(fontWeight: FontWeight.bold)),
-                Text(_currentStreak == null ? "?" : _currentStreak.days.toString() + " days")
-              ],
+            Expanded(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      ImageIcon(
+                        AssetImage('assets/images/141054.png'),
+                        size: 40,
+                      ),
+                      Text("Longest Streak ", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(_longestStreak == null ? "?" : _longestStreak.days.toString()  + " days")
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      ImageIcon(
+                        AssetImage('assets/images/141054.png'),
+                        size: 40,
+                      ),
+                      Text("Current Streak ", style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(_currentStreak == null ? "?" : _currentStreak.days.toString() + " days")
+                    ],
+                  ),
+                ],
+              ),
             )
           ],
         )
