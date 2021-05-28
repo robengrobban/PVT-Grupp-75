@@ -1,17 +1,13 @@
-import 'dart:convert';
 
 import 'package:calendar_widget/calendar_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/models/Medal.dart';
 import 'package:flutter_app/models/Streak.dart';
-import 'package:flutter_app/models/account_handler.dart';
 import 'package:flutter_app/models/medal_handler.dart';
 import 'package:flutter_app/models/medal_repository.dart';
 import 'package:flutter_app/models/performed_route.dart';
-import 'package:flutter_app/main.dart';
 import 'package:flutter_app/models/user_route_handler.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_app/widgets/big_gradient_dialog.dart';
 
 import 'package:flutter_app/theme.dart' as Theme;
@@ -261,36 +257,11 @@ class _StreakScreenState extends State<StreakScreen> {
       });
     });
   }
-
   Future<void> _getPerformedRoutes() async {
-    String token = await AccountHandler().accessToken();
-    var uri = USES_HTTPS
-        ? Uri.https(SERVER_HOST, '/performedRoutes', {"token": token})
-        : Uri.http(SERVER_HOST, '/performedRoutes', {"token": token});
-    print(uri.toString());
-    final response = await http.get(uri);
-    setState(() {
-      if (response.statusCode == 200) {
-        _performedRoutes = _parseRoute(response.body);
-      } else {
-        _performedRoutes = {};
-      }
-    });
-  }
-
-  Map<DateTime, List<PerformedRoute>> _parseRoute(String responseBody) {
-    Map<DateTime, List<PerformedRoute>> routeMap = {};
-    List<dynamic> routes = jsonDecode(responseBody);
-    for (var d in routes) {
-      PerformedRoute route = PerformedRoute.fromJson(d);
-      DateTime routeTime = route.timeFinished;
-      DateTime routeDate =
-          DateTime(routeTime.year, routeTime.month, routeTime.day);
-      if (!routeMap.containsKey(routeDate)) {
-        routeMap[routeDate] = [];
-      }
-      routeMap[routeDate].add(route);
-    }
-    return routeMap;
+      await UserRouteHandler().getRoutesAsDateMap().then((performedroutes) {
+        setState(() {
+          _performedRoutes = performedroutes;
+        });
+      });
   }
 }

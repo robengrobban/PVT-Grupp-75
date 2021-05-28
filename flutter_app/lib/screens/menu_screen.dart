@@ -89,12 +89,21 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 
   void _openAchievements() {
-    Navigator.of(context).pushNamed("/success");
-    print("Opening Achievements");
+    if(AccountHandler().isLoggedIn()) {
+      Navigator.of(context).pushNamed("/success");
+      print("Opening Achievements");
+    } else {
+      _showFeatureLockedDialog();
+    }
   }
 
   void _openWeeklySummary() {
-    print("Opening Weekly Summary");
+    if(AccountHandler().isLoggedIn()) {
+      Navigator.of(context).pushNamed("/weekly");
+      print("Opening Weekly Summary");
+    } else {
+      _showFeatureLockedDialog();
+    }
   }
 
   Widget _getAccountButton() {
@@ -138,6 +147,19 @@ class _MenuScreenState extends State<MenuScreen> {
         );
       },
     );
+  }
+
+  Future<void> _showFeatureLockedDialog() async {
+    return await showDialog<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('You need to be logged in to use this feature'),
+        actions: <Widget>[
+          AlertTextButton('Cancel', () => Navigator.of(context).pop(), false),
+        ],
+      );
+    });
   }
 
 }

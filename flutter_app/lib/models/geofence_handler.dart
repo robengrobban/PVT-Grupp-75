@@ -25,7 +25,6 @@ class GeoFenceHandler {
       await _handleGeoFenceEvent(event);
     });
     bg.BackgroundGeolocation.onEnabledChange((isEnabled) async {
-      print("PERFORMING MANUALLY)${_toPass.length}");
       if(!isEnabled && _toPass.isNotEmpty) {
         NotificationHandler().send(666, "Tracking of walk stopped", "The walk you were taking is no longer tracked, this might be due to too much time passing or due to some unknown error");
         stopAndClear();
@@ -36,12 +35,10 @@ class GeoFenceHandler {
 
   Future _handleGeoFenceEvent(bg.GeofenceEvent event) async {
     _passed.add(int.parse(event.identifier));
-    NotificationHandler().send(int.parse(event.identifier), "Past a point", "count is ${_passed.length} of ${_toPass.length}");
-    print("Passed: $_passed topass: $_toPass");
+    print("Passed: $_passed ToPass: $_toPass");
     if(_passed.containsAll(_toPass)) {
       if(!_passedStartTwice) {
         _passed.remove(1000);
-        NotificationHandler().send(999, "Pass start again", "count is ${_passed.length} of ${_toPass.length}");
         _passedStartTwice = true;
       } else {
         int actualDuration = DateTime.now().difference(_startTime).inSeconds;
@@ -103,7 +100,7 @@ class GeoFenceHandler {
     for (int i = step; i < route.polyCoordinates.length - step;i += step) {
       await _addGeoFence(1000+i, route.polyCoordinates[i]);
     }
-    NotificationHandler().send(21, "Have a nice walk", "${_toPass.length} points created");
+    NotificationHandler().send(21, "Your walk has started", "Have a nice day!");
     await bg.BackgroundGeolocation.startGeofences().then((
         value) => "state is ${value.enabled}");
   }

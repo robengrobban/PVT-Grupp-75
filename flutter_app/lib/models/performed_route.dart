@@ -1,6 +1,5 @@
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:collection/collection.dart';
 
 class PerformedRoute {
   List<LatLng> waypoints;

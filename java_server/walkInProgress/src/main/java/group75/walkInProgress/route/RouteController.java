@@ -1,5 +1,13 @@
 package group75.walkInProgress.route;
 
+import com.google.maps.errors.ApiException;
+import com.google.maps.errors.InvalidRequestException;
+import com.google.maps.errors.ZeroResultsException;
+import com.google.maps.model.LatLng;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -8,15 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-
-import com.google.maps.errors.ApiException;
-import com.google.maps.errors.InvalidRequestException;
-import com.google.maps.errors.ZeroResultsException;
-import com.google.maps.model.LatLng;
 
 @Controller
 @RequestMapping(path = "/route")
@@ -63,9 +62,7 @@ public class RouteController {
 	@GetMapping(path = "/generate/waypoints", consumes = "application/json", produces = "application/json")
 	
 	public ResponseEntity<Route> getCircularRouteFromWaypoints(@RequestBody BasicRouteInfo routeInfo) {
-		System.out.println(routeInfo);
-		System.out.println(routeInfo.startPoint);
-		System.out.println(routeInfo.waypoints);
+
 		if(routeInfo == null || routeInfo.startPoint == null || routeInfo.waypoints == null) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}

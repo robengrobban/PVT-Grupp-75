@@ -1,9 +1,5 @@
 package group75.walkInProgress.medals;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import group75.walkInProgress.Server;
 
@@ -32,7 +32,6 @@ public class MedalController {
     @PostMapping(path="/add",consumes="application/json",produces="application/json")
     public @ResponseBody ResponseEntity<Medal> saveMedal(@RequestBody MedalBody medalBody) {
     	Medal medal = medalBody.getMedal();
-    	System.out.println(medal.getTimeEarned());
     	if(medalBody==null || medal == null || medal.getType()== null || medal.getTimeEarned() == null) {
     		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     	}
