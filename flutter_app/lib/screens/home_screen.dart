@@ -82,8 +82,10 @@ class _HomeScreenState extends State<HomeScreen> {
     WeatherData weatherData =
         await WeatherHandler().currentWeather(coordinates);
     if (weatherData != null) {
-      _temperature = weatherData.temperature();
-      _weatherIcon = weatherData.forecastIcon();
+      setState((){
+        _temperature = weatherData.temperature();
+        _weatherIcon = weatherData.forecastIcon();
+      });
     }
   }
 
