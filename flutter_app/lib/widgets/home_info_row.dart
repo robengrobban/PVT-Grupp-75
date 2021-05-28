@@ -32,7 +32,7 @@ class HomeInfoRow extends StatelessWidget {
         children: [
           Visibility(
             child: InfoBox(Icons.timelapse_rounded, "TOTAL H",
-                _totalTime.toString() + " h"),
+                _totalTime == null ? "?" : _totalTime.toString() + " h"),
             visible: _isLoggedIn,
             maintainSize: true,
             maintainAnimation: true,
@@ -40,7 +40,7 @@ class HomeInfoRow extends StatelessWidget {
           ),
           Visibility(
               child: InfoBox(Icons.directions_walk, "TOTAL KM",
-                  _totalKm.toString() + " km"),
+                  _totalKm == null ? "?" :  _totalKm.toString() + " km"),
               visible: _isLoggedIn,
               maintainSize: true,
               maintainAnimation: true,
