@@ -21,7 +21,6 @@ class GoogleCalendarFetcher {
     if (response.statusCode != 200) {
       return null;
     }
-    log(response.body);
     return json.decode(response.body);
 
   }
