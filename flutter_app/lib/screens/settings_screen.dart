@@ -26,7 +26,7 @@ class _SettingScreenState extends State<SettingScreen> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text("Settings"),
+          title: Text("Notification settings"),
         ),
         backgroundColor: Colors.white,
         body: Container(
