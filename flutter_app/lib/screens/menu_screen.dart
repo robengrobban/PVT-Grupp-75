@@ -32,7 +32,7 @@ class _MenuScreenState extends State<MenuScreen> {
           title: Text("Menu"),
           actions: [
               IconButton(
-                  icon: Icon(Icons.settings),
+                  icon: Icon(Icons.notifications),
                   onPressed: _openSettings
               )
           ],
