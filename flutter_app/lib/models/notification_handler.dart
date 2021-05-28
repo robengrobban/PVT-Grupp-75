@@ -192,8 +192,8 @@ class NotificationHandler {
       }
 
       int id = spot.id();
-      String title = "Det finns en möjlig 🐜";
-      String message = spot.startTime().toString();
+      String title = "Dags för en promenad?";
+      String message = "Det ser ut som det finns tid för dig att gå en prommenad nu på " + _walkLength.toString() + "minuter. Klicka för att börja!🐜";
 
       tz.TZDateTime time = tz.TZDateTime.from( spot.startTime(), tz.local );
 
