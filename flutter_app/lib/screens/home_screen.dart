@@ -167,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Text(
-                            "${_currentRoute != null ? _currentRoute.duration : 0} min ",
+                            "${_currentRoute != null ? _currentRoute.duration ~/60 : 0} min ",
                             style: TextStyle(
                                 color: Theme.AppColors.brandOrange[500],
                                 fontSize: 36),

@@ -60,19 +60,19 @@ class _WeeklySummaryState extends State<WeeklySummaryScreen> {
                     Padding(padding: EdgeInsets.only(bottom:20), child: Row(
                       children: [
                         Icon(Icons.star, color: Colors.white,size: 40,),
-                        Text("Made $_numberOfWalks walks",style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white))
+                        Expanded(child:Text("Made $_numberOfWalks walks",style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)))
                       ],
                     )),
                 Padding(padding: EdgeInsets.only(bottom:30), child: Row(
                   children: [
                     Icon(Icons.star, color: Colors.white,size: 40,),
-                    Text("Walked ${_distance.toStringAsFixed(2)} km",style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white))
+                    Expanded(child:Text("Walked ${_distance.toStringAsFixed(2)} km",style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)))
                   ],
                 )),
                 Padding(padding: EdgeInsets.only(bottom:30), child: Row(
                   children: [
                     Icon(Icons.star, color: Colors.white,size: 40,),
-                    Text("Walked for ${_hours>0 ? _hours.toString() + "hours and " : ""}$_minutes minutes",style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white))
+                    Expanded(child:Text("Walked for ${_hours>0 ? _hours.toString() + " hours and " : ""}$_minutes minutes",style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)))
                   ],
                 )),
                 Padding(padding: EdgeInsets.only(bottom:30), child: Row(

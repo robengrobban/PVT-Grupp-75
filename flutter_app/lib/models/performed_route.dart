@@ -26,7 +26,7 @@ class PerformedRoute {
         waypoints: waypoints,
         startPoint: MyLocation.fromJson(json['startPoint']).toLatLng(),
         distance: (json['distance'] as int),
-        actualDuration: ((json["actualDuration"] / 60).toInt()),
+        actualDuration: ((json["actualDuration"]).toInt()),
         timeFinished: (DateTime.parse(json['timeFinished'])),
     );
   }

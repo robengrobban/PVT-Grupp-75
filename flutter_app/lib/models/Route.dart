@@ -52,7 +52,7 @@ class CircularRoute {
         waypoints: waypoints,
         startPoint: MyLocation.fromJson(json['startPoint']).toLatLng(),
         distance: (json['distance'] as double).toInt(),
-        duration: ((json["durationInSeconds"] / 60).toInt()),
+        duration: ((json["durationInSeconds"]).toInt()),
         northEastBound: MyLocation.fromJson(json['northEastBound']).toLatLng(),
         southWestBound: MyLocation.fromJson(json['southWestBound']).toLatLng());
   }
