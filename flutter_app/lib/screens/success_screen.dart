@@ -186,7 +186,7 @@ class _StreakScreenState extends State<StreakScreen> {
                                             CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                              "${(_performedRoutes[dt][index].timeFinished.hour)}:${(_performedRoutes[dt][index].timeFinished.minute)}",
+                                              "${(_performedRoutes[dt][index].timeFinished.hour).toString().padLeft(2, "0")}:${(_performedRoutes[dt][index].timeFinished.minute).toString().padLeft(2, "0")}",
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
