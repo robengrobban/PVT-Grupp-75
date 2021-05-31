@@ -64,6 +64,12 @@ class _CameraScreenState extends State {
   }
 
   @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(centerTitle: true, title: Text("Camera")),
@@ -141,8 +147,7 @@ class _CameraScreenState extends State {
                   color: Colors.white,
                 ),
                 decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: Theme.appGradiant),
+                    shape: BoxShape.circle, gradient: Theme.appGradiant),
               ),
               onPressed: () {
                 _onCapturePressed(context);
