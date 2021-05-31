@@ -1,4 +1,3 @@
-
 import 'package:calendar_widget/calendar_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -69,6 +68,7 @@ class _MedalScreenState extends State<MedalScreen> {
     super.initState();
     _getMedals();
   }
+
   @override
   Widget build(BuildContext context) {
     return GridView.count(
@@ -82,13 +82,15 @@ class _MedalScreenState extends State<MedalScreen> {
                   child: ImageIcon(
                     AssetImage('assets/images/141054.png'),
                     size: 90,
-                    color: MedalRepository().getColor(_medals[index].type, _medals[index].value),
+                    color: MedalRepository()
+                        .getColor(_medals[index].type, _medals[index].value),
                   ),
                   shaderCallback: (Rect bounds) {
                     return LinearGradient(
                       colors: [
                         Colors.transparent,
-                        MedalRepository().getColor(_medals[index].type, _medals[index].value)
+                        MedalRepository()
+                            .getColor(_medals[index].type, _medals[index].value)
                       ],
                       stops: [0.0, 0.5],
                     ).createShader(bounds);
@@ -100,15 +102,17 @@ class _MedalScreenState extends State<MedalScreen> {
                 width: 90,
                 child: FittedBox(
                   fit: BoxFit.fitWidth,
-                  child: Text(MedalRepository().getDescription(_medals[index].type, _medals[index].value)),
+                  child: Text(MedalRepository().getDescription(
+                      _medals[index].type, _medals[index].value)),
                 ),
               )
             ]);
           },
         ));
   }
+
   Future<void> _getMedals() async {
-    List<Medal> _userMedals= await MedalHandler().getMedals();
+    List<Medal> _userMedals = await MedalHandler().getMedals();
     setState(() {
       _medals = _userMedals;
     });
@@ -164,16 +168,19 @@ class _StreakScreenState extends State<StreakScreen> {
                           width: 200,
                           height: 200,
                           child: ListView(
-                            children:
-                                List.generate(_performedRoutes[dt].length, (index) {
+                            children: List.generate(_performedRoutes[dt].length,
+                                (index) {
                               return Card(
                                   shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(10))),
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(10))),
                                   margin: EdgeInsets.only(bottom: 10),
                                   child: Padding(
                                     padding: const EdgeInsets.only(
-                                        top: 8.0, bottom: 8, left: 12, right: 12),
+                                        top: 8.0,
+                                        bottom: 8,
+                                        left: 12,
+                                        right: 12),
                                     child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
@@ -183,8 +190,8 @@ class _StreakScreenState extends State<StreakScreen> {
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
-                                                  color: Theme
-                                                      .AppColors.brandOrange[500])),
+                                                  color: Theme.AppColors
+                                                      .brandOrange[500])),
                                           Row(
                                             children: [
                                               Text(
@@ -193,7 +200,8 @@ class _StreakScreenState extends State<StreakScreen> {
                                                   fontWeight: FontWeight.bold,
                                                 ),
                                               ),
-                                              Text((_performedRoutes[dt][index].distance /
+                                              Text((_performedRoutes[dt][index]
+                                                              .distance /
                                                           1000)
                                                       .toStringAsFixed(2) +
                                                   " km")
@@ -202,7 +210,8 @@ class _StreakScreenState extends State<StreakScreen> {
                                           Row(children: [
                                             Text("Duration: ",
                                                 style: TextStyle(
-                                                    fontWeight: FontWeight.bold)),
+                                                    fontWeight:
+                                                        FontWeight.bold)),
                                             Text((_performedRoutes[dt][index]
                                                             .actualDuration ~/
                                                         60)
@@ -218,34 +227,42 @@ class _StreakScreenState extends State<StreakScreen> {
                     );
                 }),
             Expanded(
-              child: Column(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Row(
+                  Column(
                     children: [
                       ImageIcon(
-                        AssetImage('assets/images/141054.png'),
+                        AssetImage('assets/images/1372969.png'),
                         size: 40,
+                        color: Colors.red,
                       ),
-                      Text("Longest Streak ", style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(_longestStreak == null ? "?" : _longestStreak.days.toString()  + " days")
+                      Text("Longest Streak ",
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(_longestStreak == null
+                          ? "?"
+                          : _longestStreak.days.toString() + " days")
                     ],
                   ),
-                  Row(
+                  Column(
                     children: [
                       ImageIcon(
-                        AssetImage('assets/images/141054.png'),
+                        AssetImage('assets/images/crown-clip-art-20.png'),
                         size: 40,
+                        color: Colors.yellowAccent,
                       ),
-                      Text("Current Streak ", style: TextStyle(fontWeight: FontWeight.bold)),
-                      Text(_currentStreak == null ? "?" : _currentStreak.days.toString() + " days")
+                      Text("Current Streak ",
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      Text(_currentStreak == null
+                          ? "?"
+                          : _currentStreak.days.toString() + " days")
                     ],
                   ),
                 ],
               ),
             )
           ],
-        )
-    );
+        ));
   }
 
   Future<void> _getLongestStreak() async {
@@ -263,11 +280,12 @@ class _StreakScreenState extends State<StreakScreen> {
       });
     });
   }
+
   Future<void> _getPerformedRoutes() async {
-      await UserRouteHandler().getRoutesAsDateMap().then((performedroutes) {
-        setState(() {
-          _performedRoutes = performedroutes;
-        });
+    await UserRouteHandler().getRoutesAsDateMap().then((performedroutes) {
+      setState(() {
+        _performedRoutes = performedroutes;
       });
+    });
   }
 }
